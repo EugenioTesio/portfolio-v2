@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  --c-bg: #050505;
+  --c-primary: #00F5FF;
+  --c-secondary: #9D00FF;
+  --c-accent: #FF00E5;
+  --f-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --text-p: #A0A0A0;
+}
+
+@layer base {
+  html {
+    font-family: var(--f-sans);
+    scroll-behavior: smooth;
+    background-color: var(--c-bg);
+    color: #FFFFFF;
+  }
+  
+  code, kbd, samp, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom scrollbar matching Immersive UI */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00F5FF;
+}
+
+/* Immersive background glow orbs */
+.radial-glow-cyan {
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.14) 0%, transparent 70%);
+  filter: blur(60px);
+}
+
+.radial-glow-purple {
+  background: radial-gradient(circle, rgba(157, 0, 255, 0.12) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+.radial-glow-magenta {
+  background: radial-gradient(circle, rgba(255, 0, 229, 0.08) 0%, transparent 70%);
+  filter: blur(70px);
+}
+
+/* Bento glass card utility */
+.glass-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 35px rgba(0, 245, 255, 0.1);
+}
+
+/* Subtle grid overlay */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
