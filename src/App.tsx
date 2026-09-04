@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import AboutSection from './components/AboutSection';
-import CapabilitiesSection from './components/CapabilitiesSection';
 import ExperienceSection from './components/ExperienceSection';
 import ProjectsGallery from './components/ProjectsGallery';
 import BlogSection from './components/BlogSection';
@@ -16,7 +15,7 @@ export default function App() {
   // Scrollspy to set active navbar link
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'about', 'capabilities', 'experience', 'projects', 'blog', 'contact'];
+      const sections = ['hero', 'about', 'experience', 'projects', 'blog', 'contact'];
       const scrollPosition = window.scrollY + 200;
 
       for (const sectionId of sections) {
@@ -41,11 +40,6 @@ export default function App() {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const handleSelectCapabilityForExperience = (capabilityId: string) => {
-    setSelectedCapabilityId(capabilityId);
-    handleNavigate('experience');
   };
 
   const handleClearCapabilityFilter = () => {
@@ -87,26 +81,20 @@ export default function App() {
           {/* Section 1: About Me */}
           <AboutSection onNavigate={handleNavigate} />
 
-          {/* Section 2: What I Can Do */}
-          <CapabilitiesSection
-            onSelectCapabilityForExperience={handleSelectCapabilityForExperience}
-            selectedCapabilityId={selectedCapabilityId}
-          />
-
-          {/* Section 3: Experience Highlights backing up What I Can Do */}
+          {/* Section 2: Experience Highlights */}
           <ExperienceSection
             selectedCapabilityId={selectedCapabilityId}
             onClearCapabilityFilter={handleClearCapabilityFilter}
             onNavigateToProjects={() => handleNavigate('projects')}
           />
 
-          {/* Section 5: Projects Gallery with filter and detail pages */}
+          {/* Section 3: Projects Gallery with filter and detail pages */}
           <ProjectsGallery />
 
           {/* Section 4: Blog Section rendering local repository Markdown files */}
           <BlogSection />
 
-          {/* Section 6: Contact Form with real-time validation & email notification integration */}
+          {/* Section 5: Contact Form with real-time validation & email notification integration */}
           <ContactSection />
         </main>
 

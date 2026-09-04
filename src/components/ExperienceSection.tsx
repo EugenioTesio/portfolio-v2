@@ -55,7 +55,7 @@ export default function ExperienceSection({
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
               <Briefcase className="w-3.5 h-3.5" />
-              <span className="font-bold tracking-[2px]">03. EXPERIENCE HIGHLIGHTS</span>
+              <span className="font-bold tracking-[2px]">02. EXPERIENCE HIGHLIGHTS</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Production Evidence Backing <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] to-[#9D00FF]">What I Can Do</span>

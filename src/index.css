@@ -83,3 +83,215 @@
     linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
 }
+
+/* HTML blog articles */
+.html-article {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.html-article > *:first-child {
+  margin-top: 0;
+}
+
+.html-article h2 {
+  color: #00f5ff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 2.25rem 0 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.html-article h3 {
+  color: #c084fc;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 1.6rem 0 0.6rem;
+}
+
+.html-article p {
+  margin: 0 0 1rem;
+}
+
+.html-article a {
+  color: #00f5ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.html-article ul,
+.html-article ol {
+  margin: 0 0 1.1rem;
+  padding-left: 1.25rem;
+}
+
+.html-article li {
+  margin: 0.35rem 0;
+}
+
+.html-article li::marker {
+  color: #00f5ff;
+}
+
+.html-article strong {
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.html-article code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #00f5ff;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+}
+
+.html-article pre {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.1rem 1.15rem;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.65;
+  margin: 0 0 1.25rem;
+}
+
+.html-article pre code {
+  background: transparent;
+  padding: 0;
+  color: #cbd5e1;
+}
+
+.html-article blockquote {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid #00f5ff;
+  background: rgba(0, 245, 255, 0.06);
+  border-radius: 0 0.85rem 0.85rem 0;
+  color: #e2e8f0;
+}
+
+.html-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.35rem;
+  font-size: 0.82rem;
+}
+
+.html-article th,
+.html-article td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  vertical-align: top;
+}
+
+.html-article th {
+  color: #00f5ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.html-article .diagram-frame {
+  margin: 1.35rem 0 1.6rem;
+  padding: 1rem 0.85rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.025);
+  overflow-x: auto;
+}
+
+.html-article .diagram-frame figcaption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #00f5ff;
+  margin: 0 0 0.75rem 0.15rem;
+}
+
+.html-article .mermaid {
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0.25rem;
+  margin: 0;
+}
+
+.html-article .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.html-article .tradeoff-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin: 0 0 1.35rem;
+}
+
+@media (min-width: 720px) {
+  .html-article .tradeoff-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.html-article .tradeoff {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1rem 1.05rem 0.35rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.html-article .tradeoff h3 {
+  margin-top: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.html-article .tradeoff.pro h3 {
+  color: #00f5ff;
+}
+
+.html-article .tradeoff.con h3 {
+  color: #ff6b9d;
+}
+
+.html-article .callout {
+  margin: 0 0 1.25rem;
+  padding: 0.95rem 1.05rem;
+  border: 1px solid rgba(157, 0, 255, 0.35);
+  background: rgba(157, 0, 255, 0.08);
+  border-radius: 1rem;
+}
+
+.html-article .checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.html-article .checklist li {
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.html-article .checklist li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1.5px solid #00f5ff;
+  border-radius: 2px;
+}

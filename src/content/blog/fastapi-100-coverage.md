@@ -7,9 +7,9 @@
 
 ---
 
-Reaching **100% meaningful code coverage** in backend services is often dismissed as impractical vanity. However, when developing critical data ingestion and financial backend pipelines, high test coverage is your only real safeguard against subtle regression bugs.
+Reaching **100% meaningful code coverage** in backend services is often dismissed as impractical vanity. However, when developing critical adoption workflow and home study backend pipelines, high test coverage is your only real safeguard against subtle regression bugs.
 
-At **PairTree**, we engineered high-throughput **FastAPI** microservices using **SQLAlchemy** and **Alembic**, maintaining 100% test coverage backed by robust `pytest` fixtures.
+At **PairTree**, an adoption enablement platform, we engineered **FastAPI** microservices using **SQLAlchemy** and **Alembic**, maintaining 100% test coverage backed by robust `pytest` fixtures.
 
 ```
        +---------------------------------------------+
