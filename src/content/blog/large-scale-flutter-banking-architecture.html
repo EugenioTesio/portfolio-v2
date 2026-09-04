@@ -1,0 +1,421 @@
+<p>When fifty-plus engineers across many squads try to ship a banking app as a classic Flutter monolith, the failure is organizational before it is technical: merge queues stall, CI times explode, and a defect in cards freezes a release that payments never touched.</p>
+
+<p>This article is a field guide for the architecture that fixes that — without pretending Flutter micro-apps are independently deployable like web micro-frontends. They are <strong>compile-time modules</strong> assembled by an <strong>app shell</strong> into one store binary. Squads own <strong>micro-apps</strong> (one domain per package). They never import each other. They integrate through the shell and talk through a <strong>capability registry</strong>, typed pub/sub, and the router. That distinction drives most of the trade-offs below.</p>
+
+<aside class="callout">
+  <p><strong>What this is not.</strong> It is not a license to split folders “for cleanliness.” If you have fewer than three squads, a well-bounded modular monolith is cheaper. The architecture here exists to let many teams move in parallel without sharing a route table, a pubspec, or a mental model of the entire tree.</p>
+</aside>
+
+<h2>The fifty-engineer failure mode</h2>
+
+<p>The symptoms are boring and expensive:</p>
+<ul>
+  <li><strong>Merge storms</strong> on the global route table, theme, and dependency tree.</li>
+  <li><strong>CI that cannot be localized.</strong> A copy change in statements re-runs golden tests for onboarding.</li>
+  <li><strong>State-management drift.</strong> One squad standardizes on BLoC for ledgers; another standardizes on Riverpod for forms; neither owns the boundary.</li>
+  <li><strong>A single binary, a single blast radius.</strong> Payments cannot ship because cards failed a screenshot test.</li>
+</ul>
+
+<p>Banking makes this worse. You still have one App Store listing, one Google Play listing, often a third store for devices without Google services, a shared RASP surface, and a regulator who does not care that “that screen belongs to another squad.” The architecture has to isolate <em>work</em>, not isolate <em>liability</em>.</p>
+
+<h2>Three principles that actually scale</h2>
+
+<p>Everything else is an implementation detail of three rules.</p>
+<ol>
+  <li><strong>Composition over inheritance.</strong> Micro-apps and vendor SDKs are assembled by the shell. Nobody subclasses “the bank app.” Deep hierarchies become un-mergeable politics.</li>
+  <li><strong>Coordinated lifecycle.</strong> The shell boots once, registers every micro-app, and calls each package’s <code>bootstrap</code> during startup. Heavy I/O belongs in lazy services, not in blocking init.</li>
+  <li><strong>No direct micro-app-to-micro-app imports.</strong> If payments needs an account carousel, it asks the registry. Compile-time coupling is how Conway’s law turns into a distributed monolith with extra steps.</li>
+</ol>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 1. App shell orchestrates micro-apps and shared platform kit</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  subgraph shell [AppShell]
+    router[RouterAgnostic]
+    di[DependencyInjection]
+    registry[CapabilityRegistry]
+    guards[AuthAndRouteGuards]
+  end
+  subgraph microapps [MicroApps]
+    auth[Auth]
+    payments[Payments]
+    accounts[Accounts]
+    cards[Cards]
+    onboarding[Onboarding]
+  end
+  subgraph platform [SharedPlatform]
+    bom[DependencyBOM]
+    design[DesignSystem]
+    wrappers[VendorWrappers]
+  end
+  shell --> microapps
+  microapps --> platform
+  registry --> microapps
+  router --> microapps
+  guards --> router
+</pre>
+</figure>
+
+<h2>The layered system</h2>
+
+<p>Name the layers so ownership is obvious. Ambiguous names are how “core” becomes a junk drawer.</p>
+
+<h3>App shell (composition root)</h3>
+<p>The only compile target that ships to stores. It registers every micro-app, boots the capability registry, aggregates routes and localization delegates, wires dependency injection, and owns session guards. Product squads do not edit this repository except through a reviewed integration PR. The shell is thin on purpose: orchestration, not business logic.</p>
+
+<h3>Micro-apps</h3>
+<p>One domain per package: payments, accounts, cards, statements, onboarding. Each micro-app exposes guarded and public routes, <strong>InteropApi</strong> handlers for other packages (<code>registerRequest</code>, <code>registerWidget</code>), localization delegates, injectable dependencies, and a one-time <code>bootstrap</code> hook. Each package also ships an <strong>isolated runner</strong> (an <code>example/</code> app) so a squad can hot-reload their world in seconds without assembling the host.</p>
+
+<h3>Shared platform kit</h3>
+<p>Design system, networking abstractions, storage, analytics facades, observability, fraud signals, and <strong>wrappers</strong> around vendor SDKs. Squads consume interfaces. The platform team swaps Google versus Huawei implementations, or a new crash reporter, without a fifty-file refactor.</p>
+
+<h3>Squad-only plugins</h3>
+<p>A few capabilities are not shared: NFC contactless, liveness for KYC, a proprietary card-scan camera. Those live in packages owned by the squad that needs them. They are the exception that proves the BOM rule below.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 2. Dependencies flow one way. Micro-app-to-micro-app imports are forbidden</figcaption>
+  <pre class="mermaid">
+flowchart BT
+  host[AppShell]
+  payments[PaymentsMicroApp]
+  accounts[AccountsMicroApp]
+  cards[CardsMicroApp]
+  shared[SharedContracts]
+  design[DesignSystem]
+  bom[DependencyBOM]
+  host --> payments
+  host --> accounts
+  host --> cards
+  payments --> shared
+  accounts --> shared
+  cards --> shared
+  payments --> design
+  accounts --> design
+  cards --> design
+  payments --> bom
+  accounts --> bom
+  cards --> bom
+  payments -.->|forbidden| accounts
+  accounts -.->|forbidden| cards
+  cards -.->|forbidden| payments
+</pre>
+</figure>
+
+<p>Enforce the dotted lines with analyzer plugins or a simple CI grep over import URIs. Social agreements rot in week three. Architecture tests do not.</p>
+
+<h2>Integrating a micro-app into the app shell</h2>
+
+<p>A micro-app does not “plug in” by adding a folder under <code>lib/features</code>. It integrates through a <strong>container contract</strong> the shell understands. Think of it as a manifest the platform team registers once per package.</p>
+
+<p>Each micro-app implements an abstract container that declares:</p>
+<ul>
+  <li><strong>A unique name</strong> — used in logs, crash attributes, and the interop catalog.</li>
+  <li><strong>Guarded routes</strong> — screens that require an authenticated session.</li>
+  <li><strong>Public routes</strong> — onboarding, legal, password recovery.</li>
+  <li><strong>InteropApi</strong> — request and widget routes other packages call via <code>makeRequest</code> and <code>getWidget</code>.</li>
+  <li><strong>Declarative action parsers</strong> — optional handlers for push payloads and server-driven navigation JSON.</li>
+  <li><strong>Localization delegates</strong> — the shell merges them into <code>MaterialApp</code>.</li>
+  <li><strong>Injectable dependencies</strong> — repositories and use cases registered during bootstrap.</li>
+  <li><strong><code>bootstrap()</code></strong> — one-time init: listeners, remote-config subscriptions, analytics setup.</li>
+</ul>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 3. App startup: shell aggregates every micro-app contract</figcaption>
+  <pre class="mermaid">
+sequenceDiagram
+  participant Main as HostMain
+  participant Shell as AppShell
+  participant Auth as AuthMicroApp
+  participant Pay as PaymentsMicroApp
+  participant Acct as AccountsMicroApp
+  participant Reg as CapabilityRegistry
+  Main->>Shell: registerMicroApp auth
+  Main->>Shell: registerMicroApp payments
+  Main->>Shell: registerMicroApp accounts
+  Main->>Shell: bootstrap
+  Shell->>Auth: bootstrap
+  Shell->>Pay: bootstrap
+  Shell->>Acct: bootstrap
+  Shell->>Reg: registerAllInteropRoutes
+  Shell->>Shell: aggregateRoutes
+  Shell->>Shell: aggregateLocalizations
+  Shell->>Main: runApp with merged router
+</pre>
+</figure>
+
+<p>The integration checklist for the platform team is short and non-negotiable:</p>
+<ol>
+  <li>Import the micro-app container in the shell project.</li>
+  <li>Add it to the shell’s micro-app list (order matters if routes could collide — platform resolves conflicts).</li>
+  <li>Pass module configuration (API base URLs, feature flags) through constructor injection, not globals.</li>
+  <li>Verify guarded routes sit behind the shell’s auth redirect.</li>
+  <li>Smoke-test deep links that target the new routes.</li>
+</ol>
+
+<aside class="callout">
+  <p><strong>Startup tax is real.</strong> Bootstrapping every micro-app at launch costs Dart isolate work, DI graphs, and native plugin registration. Mitigate with lazy service construction inside <code>bootstrap</code>, not by skipping registration. A missing interop route at runtime is worse than a few extra milliseconds at cold start.</p>
+</aside>
+
+<h2>Four ways micro-apps talk</h2>
+
+<p>Low coupling is not “no communication.” Banking UIs are mosaics: the home screen is a host of widgets owned by five squads. You need a small, named set of channels — and you need to refuse a fifth.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 4. Four communication modes. Pick the narrowest that works</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  caller[CallingMicroApp]
+  caller -->|"full flow then return"| routerHandoff[RouterHandoff]
+  caller -->|"embed UI plus logic"| getWidget[interop.getWidget]
+  caller -->|"request a result"| makeRequest[interop.makeRequest]
+  caller -->|"something happened"| pubSub[TypedPubSub]
+  routerHandoff --> authPkg[AuthMicroApp]
+  getWidget --> accountsPkg[AccountsMicroApp]
+  makeRequest --> profilePkg[ProfileMicroApp]
+  pubSub --> platformBus[PlatformEventBus]
+</pre>
+</figure>
+
+<h3>1. Router hand-off</h3>
+<p>Delegate an entire flow — login, KYC, device binding — and pass a return location via a query parameter (for example <code>re_direct=/home</code>). The callee pops with a result. This is the right tool when the user should leave your micro-app. Pros: obvious back stack, easy to deep-link. Cons: you cannot embed a slice of that flow on a dashboard.</p>
+
+<h3>2. Interop widgets — <code>getWidget</code></h3>
+<p>The owner registers a handler with <code>interop.registerWidget('/accounts/balance-card', …)</code>. Callers embed UI with <code>interop.getWidget(route, params)</code>. The owner builds the widget with its own state and use cases. The home squad never imports accounts. Pros: true UI reuse across squads. Cons: layout surprises, async holes while the widget loads, and a home screen that fails in pieces instead of as a unit. Always pass an error placeholder.</p>
+
+<h3>3. Interop requests — <code>makeRequest</code></h3>
+<p>The owner registers a handler with <code>interop.registerRequest('/profile/device-info', …)</code>. Callers fetch data with <code>interop.makeRequest(route, params)</code> — synchronous-looking request/response for device info, biometric availability, a sanitized profile. Parameters are a dictionary; the contract lives in the interop catalog, not in a shared model package that everyone depends on. Pros: no UI entanglement. Cons: untyped maps, runtime “route not found,” and the temptation to smuggle DTOs as JSON strings forever. Publish the catalog. Version the routes. Reject unknown required keys.</p>
+
+<h3>How InteropApi works</h3>
+<p>Think of InteropApi as internal HTTP: each micro-app publishes routes at bootstrap; callers address them by path. The shell owns a single <strong>InteropRegistry</strong> that dispatches to the owning package. No caller imports the owner — only the route string and the catalog contract.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 5. InteropApi lifecycle: register at bootstrap, dispatch by route at runtime</figcaption>
+  <pre class="mermaid">
+sequenceDiagram
+  participant Shell as AppShell
+  participant Reg as InteropRegistry
+  participant Catalog as InteropCatalog
+  participant Owner as AccountsMicroApp
+  participant Caller as HomeMicroApp
+
+  Note over Shell,Owner: Bootstrap
+  Shell->>Owner: bootstrap
+  Owner->>Reg: registerRequest("/accounts/summary", handler)
+  Owner->>Reg: registerWidget("/accounts/balance-card", handler)
+  Reg->>Catalog: publish routes
+
+  Note over Caller,Owner: Runtime makeRequest
+  Caller->>Reg: makeRequest("/accounts/summary", params)
+  Reg->>Owner: dispatch handler
+  Owner->>Owner: run use case
+  Owner-->>Reg: result map
+  Reg-->>Caller: result map
+
+  Note over Caller,Owner: Runtime getWidget
+  Caller->>Reg: getWidget("/accounts/balance-card", params)
+  Reg->>Owner: dispatch handler
+  Owner->>Owner: build Widget with providers
+  Owner-->>Reg: Widget
+  Reg-->>Caller: Widget
+</pre>
+</figure>
+
+<p>Registration is owner-side (<code>registerRequest</code>, <code>registerWidget</code>). Invocation is caller-side (<code>makeRequest</code>, <code>getWidget</code>). The registry resolves the route, validates required parameters against the catalog, and forwards to the handler. If the route is missing or params are wrong, fail fast with a typed error — not a null widget on the home screen.</p>
+
+<h3>4. Typed pub/sub</h3>
+<p>Session established, session dropped, uncaught error, remote-config bag changed, accounts list refreshed. These are facts about the world, not requests. The platform team owns the channel types. Squads must cancel subscriptions when a widget disposes. Pros: many listeners, no import cycle. Cons: a global bus is how hidden coupling returns. If you need a request/response, it is not an event.</p>
+
+<div class="tradeoff-grid">
+  <section class="tradeoff pro">
+    <h3>Registry and bus</h3>
+    <ul>
+      <li>Squads ship without waiting on each other’s source.</li>
+      <li>You can mock interop routes in the isolated runner.</li>
+      <li>Unique interop routes prevent silent collisions.</li>
+      <li>Performance traces can tag a destination route.</li>
+    </ul>
+  </section>
+  <section class="tradeoff con">
+    <h3>The distributed monolith</h3>
+    <ul>
+      <li>Failures move from compile time to production.</li>
+      <li>Call graphs vanish from “find references.”</li>
+      <li>A renamed route is a silent home-screen hole.</li>
+      <li>Overusing the bus recreates spaghetti with extra hops.</li>
+    </ul>
+  </section>
+</div>
+
+<p>Industry writing on Flutter super-apps often stops at “use an event bus.” That is how you get a distributed monolith: every feature depends on a singleton, none of the edges are typed, and onboarding a new engineer means grepping strings. A registry with required parameters, status codes, and a human-readable catalog is the minimum adult supervision.</p>
+
+<h2>Inside a micro-app</h2>
+
+<p>The folder template is not bureaucracy. It is how someone from another squad can open a PR on Friday without a tour. A package that cannot be navigated in ten minutes will be copied, not extended.</p>
+
+<pre><code>micro_app/
+  l10n/
+  lib/src/
+    interop/
+      requests/          # registerRequest handlers — data routes
+      widgets/           # registerWidget handlers — view routes
+    config/
+      dependency_injection/
+      network/           # api_endpoints.dart — no magic URLs in datasources
+      remote_config/
+      storage/
+      analytics/
+    commons/             # helpers local to this micro-app
+    features/
+      transfer/
+        data/
+          models/
+          data_sources/
+          repositories/
+        domain/
+          entities/
+          repositories/
+          use_cases/
+        presentation/
+          providers/       # or blocs — presentation state only
+          screens/
+          widgets/
+  test/                  # mirrors lib/
+  example/               # isolated runner — the squad's daily driver</code></pre>
+
+<h3>Presentation vs domain wiring</h3>
+<p>Presentation state (Riverpod, BLoC, or similar) lives under <code>features/*/presentation</code>. Domain and data layers are constructed through the injector the shell provides — not through ad-hoc <code>ProviderContainer()</code> inside interop handlers. Two DI systems in one package is how tests flake and memory leaks hide in <code>registerRequest</code> callbacks.</p>
+
+<h3>InteropApi lives at the package edge</h3>
+<p><code>registerRequest</code> handlers call use cases. <code>registerWidget</code> handlers return widgets built with the owner’s providers. Shared widgets used only by interop sit in <code>features/shared</code>. The interop layer is the public API of your micro-app to the rest of the bank — document every route in the catalog.</p>
+
+<h3>Config is code, not folklore</h3>
+<ul>
+  <li><strong>No raw strings in UI.</strong> Localization files are part of the package contract; the shell aggregates delegates.</li>
+  <li><strong>Enumerate endpoints, remote-config keys, storage keys, and analytics events</strong> in config files. Searching the repo for a magic string during an incident is not a strategy.</li>
+  <li><strong>Immutable models.</strong> Code-generated unions for states beat “a nullable entity plus three booleans.”</li>
+  <li><strong>Navigation from the notifier, not the widget,</strong> using the injected router abstraction the shell exposes.</li>
+</ul>
+
+<p>The isolated runner is the onboarding product. A new engineer should clone one repository, run one command, and see transfers — not wait for the host’s flavor matrix, signing, and fifty other packages to resolve.</p>
+
+<h2>The platform operating system</h2>
+
+<p>At this scale the platform team is not “the people who do tickets nobody wants.” They are the kernel.</p>
+
+<h3>A dependency bill of materials</h3>
+<p>Pub cannot put two versions of the same package into one binary. If payments pins <code>http ^0.13</code> and cards pins <code>http ^1.1</code>, the host does not build. The fix is a BOM package: micro-apps depend on the BOM, not on pub.dev, except for truly encapsulated squad plugins. Dart workspaces (SDK 3.6+) and Melos are the ecosystem’s version of the same idea — one resolution, one lockfile. A banking org still wants the BOM as a <em>policy</em> artifact: upgrading Dio is a platform RFC, not a drive-by in a squad sprint.</p>
+
+<h3>Wrappers, not SDKs in feature code</h3>
+<p>Analytics, crash reporting, remote config, geolocation, and secure storage all have two lives on Android: Google Mobile Services and Huawei Mobile Services. Feature code that imports a vendor plugin will be rewritten twice. Wrap them. The wrapper is also where you attach a <code>microapp</code> attribute to every event and crash, which is the only way a unified dashboard pages the right squad.</p>
+
+<h3>CI the squads cannot fork</h3>
+<p>Reusable workflows: format, analyzer (including a strict ruleset such as Very Good Analysis minus noise), unit tests, coverage upload, SAST. Squads do not own the workflow files. If they need a new job, they propose it to platform. Path-filtered CI on the host still runs the world; path-filtered CI on a micro-app repository must be fast enough that waiting feels rude — under four minutes is a reasonable target.</p>
+
+<h3>A release train, not a heroics calendar</h3>
+<p>Independent packages still leave the store as one artifact. A two-week train — branch cut, signed multi-store builds, staged rollout — is the integration cadence. The train is an operating model, not an architecture. Treat it as such; do not invent a second composition root to avoid talking to QA.</p>
+
+<h2>Banking extras the textbooks skip</h2>
+
+<h3>Deep links and declarative actions</h3>
+<p>Campaign tools and push notifications send JSON: “open payment for amount X.” Each micro-app registers parsers by <code>actionType</code>; the shell aggregates them. Deep links target routes owned by specific micro-apps — the shell’s router must know which package owns which path. Parsers and deep links must run through the same auth guards as typed routes. This is how you ship a seasonal flow without waiting for store review — and how you accidentally ship a navigation gadget with no authentication if guards are skipped.</p>
+
+<h3>Unified observability</h3>
+<p>Stamp <code>microapp</code> (and feature, where useful) on every analytics event and crash report. Otherwise you will page the wrong squad at 2 a.m. One project, one taxonomy, required ownership attributes. Migration from legacy dashboards is a program, not a ticket.</p>
+
+<h3>Compile-time modules still bloat the binary</h3>
+<p>Tree-shaking helps. It does not delete a native KYC SDK that most users will never open. Measure with <code>flutter build --analyze-size</code>, ship Android App Bundles, and be vicious about squad-only plugins. Flutter is not a micro-frontend runtime; you cannot download a feature graph later.</p>
+
+<h3>PCI and RASP are shell concerns</h3>
+<p>Card data should never enter a squad’s Dart heap if a tokenizer can stop it at the SDK. Root detection, hooking, and debugger checks belong in the shell, uniformly. A micro-app that “implements its own jailbreak check” is a finding, not a feature.</p>
+
+<h2>Team topology</h2>
+
+<p>Conway’s law is not a metaphor here. The repo graph will copy the org chart. Design the org chart on purpose.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 6. Platform team as kernel; stream-aligned squads own micro-apps</figcaption>
+  <pre class="mermaid">
+flowchart LR
+  subgraph platformTeam [PlatformTeam]
+    shellOwn[AppShell]
+    ciOwn[ReusableCI]
+    bomOwn[BOMAndWrappers]
+    catalogOwn[InteropCatalog]
+  end
+  subgraph squads [StreamAlignedSquads]
+    paySquad[PaymentsSquad]
+    accSquad[AccountsSquad]
+    cardSquad[CardsSquad]
+  end
+  platformTeam -->|"contracts templates and trains"| squads
+  paySquad --> paymentsPkg[PaymentsMicroApp]
+  accSquad --> accountsPkg[AccountsMicroApp]
+  cardSquad --> cardsPkg[CardsMicroApp]
+</pre>
+</figure>
+
+<p>One micro-app, one owning squad. Shared packages have a named steward, not “whoever touched it last.” The platform team is a bottleneck by design: BOM upgrades, shell integration, new broadcast types, CI templates. That bottleneck is cheaper than twelve versions of Dio. Staff it. If platform is two people supporting twelve squads, you do not have a platform. You have a queue of blocked sprints.</p>
+
+<p>Integration into the shell is a checklist, not folklore: container class, unique name, routes, interop handlers, parsers, localization, DI, bootstrap, remote-config keys, deep links, crash attributes, analytics events. Until that checklist is boring, every new package will be a production incident.</p>
+
+<h2>Pros and cons, without the slideware</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>What you gain</th>
+      <th>What you pay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Team velocity</td>
+      <td>Parallel work, isolated runners, smaller PRs, onboarding in days not weeks.</td>
+      <td>Integration PRs into the shell still serialize at the train. Platform becomes a queue.</td>
+    </tr>
+    <tr>
+      <td>Coupling</td>
+      <td>No compile-time cycles between micro-apps. Clear ownership per domain.</td>
+      <td>Runtime coupling via string routes. Catalogs and contract tests are mandatory, not optional.</td>
+    </tr>
+    <tr>
+      <td>Product</td>
+      <td>One cohesive app, one identity, one store listing, shared design system.</td>
+      <td>Shared process, shared RASP surface, shared binary size. A native crash in any SDK affects everyone.</td>
+    </tr>
+    <tr>
+      <td>Quality</td>
+      <td>Micro-app CI is fast. You can golden-test a flow without booting the bank.</td>
+      <td>End-to-end still needs the shell. Interop holes appear only when graphs are composed.</td>
+    </tr>
+    <tr>
+      <td>Governance</td>
+      <td>BOM, wrappers, and locked workflows stop dependency roulette.</td>
+      <td>Squads feel constrained. Shadow pubspec entries will appear unless review is sharp.</td>
+    </tr>
+    <tr>
+      <td>Operations</td>
+      <td>Unified analytics and crashes with a micro-app dimension.</td>
+      <td>Building the catalog and keeping it current is ongoing platform work.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The architecture also fails in characteristic ways. Bootstrap-everything inflates startup. <code>getWidget</code> calls turn the home screen into a distributed system. A “shared” package that secretly depends on one squad’s domain infects everyone. Lifecycle leaks — a socket or stream subscription that survives widget disposal — become data bugs in a bank, not academic edge cases.</p>
+
+<h2>When not to do this</h2>
+
+<ul>
+  <li><strong>Fewer than three squads.</strong> You will spend more time on the shell than on the product. Use packages for the design system and stop.</li>
+  <li><strong>No platform team.</strong> Without stewards for CI, BOM, and the interop catalog, this design decays into a federation of incompatible Flutter apps that still have to compile together.</li>
+  <li><strong>A need for true independent deployability.</strong> Flutter will not give you that in the store. If you need to ship cards without a binary, you are talking about server-driven UI or a web surface, not another Dart package.</li>
+  <li><strong>Micro-apps as folders, not packages.</strong> If everything still lives in one repo with no isolated runner and no import bans, you have renamed a monolith, not modularized it.</li>
+</ul>
+
+<h2>Closing</h2>
+
+<p>Large-scale Flutter banking architecture is an operating system for teams, wearing a mobile UI. The app shell, the micro-app, the capability registry, and the BOM are how you keep fifty engineers from sharing a file. They are also how you inherit a new class of failure: stringly-typed integration, a heavier binary, and a platform team that must be staffed like a kernel team.</p>
+
+<p>Use the shape when the org is already too big for one squad and one route table. Skip it when you are still one team with ambition. And never confuse independently <em>developable</em> micro-apps with independently <em>shippable</em> apps — the store still gets one artifact, and the regulator still sees one bank.</p>

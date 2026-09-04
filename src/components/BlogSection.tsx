@@ -17,8 +17,9 @@ import {
   X,
   Sparkles
 } from 'lucide-react';
-import { getBlogPosts, getBlogPostBySlug } from '../data/blogLoader';
+import { getBlogPosts } from '../data/blogLoader';
 import { BlogPost } from '../types';
+import HtmlArticleBody from './HtmlArticleBody';
 
 export default function BlogSection() {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
@@ -61,17 +62,17 @@ export default function BlogSection() {
               <span className="font-bold tracking-[2px]">04. TECHNICAL BLOG & REPOSITORY</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Engineering Notes Rendered from <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">Local Markdown</span>
+              Engineering Notes Rendered from <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">Local Articles</span>
             </h2>
             <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
-              Practical guides on micro-apps, 15-day release trains, RASP hardening, and 100% backend test coverage parsed directly from repository markdown files.
+              Practical guides on large-scale Flutter architecture, 15-day release trains, RASP hardening, and backend coverage — parsed from repository Markdown and HTML.
             </p>
           </div>
 
           {/* Local Repository Indicator */}
           <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono text-[#A0A0A0] self-start md:self-auto backdrop-blur-md">
             <FileCode2 className="w-4 h-4 text-[#00F5FF]" />
-            <span>Source: /src/content/blog/*.md</span>
+            <span>Source: /src/content/blog/*.md, *.html</span>
           </div>
         </div>
 
@@ -281,12 +282,15 @@ export default function BlogSection() {
                 </div>
               </div>
 
-              {/* Rendered Markdown Body */}
-              <div className="markdown-body prose prose-invert max-w-none prose-headings:text-white prose-headings:font-extrabold prose-h1:text-2xl prose-h2:text-xl prose-h2:text-[#00F5FF] prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2 prose-h2:mt-8 prose-h3:text-lg prose-h3:text-[#9D00FF] prose-p:text-slate-300 prose-p:leading-relaxed prose-code:text-[#00F5FF] prose-code:bg-white/[0.05] prose-code:px-2 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-xs prose-pre:bg-black/60 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-2xl prose-pre:p-5 prose-pre:text-xs prose-li:text-slate-300">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {selectedPost.content || ''}
-                </ReactMarkdown>
-              </div>
+              {selectedPost.format === 'html' ? (
+                <HtmlArticleBody html={selectedPost.content || ''} />
+              ) : (
+                <div className="markdown-body prose prose-invert max-w-none prose-headings:text-white prose-headings:font-extrabold prose-h1:text-2xl prose-h2:text-xl prose-h2:text-[#00F5FF] prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2 prose-h2:mt-8 prose-h3:text-lg prose-h3:text-[#9D00FF] prose-p:text-slate-300 prose-p:leading-relaxed prose-code:text-[#00F5FF] prose-code:bg-white/[0.05] prose-code:px-2 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-xs prose-pre:bg-black/60 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-2xl prose-pre:p-5 prose-pre:text-xs prose-li:text-slate-300">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {selectedPost.content || ''}
+                  </ReactMarkdown>
+                </div>
+              )}
 
               {/* Article Footer */}
               <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">

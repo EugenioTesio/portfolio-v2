@@ -10,7 +10,7 @@ export const PERSONAL_INFO = {
   image: regeneratedProfileImage,
   bio: `I'm Eugenio Tesio, a passionate Mobile Expert, Systems Architect, and Electronics Engineer with over 14 years of professional software engineering and hardware telemetry experience. I specialize in designing and scaling high-velocity mobile platforms and resilient backends with Flutter (BLoC & Riverpod), Python (FastAPI), Java (Spring Boot), and Google Cloud Platform. 
 
-Currently serving as Mobile Expert at ueno bank (ITTI S.A.E.C.A.), I pioneered the architectural migration to a multi-repo Micro-App & App Shell ecosystem that coordinates 50+ Flutter engineers, unified the flagship retail and business banking applications, built automated 15-day Release Trains to Apple App Store, Google Play, and Huawei AppGallery, and hardened security posture with Fintech RASP. My past career includes achieving 100% backend test coverage with FastAPI at PairTree, delivering Riverpod and Nest.js microservices at Tandamos, building enterprise GCP Pub/Sub messaging pipelines at Valtech, and a decade of delivering custom mobile/IoT solutions (including OCPP 1.6 EV charging networks and commercialized RS485 telemetry devices) with zero mobile store rejections.`,
+Currently serving as Mobile Expert at ueno bank (ITTI S.A.E.C.A.), I pioneered the architectural migration to a multi-repo Micro-App & App Shell ecosystem that coordinates 50+ Flutter engineers, unified the flagship retail and business banking applications, built automated 15-day Release Trains to Apple App Store, Google Play, and Huawei AppGallery, and hardened security posture with Fintech RASP. My past career includes achieving 100% backend test coverage with FastAPI at PairTree (adoption enablement platform), delivering Riverpod and Nest.js microservices at Tandamos, building enterprise GCP Pub/Sub messaging pipelines at Valtech, and a decade of delivering custom mobile/IoT solutions (including OCPP 1.6 EV charging networks and commercialized RS485 telemetry devices) with zero mobile store rejections.`,
   education: {
     degree: "Engineer’s degree, Electrical and Electronics Engineering (Ingeniero Electrónico)",
     institution: 'Universidad Tecnológica Nacional (UTN) — Facultad Regional San Francisco',
@@ -192,8 +192,9 @@ export const EXPERIENCES: ExperienceItem[] = [
     id: 'pairtree',
     role: 'Full Stack Developer',
     company: 'PairTree',
+    location: 'Seattle, WA (Remote)',
     period: 'Jun. 2022 – May. 2023',
-    summary: 'Delivered production Flutter applications on BLoC with golden widget tests, while maintaining mission-critical FastAPI backend services at 100% test coverage.',
+    summary: 'Built full-stack features for PairTree, an adoption enablement platform that connects licensed adoption professionals, adopting families, and expectant moms — powering Connect Pro (nationwide professional collaboration), Home Base (home study management), and the PairTree Family mobile experience. Delivered Flutter clients on BLoC with golden widget tests and maintained FastAPI backend services at 100% test coverage. The company has since ceased operations and the app is no longer available.',
     featuredStat: {
       value: '100% Coverage',
       label: 'FastAPI Backend with Pytest Fixtures'
@@ -206,26 +207,26 @@ export const EXPERIENCES: ExperienceItem[] = [
     ],
     bulletPoints: [
       {
-        category: 'Mobile Delivery',
-        text: 'Built production Flutter apps on BLoC, with unit, widget, integration, and golden tests — raising UI regression safety.',
+        category: 'Adoption Mobile Platform',
+        text: 'Built Flutter apps on BLoC for PairTree Family — home study task flows, profile matching, and adoption professional tooling, with unit, widget, integration, and golden tests.',
         metrics: 'Golden pixel-perfect regression safety across releases',
         capabilityTag: 'Flutter BLoC & Golden Tests'
       },
       {
         category: 'CI/CD Automation',
-        text: 'Built GitHub Actions pipelines for test and deploy — shortening review feedback loops.',
+        text: 'Built GitHub Actions pipelines for automated test and deploy across mobile and backend services — shortening review feedback loops.',
         metrics: 'Automated test suites executed on every single commit',
         capabilityTag: 'GitHub Actions Automation'
       },
       {
         category: 'Backend Quality',
-        text: 'Contributed to FastAPI services with SQLAlchemy and Alembic, reaching 100% code coverage using fixtures for functional and regression tests.',
+        text: 'Contributed to FastAPI services backing home study workflows and professional collaboration features, with SQLAlchemy, Alembic, and 100% pytest coverage using fixtures for functional and regression tests.',
         metrics: '100% code coverage achieved and maintained',
         capabilityTag: 'FastAPI 100% Coverage'
       },
       {
         category: 'Reliability',
-        text: 'Tracked defects with Sentry and partnered with developers to diagnose and resolve production issues.',
+        text: 'Tracked defects with Sentry and partnered with developers to diagnose and resolve production issues across mobile and API services.',
         metrics: 'Zero unmonitored production exceptions',
         capabilityTag: 'Sentry Error Tracking'
       }
@@ -432,11 +433,11 @@ export const PROJECTS: ProjectItem[] = [
     ]
   },
   {
-    id: 'pairtree-agtech',
-    title: 'PairTree Agricultural Intelligence Mobile Suite',
-    tagline: 'High-reliability Flutter farm management app paired with 100% test-covered FastAPI backend.',
-    category: 'backend',
-    categoryLabel: 'Backend & APIs',
+    id: 'pairtree-adoption',
+    title: 'PairTree Adoption Enablement Platform',
+    tagline: 'Full-stack adoption platform connecting professionals, families, and expectant moms — Flutter app with 100% test-covered FastAPI backend.',
+    category: 'mobile',
+    categoryLabel: 'Mobile & Flutter',
     featured: true,
     bannerGradient: 'from-cyan-500/20 via-blue-500/10 to-transparent',
     technologies: ['FastAPI', 'Python', 'Flutter', 'BLoC', 'SQLAlchemy', 'Alembic', 'PostgreSQL', 'Docker', 'Sentry'],
@@ -446,22 +447,24 @@ export const PROJECTS: ProjectItem[] = [
       { label: 'Database Migrations', value: 'Zero-Downtime' },
       { label: 'Error Tracking', value: 'Sentry Monitored' }
     ],
-    overview: 'Full-stack enterprise agricultural intelligence platform allowing farmers and operations managers to monitor machinery, crop data, and livestock logistics in real time.',
-    challenge: 'Extreme environmental field conditions with intermittent internet connectivity required bulletproof offline-first mobile sync, while backend financial and logistic calculations tolerated zero tolerance for regression errors.',
-    solution: 'Engineered the mobile client with Flutter BLoC and pixel-accurate Golden regression tests. Implemented FastAPI backend microservices with comprehensive Pytest fixtures that maintained 100% code coverage across all routes and database migrations.',
+    overview: 'PairTree was an adoption enablement platform headquartered in Seattle that connected licensed adoption professionals, adopting families, and expectant moms. The platform powered Connect Pro (nationwide professional collaboration), Home Base (home study management), and the PairTree Family mobile app — centralizing home study tasks, personality-based matching, legal support, and post-adoption resources in a safe, scam-free environment. The company has since ceased operations and the app is no longer available.',
+    challenge: 'Private adoption in the US relies on fragmented, analog processes across licensed professionals, families, and expectant moms — with high fees, long timelines, and limited interoperability between providers. PairTree needed a secure digital platform that could streamline home studies, enable nationwide professional collaboration, and deliver a trustworthy mobile experience with zero tolerance for backend regression errors.',
+    solution: 'Engineered Flutter BLoC mobile clients for PairTree Family with pixel-accurate Golden regression tests. Built FastAPI backend microservices for home study workflows and professional collaboration with comprehensive Pytest fixtures maintaining 100% code coverage across all routes and database migrations.',
     architectureHighlights: [
+      'Connect Pro centralized database enabling nationwide collaboration among licensed adoption professionals',
+      'Home Base home study management with step-by-step, state-specific task guidance',
+      'PairTree Family mobile app for home study tasks, matching, and support services',
       'Transactional rollback database fixtures for fast in-memory pytest execution',
       'Golden UI tests preventing unexpected visual breakage across mobile OS updates',
-      'Alembic migration safety pipelines executed in GitHub Actions prior to staging deploy',
-      'Real-time Sentry alert integration with contextual stack tracing'
+      'Alembic migration safety pipelines executed in GitHub Actions prior to staging deploy'
     ],
     results: [
       '100% code coverage verified on every pull request',
       'Zero critical backend regressions reported over 12 consecutive months',
-      'Sub-50ms API response times across high-volume sensor telemetry endpoints'
+      'Delivered a unified adoption platform replacing fragmented analog workflows'
     ],
     links: [
-      { label: 'PairTree Platform', url: 'https://pairtree.co', type: 'live' }
+      { label: 'PairTree (LinkedIn)', url: 'https://www.linkedin.com/company/pairtree/', type: 'docs' }
     ]
   },
   {
@@ -575,6 +578,18 @@ export const PROJECTS: ProjectItem[] = [
 ];
 
 export const BLOG_POSTS: BlogPost[] = [
+  {
+    slug: 'large-scale-flutter-banking-architecture',
+    title: 'Architecting a Large-Scale Flutter Banking App for 50+ Engineers',
+    excerpt: 'App shell, micro-apps, capability registry, and internal package structure — how squads integrate and communicate without importing each other.',
+    date: 'Sep 04, 2026',
+    readTime: '14 min read',
+    category: 'Architecture',
+    tags: ['Flutter', 'Banking', 'Micro-Apps', 'App Shell', 'Architecture'],
+    author: 'Eugenio Tesio',
+    filename: 'large-scale-flutter-banking-architecture.html',
+    format: 'html'
+  },
   {
     slug: 'micro-app-architecture',
     title: 'Migrating Monoliths to Flutter Micro-App & App Shell Architecture',

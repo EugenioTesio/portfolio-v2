@@ -66,6 +66,7 @@ export interface BlogPost {
   tags: string[];
   author: string;
   filename: string;
+  format?: 'markdown' | 'html';
   content?: string;
 }
 

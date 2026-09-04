@@ -37,9 +37,6 @@ export default function Footer({ onNavigate }: FooterProps) {
             <button onClick={() => onNavigate('about')} className="hover:text-[#00F5FF] transition-colors">
               About
             </button>
-            <button onClick={() => onNavigate('capabilities')} className="hover:text-[#00F5FF] transition-colors">
-              Capabilities
-            </button>
             <button onClick={() => onNavigate('experience')} className="hover:text-[#00F5FF] transition-colors">
               Experience
             </button>
