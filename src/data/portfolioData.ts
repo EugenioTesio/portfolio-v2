@@ -591,28 +591,6 @@ export const BLOG_POSTS: BlogPost[] = [
     format: 'html'
   },
   {
-    slug: 'micro-app-architecture',
-    title: 'Migrating Monoliths to Flutter Micro-App & App Shell Architecture',
-    excerpt: 'How we scaled ueno bank to 50+ Flutter engineers by decoupling features into autonomous packages and harmonizing BLoC with Riverpod.',
-    date: 'Oct 18, 2024',
-    readTime: '7 min read',
-    category: 'Architecture',
-    tags: ['Flutter', 'Micro-Apps', 'BLoC', 'Riverpod', 'Architecture'],
-    author: 'Eugenio Tesio',
-    filename: 'micro-app-architecture.md'
-  },
-  {
-    slug: '15-day-release-train',
-    title: 'Architecting a 15-Day Automated Mobile Release Train with Codemagic',
-    excerpt: 'Establishing automated multi-store signing and distribution across Apple App Store, Google Play Store, and Huawei AppGallery with Codemagic and GitHub Actions.',
-    date: 'Nov 12, 2024',
-    readTime: '6 min read',
-    category: 'CI/CD & DevOps',
-    tags: ['Codemagic', 'CI/CD', 'App Store', 'Google Play', 'Huawei'],
-    author: 'Eugenio Tesio',
-    filename: '15-day-release-train.md'
-  },
-  {
     slug: 'rasp-mobile-security',
     title: 'Fintech Mobile Hardening: Implementing RASP, Root Detection & Secure WebViews',
     excerpt: 'Protecting banking apps in hostile environments: multi-vector root detection, anti-debugging, memory hooks, and hardened WebViews in Flutter.',
@@ -622,17 +600,6 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ['RASP', 'Security', 'Fintech', 'Flutter', 'Root Detection'],
     author: 'Eugenio Tesio',
     filename: 'rasp-mobile-security.md'
-  },
-  {
-    slug: 'fastapi-100-coverage',
-    title: 'Attaining 100% Test Coverage in FastAPI with SQLAlchemy Fixtures',
-    excerpt: 'A practical, frictionless guide to reaching and maintaining 100% backend code coverage using rollback database fixtures and dependency overrides.',
-    date: 'Jan 15, 2025',
-    readTime: '5 min read',
-    category: 'Backend',
-    tags: ['Python', 'FastAPI', 'Testing', 'SQLAlchemy', 'Alembic'],
-    author: 'Eugenio Tesio',
-    filename: 'fastapi-100-coverage.md'
   },
   {
     slug: 'iot-rs485-to-cloud',

@@ -65,7 +65,7 @@ export default function BlogSection() {
               Engineering Notes Rendered from <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">Local Articles</span>
             </h2>
             <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
-              Practical guides on large-scale Flutter architecture, 15-day release trains, RASP hardening, and backend coverage — parsed from repository Markdown and HTML.
+              Practical guides on large-scale Flutter architecture, RASP hardening, and industrial IoT — parsed from repository Markdown and HTML.
             </p>
           </div>
 
