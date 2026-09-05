@@ -593,23 +593,25 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'rasp-mobile-security',
     title: 'Fintech Mobile Hardening: Implementing RASP, Root Detection & Secure WebViews',
-    excerpt: 'Protecting banking apps in hostile environments: multi-vector root detection, anti-debugging, memory hooks, and hardened WebViews in Flutter.',
+    excerpt: 'RASP in the app shell, multi-vector posture, and sandboxed WebViews — how a banking binary treats the phone as hostile without fifty squad-owned jailbreak checks.',
     date: 'Dec 05, 2024',
-    readTime: '8 min read',
+    readTime: '13 min read',
     category: 'Security',
     tags: ['RASP', 'Security', 'Fintech', 'Flutter', 'Root Detection'],
     author: 'Eugenio Tesio',
-    filename: 'rasp-mobile-security.md'
+    filename: 'rasp-mobile-security.html',
+    format: 'html'
   },
   {
     slug: 'iot-rs485-to-cloud',
     title: 'From RS485 & OCPP 1.6 to Cloud Backends: Industrial IoT Telemetry Lessons',
-    excerpt: 'Bridging electrical hardware with modern cloud backends: differential noise handling, local packet buffering, and lessons from the Smart Lub project.',
+    excerpt: 'CRC on the wire, durable edge logs, and idempotent ingest — how Smart Lub and OCPP 1.6 survive EMI, blackouts, and replay without inventing metering.',
     date: 'Feb 20, 2025',
-    readTime: '6 min read',
+    readTime: '12 min read',
     category: 'IoT & Systems',
     tags: ['IoT', 'RS485', 'Hardware', 'OCPP 1.6', 'Embedded'],
     author: 'Eugenio Tesio',
-    filename: 'iot-rs485-to-cloud.md'
+    filename: 'iot-rs485-to-cloud.html',
+    format: 'html'
   }
 ];

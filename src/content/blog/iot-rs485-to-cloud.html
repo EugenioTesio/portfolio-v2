@@ -1,0 +1,240 @@
+<p>A lubrication skid on a factory floor and a charger on a parking deck do not fail like a mobile app. They fail like physics: common-mode noise on a long pair, a transceiver that latches, a night-shift outage that lasts longer than RAM. If the cloud never sees the packet, billing is wrong, a machine runs dry, or a session never closes.</p>
+
+<p>This article is a field guide for the path from <strong>differential serial</strong> and <strong>OCPP 1.6</strong> to a cloud ingestion API — without pretending an MQTT tutorial is an industrial system. Edge nodes are <strong>unreliable publishers</strong>. The bus is a <strong>hostile analog environment</strong>. The backend is an <strong>idempotent ledger</strong>, not a firehose of unique snowflakes. That distinction drives most of the trade-offs below.</p>
+
+<aside class="callout">
+  <p><strong>What this is not.</strong> It is not a schematic for a hobby ESP32 weather station. If your link is USB on a lab bench and your “backend” is a JSON file, a well-bounded script is cheaper. The architecture here exists because EMI, brownouts, and simultaneous reconnect storms are the default, not the incident.</p>
+</aside>
+
+<h2>The lost-packet failure mode</h2>
+
+<p>The symptoms are boring and expensive:</p>
+<ul>
+  <li><strong>CRC theater.</strong> Frames are parsed, checksums are optional, and a flipped bit becomes a plausible temperature.</li>
+  <li><strong>RAM as a buffer.</strong> The gateway stores unsynced telemetry in volatile memory. Power blips; the shift’s data never existed.</li>
+  <li><strong>Naive reconnect.</strong> The plant network returns. Two hundred nodes retry in the same millisecond. The ingestion service is the outage.</li>
+  <li><strong>Non-idempotent POSTs.</strong> Replay after a timeout double-counts volume, energy, or lubrication cycles. Finance notices before engineering does.</li>
+</ul>
+
+<p>I learned this first on <strong>Smart Lub</strong> for Vulcano Lubricación — an RS485 telemetry device that had to survive a factory, then a commercial catalog. I learned it again on <strong>OCPP 1.6-J</strong> charge points, where a dropped WebSocket is a metering and remote-command problem, not a spinner on a phone.</p>
+
+<h2>Three principles that survive the floor</h2>
+
+<p>Everything else is an implementation detail of three rules.</p>
+<ol>
+  <li><strong>Believe the physical layer.</strong> Differential signaling rejects common-mode noise; it does not invent integrity. CRC (or protocol checksum) on every frame, timeouts that reset stuck UARTs, a hardware watchdog that loves nobody.</li>
+  <li><strong>Durability before elegance.</strong> Unsynced frames live in EEPROM, flash, or an industrial SD with a wear plan. RAM is a cache, not a log.</li>
+  <li><strong>Replay is the happy path.</strong> Sequence IDs, idempotent upserts, and jittered backoff. The cloud must assume every packet will arrive twice, late, or in a burst after a blackout.</li>
+</ol>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 1. One pattern: hostile bus, durable gateway, idempotent cloud</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  subgraph field [Field]
+    machine[MachineryOrChargePoint]
+    bus[RS485OrOCPPLink]
+  end
+  subgraph gateway [EdgeGateway]
+    uart[SerialOrWsClient]
+    crc[FrameIntegrity]
+    store[NonVolatileBuffer]
+    net[TlsPublisher]
+  end
+  subgraph cloud [Cloud]
+    ingest[IdempotentIngest]
+    db[TelemetryStore]
+    ui[OpsDashboard]
+  end
+  machine --> bus
+  bus --> uart
+  uart --> crc
+  crc --> store
+  store --> net
+  net --> ingest
+  ingest --> db
+  db --> ui
+</pre>
+</figure>
+
+<h2>The layered system</h2>
+
+<p>Name the layers so a firmware engineer and a backend engineer can argue about the same boxes.</p>
+
+<h3>Physical and link</h3>
+<p>RS485 is a differential pair with polarity, termination, and bias that will be wired wrong on site. OCPP 1.6-J is JSON over a persistent TLS WebSocket with a state machine that does not care about your REST habits. Both are links that drop. Neither is “HTTP with extra headers.”</p>
+
+<h3>Edge gateway</h3>
+<p>Microcontroller or small Linux box: decode, verify, buffer, publish. On Smart Lub that meant CRC-checked Modbus-style frames, Ethernet or Wi-Fi as the northbound path, and local storage so a shop-floor switch reboot was not a data-loss event. On chargers that meant keeping the OCPP session honest while metering ticks continued locally.</p>
+
+<h3>Ingestion and product</h3>
+<p>Cloud Run (or equivalent), a PostgreSQL-shaped truth, and a Flutter or web ops surface. The API’s primary job is <strong>deduplication</strong>. Visualization is a privilege you earn after the ledger is boring.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 2. Dependencies flow north. The cloud never drives the transceiver</figcaption>
+  <pre class="mermaid">
+flowchart BT
+  ui[OpsDashboard]
+  api[IngestAPI]
+  gw[EdgeGateway]
+  bus[FieldBus]
+  ui --> api
+  api --> gw
+  gw --> bus
+  api -.->|commands with timeout| gw
+  gw -.->|never block sensing on HTTP| bus
+</pre>
+</figure>
+
+<p>Southbound commands — remote stop, firmware nudge, start transaction — need their own timeouts and acknowledgements. A stuck HTTP handler must not stall the UART ISR. Architecture tests here are integration tests with a killed NIC, not mocks that always succeed.</p>
+
+<h2>Respect noise, parity, and stuck silicon</h2>
+
+<p>Factory floors and outdoor charge bays are EMI generators with a parking lot attached. Differential RS485 helps. Firmware still has to:</p>
+<ul>
+  <li>Compute CRC16 (or the protocol’s checksum) on every frame and drop failures without “best effort decode.”</li>
+  <li>Bound reads with hardware timeouts so a missing stop bit cannot hang the main loop.</li>
+  <li>Pet a watchdog that resets a wedged transceiver instead of waiting for a truck roll.</li>
+</ul>
+
+<p>OCPP is not analog noise, but it rhymes: malformed JSON, half-open TCP, and a charge point that thinks it is still in a transaction. Treat schema validation like CRC. Treat idle timeouts like UART framing timeouts.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 3. Frame path: verify, store, then publish — never the reverse</figcaption>
+  <pre class="mermaid">
+sequenceDiagram
+  participant Bus as FieldBus
+  participant Fw as Firmware
+  participant Nv as NonVolatileLog
+  participant Net as TlsClient
+  participant Api as IngestAPI
+
+  Bus->>Fw: raw frame
+  Fw->>Fw: CRC or schema check
+  alt invalid
+    Fw->>Fw: drop and count error
+  else valid
+    Fw->>Nv: append with sequenceId
+    Fw->>Net: publish batch
+    Net->>Api: upsert by sequenceId
+    Api-->>Net: ack
+    Net->>Nv: mark durable ack
+  end
+</pre>
+</figure>
+
+<aside class="callout">
+  <p><strong>Ack only after durability on both sides.</strong> Clearing a local buffer because the TCP write returned is how you lose the blackout window. The sequence ID is cleared when the ingest API reports a committed upsert — or when a later reconcile job says the cloud already has it.</p>
+</aside>
+
+<h2>Intermittent connectivity is the operating mode</h2>
+
+<p>On phones, a drop is a spinner. On a lubrication line or a charger, a drop is missed billing or a dry bearing. Design for the partition:</p>
+<ul>
+  <li><strong>Local buffering.</strong> Circular log in EEPROM or flash with a high-water mark and a strategy for when the log is full (drop oldest vs fail closed — a product decision, not a silent wrap).</li>
+  <li><strong>Idempotent ingestion.</strong> Unique <code>deviceId + sequenceId</code> (and for OCPP, transaction and meter-value identities the spec already gives you). Replays merge; they do not append a second universe.</li>
+  <li><strong>Backoff with jitter.</strong> A site-wide power restoration is a thundering herd with Ethernet cables. Exponential backoff without jitter is a synchronized self-DoS.</li>
+</ul>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 4. Partition: sense and log continue while northbound is dead</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  sense[SenseLoop]
+  log[LocalLog]
+  online{NorthboundUp}
+  sense --> log
+  log --> online
+  online -->|no| wait[JitteredBackoff]
+  wait --> online
+  online -->|yes| replay[ReplayUnacked]
+  replay --> ingest[IdempotentUpsert]
+</pre>
+</figure>
+
+<h2>OCPP 1.6 is the same architecture in a suit</h2>
+
+<p>A CSMS holding persistent WSS connections to charge points is Smart Lub’s Ethernet publisher with a larger state machine. Meter values are telemetry frames. <code>RemoteStartTransaction</code> is a southbound command with a deadline. Billing reconciliation is the idempotent ledger with legal consequences.</p>
+
+<p>The Flutter dashboard is not the system. It is a subscriber of committed state. If the UI is live and the ingest path is not durable, you have built a demo that lies quickly.</p>
+
+<div class="tradeoff-grid">
+  <section class="tradeoff pro">
+    <h3>Edge log plus idempotent API</h3>
+    <ul>
+      <li>Blackouts become delay, not loss.</li>
+      <li>Backend retries are safe by construction.</li>
+      <li>Ops can explain gaps as “not yet acked,” not “maybe gone.”</li>
+      <li>The same pattern ports from Modbus to OCPP without a new religion.</li>
+    </ul>
+  </section>
+  <section class="tradeoff con">
+    <h3>The infinite buffer fantasy</h3>
+    <ul>
+      <li>Flash wears. EEPROM fills. You need a drop policy.</li>
+      <li>Clock drift makes “event time” a debate unless devices have a sync story.</li>
+      <li>Exactly-once delivery is a myth; exactly-once <em>effects</em> are an upsert key.</li>
+      <li>Southbound commands during a partition need an operator-visible pending state.</li>
+    </ul>
+  </section>
+</div>
+
+<p>Industry writing on IoT often stops at “use MQTT and QoS 1.” That is how you get a distributed pile of unique messages and a database full of twins. A sequence space, a durable log, and an upsert are the minimum adult supervision.</p>
+
+<h2>The full-stack advantage, without the mystique</h2>
+
+<p>Knowing why a MAX485 needs termination does not make you a better React developer in the abstract. It makes you refuse APIs that cannot replay, UIs that treat “connected” as “true,” and firmware that blocks on HTTP in the receive path. The register-level instinct is a bias toward <strong>bounded work</strong> and <strong>explicit failure</strong>.</p>
+
+<h2>Pros and cons, without the slideware</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>What you gain</th>
+      <th>What you pay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Integrity</td>
+      <td>Corrupt frames die at the edge. The ledger sees verified facts.</td>
+      <td>You drop data you cannot prove. Counters and alarms must show the drop.</td>
+    </tr>
+    <tr>
+      <td>Availability</td>
+      <td>Sensing continues through a dead WAN. Replay closes the gap.</td>
+      <td>Local storage, wear, and a reconcile job that someone has to own.</td>
+    </tr>
+    <tr>
+      <td>Cloud</td>
+      <td>Horizontal ingest that assumes duplicates. Billing math stays explainable.</td>
+      <td>Schema and sequence contracts are forever. Changing them is a fleet problem.</td>
+    </tr>
+    <tr>
+      <td>Operations</td>
+      <td>Dashboards reflect committed state; technicians debug acks, not vibes.</td>
+      <td>You will still roll a truck for polarity, termination, and a wet RJ45.</td>
+    </tr>
+    <tr>
+      <td>Transfer</td>
+      <td>RS485 lessons transfer to OCPP, and back, because the failure modes rhyme.</td>
+      <td>Teams will over-abstract “the IoT platform” and ship a gateway that does nothing well.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>When not to do this</h2>
+
+<ul>
+  <li><strong>Lab-only links.</strong> If the device never leaves a bench and the data is not money or metal, a Python script and a CSV is honest.</li>
+  <li><strong>No sequence space.</strong> If you cannot name a unique event, you cannot upsert. Do not paper over that with “Kafka will sort it out.”</li>
+  <li><strong>Cloud-first firmware.</strong> If the sample loop waits on HTTPS, you have coupled physics to someone else’s SLO.</li>
+  <li><strong>A dashboard as source of truth.</strong> Live WebSockets that bypass the ledger will disagree with invoices. Pick one source; make it the database.</li>
+</ul>
+
+<h2>Closing</h2>
+
+<p>Industrial telemetry is an operating system for partitions, wearing a serial cable. CRC, non-volatile logs, jittered replay, and idempotent upserts are how you keep a factory or a charge network from inventing data. They are also how you inherit a new class of work: flash wear, sequence epochs, and a platform team that must treat the edge like a kernel.</p>
+
+<p>Use the shape when loss is a safety or billing event. Skip it when you are still one sensor on a desk. And never confuse a connected dashboard with a durable system — the wire still gets noisy, the power still drops, and the cloud still has to survive being told the same truth twice.</p>

@@ -1,0 +1,284 @@
+<p>A banking Flutter binary runs on hardware the bank does not own, in processes the bank cannot attest, next to apps the user installed for reasons that are none of the regulator’s business. Debuggers attach. Frida injects. Magisk lies about <code>/system/bin/su</code>. A WebView that “just loads the KYC portal” becomes a bridge from the DOM into native reflection.</p>
+
+<p>This article is a field guide for the security surface that actually belongs in a fintech app — without pretending a Dart plugin is a security program. <strong>Runtime Application Self-Protection (RASP)</strong> lives in the <strong>app shell</strong>, not in a squad package. Detection is <strong>multi-vector</strong>. Enforcement is a <strong>posture</strong> with a UX, not a silent crash. WebViews are a <strong>browser with a contract</strong>, not an <code>iframe</code> with extra steps. That distinction drives most of the trade-offs below.</p>
+
+<aside class="callout">
+  <p><strong>What this is not.</strong> It is not a license to sprinkle jailbreak checks in every micro-app. It is not “add freeRASP and ship.” A single filesystem probe is theater against modern hide-my-root stacks. If you do not own the native sentinel, the attestation pipeline, and the session kill path, you have a demo, not a control.</p>
+</aside>
+
+<h2>The hostile-device failure mode</h2>
+
+<p>The symptoms show up in incident reviews, not in unit tests:</p>
+<ul>
+  <li><strong>One check, one bypass.</strong> Looking for <code>cydia.app</code> or <code>su</code> is how Magisk DenyList earns its keep.</li>
+  <li><strong>Squad-owned “security.”</strong> Payments implements a jailbreak flag; cards implements another; neither agrees on what “compromised” means for the session.</li>
+  <li><strong>WebView as a second app.</strong> Unbounded JavaScript interfaces, open navigation, and persistent cookies turn an embedded portal into a native gadget.</li>
+  <li><strong>Crash as a control.</strong> Killing the process without a screen produces one-star reviews, support tickets, and users who sideload the previous APK.</li>
+</ul>
+
+<p>Banking makes this worse. You still have one store listing, one shared RASP surface, and a regulator who does not care that “that WebView belongs to onboarding.” The architecture has to isolate <em>features</em>. It must not isolate <em>liability</em>.</p>
+
+<h2>Three principles that actually hold</h2>
+
+<p>Everything else is an implementation detail of three rules.</p>
+<ol>
+  <li><strong>The shell owns posture.</strong> Root, hook, debugger, and signature checks run once, uniformly, before guarded routes. A micro-app that “implements its own jailbreak check” is a finding.</li>
+  <li><strong>Signals compose; verdicts are few.</strong> Collect independent evidence (files, traces, libraries, signing). Map them onto a small enum — <code>safe</code>, <code>elevated</code>, <code>compromised</code> — so product and legal can agree on behavior.</li>
+  <li><strong>Kill the session, then explain.</strong> Revoke tokens and wipe keys first. Then show a dignified screen. A frozen process with live refresh tokens is worse than an honest block.</li>
+</ol>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 1. RASP sentinel sits in the app shell, not in feature packages</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  subgraph shell [AppShell]
+    guards[AuthAndRouteGuards]
+    sentinel[RaspSentinel]
+    session[SessionAndKeystore]
+  end
+  subgraph native [NativeBridge]
+    antiDebug[AntiDebugging]
+    integrity[SignatureCheck]
+    root[RootAndJailbreak]
+    hooks[HookDetection]
+  end
+  subgraph microapps [MicroApps]
+    payments[Payments]
+    cards[Cards]
+    onboarding[Onboarding]
+  end
+  guards --> sentinel
+  sentinel --> native
+  sentinel --> session
+  guards --> microapps
+  microapps -.->|forbidden own checks| sentinel
+</pre>
+</figure>
+
+<h2>The layered control plane</h2>
+
+<p>Name the layers so ownership is obvious. Ambiguous names are how “utils/security.dart” becomes a junk drawer.</p>
+
+<h3>App shell (composition root)</h3>
+<p>Boots the sentinel, blocks guarded navigation when posture is <code>compromised</code>, stamps crash and analytics events with a threat level, and owns the security interstitial. Product squads consume a read-only posture stream. They do not call <code>ptrace</code>.</p>
+
+<h3>Native sentinel</h3>
+<p>Platform channels or FFI into a small C/Obj-C/Kotlin surface: <code>PTRACE_TRACEME</code> and debugger ports, APK/IPA signature comparison against an embedded pin, su/Magisk/Cydia path and package probes, and loaded-library scans for Frida, Xposed, and Substrate. Dart is the policy layer. Native is the sensor.</p>
+
+<h3>Enforcement</h3>
+<p>Two rails, always both: <strong>immediate token revocation</strong> (in-memory OAuth, encrypted storage keys) and <strong>silent threat telemetry</strong> (enough to page, not enough to coach an attacker). UX is a third rail, not a substitute.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 2. Evidence in, small verdict out. Policy lives above the sensors</figcaption>
+  <pre class="mermaid">
+flowchart LR
+  suPath[SuAndMagisk]
+  debugger[DebuggerAttached]
+  signature[AppSignature]
+  injected[InjectedLibraries]
+  suPath --> posture[PostureEvaluator]
+  debugger --> posture
+  signature --> posture
+  injected --> posture
+  posture --> safe[Safe]
+  posture --> elevated[Elevated]
+  posture --> compromised[Compromised]
+  compromised --> revoke[RevokeSession]
+  compromised --> screen[SecurityScreen]
+  elevated --> telemetry[ThreatTelemetry]
+</pre>
+</figure>
+
+<p>Enforce the dotted line in Figure 1 with an analyzer ban on security channel invocations outside the shell package. Social agreements rot in week three. Architecture tests do not.</p>
+
+<h2>Multi-vector root and jailbreak detection</h2>
+
+<p>A single probe is a unit test the attacker writes once. Independent vectors fail independently. Magisk can hide a binary path and still leak a hooked libc; a debugger can attach on a non-rooted device; a re-signed APK can pass a naive <code>su</code> check.</p>
+
+<p>The evaluator is deliberately boring. Native returns booleans. Dart maps them. Thresholds are product decisions, not clever heuristics that nobody can explain in an audit.</p>
+
+<pre><code>enum SecurityThreatLevel { safe, elevated, compromised }
+
+class SecuritySentinel {
+  static Future&lt;SecurityThreatLevel&gt; evaluateDevicePosture() async {
+    final hasSuBinary = await NativeSecurityBridge.checkSuPaths();
+    final isDebuggerAttached = await NativeSecurityBridge.isDebuggerConnected();
+    final signatureValid = await NativeSecurityBridge.verifyAppSignature();
+    final suspiciousHooks = await NativeSecurityBridge.detectInjectedLibraries();
+
+    if (!signatureValid || suspiciousHooks || isDebuggerAttached) {
+      return SecurityThreatLevel.compromised;
+    }
+    if (hasSuBinary) {
+      return SecurityThreatLevel.elevated;
+    }
+    return SecurityThreatLevel.safe;
+  }
+}</code></pre>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 3. Cold start: posture before the first guarded route</figcaption>
+  <pre class="mermaid">
+sequenceDiagram
+  participant Main as HostMain
+  participant Shell as AppShell
+  participant Sent as RaspSentinel
+  participant Native as NativeBridge
+  participant Session as SessionStore
+  participant Router as Router
+
+  Main->>Shell: bootstrap
+  Shell->>Sent: evaluateDevicePosture
+  Sent->>Native: checkSuPaths
+  Sent->>Native: isDebuggerConnected
+  Sent->>Native: verifyAppSignature
+  Sent->>Native: detectInjectedLibraries
+  Native-->>Sent: evidence
+  Sent-->>Shell: compromised
+  Shell->>Session: revokeTokens and wipeKeys
+  Shell->>Router: redirect securityInterstitial
+  Note over Router: Guarded micro-app routes never mount
+</pre>
+</figure>
+
+<aside class="callout">
+  <p><strong>False positives are a product incident.</strong> USB debugging on a QA device, custom ROMs on enthusiast hardware, and some MDM profiles will trip sensors. Keep an allow-list for internal builds, log the firing vector, and never fold “unknown” into <code>compromised</code> without a human-readable reason on the interstitial.</p>
+</aside>
+
+<h2>Hardening mobile WebViews</h2>
+
+<p>Enterprise banking still embeds the web: government identity, card activation, dynamic terms. A stock WebView is a browser with your origin’s privileges and a JavaScript bridge into Dart. Treat it as a third runtime, not a widget.</p>
+
+<h3>Three non-negotiable rules</h3>
+<ol>
+  <li><strong>No unbounded JavaScript interfaces.</strong> Never expose a generic native reflection object to the DOM. If a bridge is required, it is a closed allow-list of methods with typed payloads.</li>
+  <li><strong>Navigation is a policy.</strong> HTTPS only, host allow-list at the navigation delegate, and a deny that emits telemetry. Redirects that leave the allow-list do not “open in the system browser” unless product explicitly opted in.</li>
+  <li><strong>Session dies with the modal.</strong> Cookies, local storage, and cache purge on dismiss. A dismissed KYC WebView that still holds a bank cookie is a second session you forgot you had.</li>
+</ol>
+
+<pre><code>NavigationDecision handleNavigation(NavigationRequest request) {
+  final uri = Uri.parse(request.url);
+  final allowedDomains = {'auth.bank.example', 'identity.bank.example'};
+
+  if (uri.scheme != 'https' || !allowedDomains.contains(uri.host)) {
+    Telemetry.logSecurityAlert('Blocked WebView navigation: ${request.url}');
+    return NavigationDecision.prevent;
+  }
+  return NavigationDecision.navigate;
+}</code></pre>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 4. WebView as a sandboxed runtime with a closed bridge</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  ui[FlutterScreen]
+  wv[HardenedWebView]
+  nav[NavigationDelegate]
+  bridge[ClosedJsBridge]
+  ui --> wv
+  wv --> nav
+  nav -->|allow-list HTTPS| portal[IdPOrKYCOrigin]
+  nav -->|else| block[PreventPlusTelemetry]
+  wv --> bridge
+  bridge -->|typed methods only| native[NativeSessionApis]
+</pre>
+</figure>
+
+<p>The component is shared platform kit, the same way the design system is. Squads do not instantiate a raw <code>WebViewWidget</code>. They ask for a sandboxed viewer with an origin set and a dismiss callback that the shell uses to purge state.</p>
+
+<h2>Graceful remediation</h2>
+
+<p>When posture is <code>compromised</code>:</p>
+<ul>
+  <li>Revoke in-memory refresh tokens and delete keystore entries <em>before</em> painting the interstitial.</li>
+  <li>Explain the likely cause in human language — USB debugging, uncertified firmware, tampered package — without publishing your detection catalog.</li>
+  <li>Offer a path that is not “force close”: settings deep-link where it helps, support article where it does not.</li>
+</ul>
+
+<div class="tradeoff-grid">
+  <section class="tradeoff pro">
+    <h3>Shell-owned RASP</h3>
+    <ul>
+      <li>One verdict, one session kill path, one interstitial.</li>
+      <li>Micro-apps stay ignorant of native sensors.</li>
+      <li>Auditors get a single control narrative.</li>
+      <li>Telemetry can tag <code>microapp</code> without letting squads invent new threat enums.</li>
+    </ul>
+  </section>
+  <section class="tradeoff con">
+    <h3>Client-side theater</h3>
+    <ul>
+      <li>Anything in the binary can be patched. RASP raises cost; it does not create a trusted client.</li>
+      <li>False positives punish legitimate power users and QA.</li>
+      <li>Over-blocking WebViews breaks vendor portals you do not control.</li>
+      <li>A noisy sentinel without backend correlation is a local scarecrow.</li>
+    </ul>
+  </section>
+</div>
+
+<p>Industry writing often stops at “detect root and exit.” That is how you get a distributed security program: every feature has a boolean, none of the edges are reviewed, and onboarding a new engineer means grepping for <code>isJailbroken</code>. A sentinel with a small verdict set, a catalog of sensors, and a human-readable interstitial is the minimum adult supervision.</p>
+
+<h2>Banking extras the plugin READMEs skip</h2>
+
+<h3>PCI and card data</h3>
+<p>Card PAN should never enter a squad’s Dart heap if a tokenizer can stop it at the SDK. RASP does not make an in-memory card form acceptable. Pair the sentinel with a tokenization boundary the payments micro-app cannot bypass.</p>
+
+<h3>SAST is not RASP</h3>
+<p>Checkmarx and Sonar catch the class of bug you wrote. They do not observe Frida at 2 a.m. Keep both. Confusing a pipeline gate with a runtime control is how findings get closed with a screenshot of CI.</p>
+
+<h3>Compile-time modules still share a process</h3>
+<p>Micro-apps do not get their own sandbox. A compromised WebView in onboarding is a compromised process for payments. Isolation of <em>work</em> is not isolation of <em>memory</em>.</p>
+
+<h2>Pros and cons, without the slideware</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>What you gain</th>
+      <th>What you pay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Coverage</td>
+      <td>Uniform posture on every guarded route, including deep links.</td>
+      <td>Startup tax: native probes before first frame of authenticated UI.</td>
+    </tr>
+    <tr>
+      <td>Coupling</td>
+      <td>Squads never import sensors. Policy changes land in one package.</td>
+      <td>The shell becomes the security bottleneck. Staff it.</td>
+    </tr>
+    <tr>
+      <td>Product</td>
+      <td>One interstitial, one copy deck, fewer “app crashed” tickets.</td>
+      <td>False positives are now brand incidents, not silent exits.</td>
+    </tr>
+    <tr>
+      <td>Assurance</td>
+      <td>A story auditors can follow: sensors, verdict, session kill, telemetry.</td>
+      <td>Determined attackers still instrument the binary. Backend risk engines remain mandatory.</td>
+    </tr>
+    <tr>
+      <td>Web</td>
+      <td>Embedded portals cannot wander the internet or retain zombie cookies.</td>
+      <td>Vendor URL changes become platform RFCs, not a one-line hotfix in a squad.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>When not to do this</h2>
+
+<ul>
+  <li><strong>No native owner.</strong> A Dart-only “root check” is a blog snippet, not a control. If you cannot ship a maintained JNI/FFI sentinel, buy a vendor SDK and wrap it in the shell — do not reimplement theater.</li>
+  <li><strong>Consumer apps with no session to revoke.</strong> If there are no tokens, no keystore, and no regulated data, a full RASP program is cost without a corresponding risk register.</li>
+  <li><strong>Per-feature detectors.</strong> If every micro-app ships its own Magisk probe, you have renamed a monolith of checks, not hardened a bank.</li>
+  <li><strong>Blocking without telemetry.</strong> You will not know whether you are stopping fraud or stopping your QA farm.</li>
+</ul>
+
+<h2>Closing</h2>
+
+<p>Fintech mobile hardening is an operating system for distrust, wearing a Flutter UI. The sentinel, the small verdict set, the session kill path, and the sandboxed WebView are how you keep fifty engineers from inventing fifty definitions of “safe device.” They are also how you inherit a new class of failure: false positives, a heavier native surface, and a platform team that must treat security like a kernel concern.</p>
+
+<p>Put RASP in the shell. Compose signals. Revoke first, explain second. And never confuse a hostile-client mitigation with a trusted client — the phone is still the attacker’s laboratory, and the bank is still one process.</p>
