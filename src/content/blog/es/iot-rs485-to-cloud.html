@@ -1,0 +1,240 @@
+<p>Un skid de lubricación en una planta y un cargador en una playa de estacionamiento no fallan como una app móvil. Fallan como física: ruido de modo común en un par largo, un transceptor que se traba, un corte de turno noche que dura más que la RAM. Si la nube nunca ve el paquete, la facturación está mal, una máquina se queda seca o una sesión nunca cierra.</p>
+
+<p>Este artículo es una guía de campo para el camino desde <strong>serial diferencial</strong> y <strong>OCPP 1.6</strong> hasta una API de ingestión en la nube — sin pretender que un tutorial de MQTT es un sistema industrial. Los nodos de edge son <strong>publicadores poco fiables</strong>. El bus es un <strong>entorno analógico hostil</strong>. El backend es un <strong>ledger idempotente</strong>, no una manguera de copos de nieve únicos. Esa distinción explica la mayoría de los compromisos que siguen.</p>
+
+<aside class="callout">
+  <p><strong>Qué no es esto.</strong> No es un esquemático para una estación meteorológica hobby con ESP32. Si tu enlace es USB en un banco de laboratorio y tu “backend” es un archivo JSON, un script bien delimitado sale más barato. Esta arquitectura existe porque EMI, brownouts y tormentas simultáneas de reconexión son el default, no el incidente.</p>
+</aside>
+
+<h2>El modo de fallo del paquete perdido</h2>
+
+<p>Los síntomas son aburridos y caros:</p>
+<ul>
+  <li><strong>Teatro de CRC.</strong> Se parsean frames, los checksums son opcionales y un bit invertido se convierte en una temperatura plausible.</li>
+  <li><strong>RAM como buffer.</strong> El gateway guarda telemetría no sincronizada en memoria volátil. Un parpadeo de alimentación; los datos del turno nunca existieron.</li>
+  <li><strong>Reconexión ingenua.</strong> Vuelve la red de planta. Doscientos nodos reintentan en el mismo milisegundo. El servicio de ingestión es el corte.</li>
+  <li><strong>POSTs no idempotentes.</strong> Un replay tras un timeout cuenta dos veces volumen, energía o ciclos de lubricación. Finanzas se entera antes que ingeniería.</li>
+</ul>
+
+<p>Lo aprendí primero en <strong>Smart Lub</strong> para Vulcano Lubricación — un dispositivo de telemetría RS485 que tenía que sobrevivir a una fábrica y luego a un catálogo comercial. Lo volví a aprender en charge points <strong>OCPP 1.6-J</strong>, donde un WebSocket caído es un problema de medición y de comando remoto, no un spinner en un teléfono.</p>
+
+<h2>Tres principios que sobreviven al piso de planta</h2>
+
+<p>Todo lo demás es un detalle de implementación de tres reglas.</p>
+<ol>
+  <li><strong>Toma en serio la capa física.</strong> La señalización diferencial rechaza ruido de modo común; no inventa integridad. CRC (o checksum del protocolo) en cada frame, timeouts que resetean UARTs trabados, un watchdog de hardware que no quiere a nadie.</li>
+  <li><strong>Durabilidad antes que elegancia.</strong> Los frames no sincronizados viven en EEPROM, flash o una SD industrial con plan de desgaste. La RAM es una cache, no un log.</li>
+  <li><strong>El replay es el happy path.</strong> Sequence IDs, upserts idempotentes y backoff con jitter. La nube debe asumir que cada paquete llegará dos veces, tarde o en un burst después de un apagón.</li>
+</ol>
+
+<figure class="diagram-frame">
+  <figcaption>Figura 1. Un patrón: bus hostil, gateway durable, nube idempotente</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  subgraph field [Field]
+    machine[MachineryOrChargePoint]
+    bus[RS485OrOCPPLink]
+  end
+  subgraph gateway [EdgeGateway]
+    uart[SerialOrWsClient]
+    crc[FrameIntegrity]
+    store[NonVolatileBuffer]
+    net[TlsPublisher]
+  end
+  subgraph cloud [Cloud]
+    ingest[IdempotentIngest]
+    db[TelemetryStore]
+    ui[OpsDashboard]
+  end
+  machine --> bus
+  bus --> uart
+  uart --> crc
+  crc --> store
+  store --> net
+  net --> ingest
+  ingest --> db
+  db --> ui
+</pre>
+</figure>
+
+<h2>El sistema en capas</h2>
+
+<p>Nombra las capas para que un ingeniero de firmware y uno de backend puedan discutir las mismas cajas.</p>
+
+<h3>Física y enlace</h3>
+<p>RS485 es un par diferencial con polaridad, terminación y bias que en campo se cablearán mal. OCPP 1.6-J es JSON sobre un WebSocket TLS persistente con una máquina de estados a la que no le importan tus hábitos REST. Ambos son enlaces que se caen. Ninguno es “HTTP con headers extra”.</p>
+
+<h3>Gateway de edge</h3>
+<p>Microcontrolador o caja Linux pequeña: decodificar, verificar, bufferizar, publicar. En Smart Lub eso significó frames estilo Modbus con CRC, Ethernet o Wi-Fi como camino northbound, y storage local para que el reboot de un switch de planta no fuera un evento de pérdida de datos. En cargadores significó mantener honesta la sesión OCPP mientras los ticks de medición seguían en local.</p>
+
+<h3>Ingestión y producto</h3>
+<p>Cloud Run (o equivalente), una verdad con forma de PostgreSQL y una superficie de ops en Flutter o web. El trabajo primario de la API es la <strong>deduplicación</strong>. La visualización es un privilegio que ganas cuando el ledger ya es aburrido.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figura 2. Las dependencias fluyen hacia el norte. La nube nunca conduce el transceptor</figcaption>
+  <pre class="mermaid">
+flowchart BT
+  ui[OpsDashboard]
+  api[IngestAPI]
+  gw[EdgeGateway]
+  bus[FieldBus]
+  ui --> api
+  api --> gw
+  gw --> bus
+  api -.->|commands with timeout| gw
+  gw -.->|never block sensing on HTTP| bus
+</pre>
+</figure>
+
+<p>Los comandos southbound — parada remota, empujón de firmware, start transaction — necesitan sus propios timeouts y acknowledgements. Un handler HTTP trabado no debe detener la ISR de UART. Aquí los tests de arquitectura son tests de integración con la NIC muerta, no mocks que siempre tienen éxito.</p>
+
+<h2>Respeta el ruido, la paridad y el silicio trabado</h2>
+
+<p>Los pisos de fábrica y las bahías de carga al aire libre son generadores de EMI con un estacionamiento pegado. RS485 diferencial ayuda. El firmware igual tiene que:</p>
+<ul>
+  <li>Calcular CRC16 (o el checksum del protocolo) en cada frame y descartar fallos sin un “best effort decode”.</li>
+  <li>Acotar lecturas con timeouts de hardware para que un bit de stop ausente no cuelgue el main loop.</li>
+  <li>Alimentar un watchdog que resetee un transceptor trabado en vez de esperar un viaje de camión.</li>
+</ul>
+
+<p>OCPP no es ruido analógico, pero rima: JSON malformado, TCP half-open y un charge point que cree que sigue en una transacción. Trata la validación de schema como CRC. Trata los idle timeouts como timeouts de framing UART.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figura 3. Camino del frame: verificar, guardar, luego publicar — nunca al revés</figcaption>
+  <pre class="mermaid">
+sequenceDiagram
+  participant Bus as FieldBus
+  participant Fw as Firmware
+  participant Nv as NonVolatileLog
+  participant Net as TlsClient
+  participant Api as IngestAPI
+
+  Bus->>Fw: raw frame
+  Fw->>Fw: CRC or schema check
+  alt invalid
+    Fw->>Fw: drop and count error
+  else valid
+    Fw->>Nv: append with sequenceId
+    Fw->>Net: publish batch
+    Net->>Api: upsert by sequenceId
+    Api-->>Net: ack
+    Net->>Nv: mark durable ack
+  end
+</pre>
+</figure>
+
+<aside class="callout">
+  <p><strong>Ack solo después de durabilidad en ambos lados.</strong> Vaciar un buffer local porque el write TCP devolvió es cómo pierdes la ventana del apagón. El sequence ID se limpia cuando la API de ingestión reporta un upsert committed — o cuando un job posterior de reconcile dice que la nube ya lo tiene.</p>
+</aside>
+
+<h2>La conectividad intermitente es el modo de operación</h2>
+
+<p>En teléfonos, una caída es un spinner. En una línea de lubricación o un cargador, una caída es facturación perdida o un rodamiento seco. Diseña para la partición:</p>
+<ul>
+  <li><strong>Buffer local.</strong> Log circular en EEPROM o flash con high-water mark y una estrategia para cuando el log está lleno (descartar lo más viejo vs fail closed — una decisión de producto, no un wrap silencioso).</li>
+  <li><strong>Ingestión idempotente.</strong> <code>deviceId + sequenceId</code> único (y para OCPP, las identidades de transacción y meter-value que la spec ya te da). Los replays hacen merge; no anexan un segundo universo.</li>
+  <li><strong>Backoff con jitter.</strong> Restaurar la energía de un sitio es un thundering herd con cables Ethernet. Backoff exponencial sin jitter es un self-DoS sincronizado.</li>
+</ul>
+
+<figure class="diagram-frame">
+  <figcaption>Figura 4. Partición: el sensing y el log siguen mientras northbound está muerto</figcaption>
+  <pre class="mermaid">
+flowchart TB
+  sense[SenseLoop]
+  log[LocalLog]
+  online{NorthboundUp}
+  sense --> log
+  log --> online
+  online -->|no| wait[JitteredBackoff]
+  wait --> online
+  online -->|yes| replay[ReplayUnacked]
+  replay --> ingest[IdempotentUpsert]
+</pre>
+</figure>
+
+<h2>OCPP 1.6 es la misma arquitectura vestida de traje</h2>
+
+<p>Un CSMS que sostiene conexiones WSS persistentes a charge points es el publicador Ethernet de Smart Lub con una máquina de estados más grande. Los meter values son frames de telemetría. <code>RemoteStartTransaction</code> es un comando southbound con deadline. La conciliación de facturación es el ledger idempotente con consecuencias legales.</p>
+
+<p>El dashboard Flutter no es el sistema. Es un subscriber del estado committed. Si la UI está viva y el camino de ingestión no es durable, has construido un demo que miente rápido.</p>
+
+<div class="tradeoff-grid">
+  <section class="tradeoff pro">
+    <h3>Log de edge más API idempotente</h3>
+    <ul>
+      <li>Los apagones se vuelven demora, no pérdida.</li>
+      <li>Los reintentos de backend son seguros por construcción.</li>
+      <li>Ops puede explicar huecos como “aún no acked”, no “tal vez se fue”.</li>
+      <li>El mismo patrón porta de Modbus a OCPP sin una religión nueva.</li>
+    </ul>
+  </section>
+  <section class="tradeoff con">
+    <h3>La fantasía del buffer infinito</h3>
+    <ul>
+      <li>El flash se desgasta. La EEPROM se llena. Necesitas una política de drop.</li>
+      <li>El clock drift convierte el “event time” en un debate salvo que los dispositivos tengan una historia de sync.</li>
+      <li>La entrega exactly-once es un mito; los <em>efectos</em> exactly-once son una clave de upsert.</li>
+      <li>Los comandos southbound durante una partición necesitan un estado pending visible para el operador.</li>
+    </ul>
+  </section>
+</div>
+
+<p>La literatura de industria sobre IoT suele detenerse en “usa MQTT y QoS 1”. Así obtienes un montón distribuido de mensajes únicos y una base llena de gemelos. Un espacio de secuencia, un log durable y un upsert son la supervisión adulta mínima.</p>
+
+<h2>La ventaja full-stack, sin mística</h2>
+
+<p>Saber por qué un MAX485 necesita terminación no te hace, en abstracto, mejor desarrollador React. Te hace rechazar APIs que no pueden hacer replay, UIs que tratan “connected” como “true” y firmware que bloquea en HTTP en el camino de recepción. El instinto a nivel de registro es un sesgo hacia <strong>trabajo acotado</strong> y <strong>fallo explícito</strong>.</p>
+
+<h2>Pros y contras, sin el slideware</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Dimensión</th>
+      <th>Lo que ganas</th>
+      <th>Lo que pagas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Integridad</td>
+      <td>Los frames corruptos mueren en el edge. El ledger ve hechos verificados.</td>
+      <td>Descartas datos que no puedes probar. Contadores y alarmas deben mostrar el drop.</td>
+    </tr>
+    <tr>
+      <td>Disponibilidad</td>
+      <td>El sensing continúa con un WAN muerto. El replay cierra el hueco.</td>
+      <td>Storage local, desgaste y un job de reconcile que alguien tiene que poseer.</td>
+    </tr>
+    <tr>
+      <td>Nube</td>
+      <td>Ingestión horizontal que asume duplicados. La matemática de facturación sigue siendo explicable.</td>
+      <td>Los contratos de schema y secuencia son para siempre. Cambiarlos es un problema de flota.</td>
+    </tr>
+    <tr>
+      <td>Operaciones</td>
+      <td>Los dashboards reflejan estado committed; los técnicos debuguean acks, no vibes.</td>
+      <td>Igual mandarás un camión por polaridad, terminación y un RJ45 mojado.</td>
+    </tr>
+    <tr>
+      <td>Transferencia</td>
+      <td>Las lecciones de RS485 se transfieren a OCPP, y de vuelta, porque los modos de fallo riman.</td>
+      <td>Los equipos sobre-abstraerán “la plataforma IoT” y publicarán un gateway que no hace nada bien.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Cuándo no hacer esto</h2>
+
+<ul>
+  <li><strong>Enlaces solo de laboratorio.</strong> Si el dispositivo nunca sale de un banco y los datos no son dinero ni metal, un script Python y un CSV es honesto.</li>
+  <li><strong>Sin espacio de secuencia.</strong> Si no puedes nombrar un evento único, no puedes hacer upsert. No tapes eso con “Kafka lo ordenará”.</li>
+  <li><strong>Firmware cloud-first.</strong> Si el loop de muestreo espera HTTPS, has acoplado la física al SLO de otro.</li>
+  <li><strong>Un dashboard como fuente de verdad.</strong> WebSockets en vivo que bypassean el ledger discreparán con las facturas. Elige una fuente; que sea la base de datos.</li>
+</ul>
+
+<h2>Cierre</h2>
+
+<p>La telemetría industrial es un sistema operativo para particiones, vestido de cable serial. CRC, logs no volátiles, replay con jitter y upserts idempotentes son cómo evitas que una fábrica o una red de carga invente datos. También son cómo heredas una nueva clase de trabajo: desgaste de flash, epochs de secuencia y un equipo de plataforma que debe tratar el edge como un kernel.</p>
+
+<p>Usa esta forma cuando la pérdida es un evento de seguridad o de facturación. Sáltala cuando sigues siendo un sensor en un escritorio. Y nunca confundas un dashboard conectado con un sistema durable — el cable sigue haciendo ruido, la energía sigue cayendo y la nube igual tiene que sobrevivir a que le cuenten la misma verdad dos veces.</p>

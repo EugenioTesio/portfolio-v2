@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import {
   GraduationCap,
   MapPin,
@@ -14,7 +15,7 @@ import {
   Sparkles,
   ArrowRight
 } from 'lucide-react';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { usePortfolioData } from '../data/portfolio';
 import regeneratedProfileImage from '../assets/images/regenerated_image_1788456283242.jpg';
 
 interface AboutSectionProps {
@@ -22,6 +23,8 @@ interface AboutSectionProps {
 }
 
 export default function AboutSection({ onNavigate }: AboutSectionProps) {
+  const { t } = useTranslation();
+  const { PERSONAL_INFO } = usePortfolioData();
   const [selectedTechPillar, setSelectedTechPillar] = useState<'all' | 'mobile' | 'backend' | 'cloud' | 'iot'>('all');
   const [avatarImg, setAvatarImg] = useState<string>(() => {
     return localStorage.getItem('eugenio_profile_img') || regeneratedProfileImage;
@@ -74,13 +77,13 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
         <div className="space-y-3 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="font-bold tracking-[2px]">01. ABOUT ME</span>
+            <span className="font-bold tracking-[2px]">{t('about.sectionBadge')}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Systems Engineering Rooted in <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] to-[#9D00FF]">Engineering Rigor</span>
+            {t('about.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] to-[#9D00FF]">{t('about.titleHighlight')}</span>
           </h2>
           <p className="text-[#A0A0A0] max-w-3xl text-base sm:text-lg">
-            A software engineer who bridges electrical hardware fundamentals with high-scale mobile architecture and distributed cloud backends.
+            {t('about.subtitle')}
           </p>
         </div>
 
@@ -115,38 +118,30 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                   </div>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-white/[0.04] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono font-bold tracking-wide">
-                  14+ Years Exp
+                  {t('about.yearsExp')}
                 </span>
               </div>
 
               <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
-                <p>
-                  Hello! I'm <strong className="text-white font-semibold">Eugenio Tesio</strong>, a Mobile Expert, Systems Architect, and Electronics Engineer with more than 14 years of end-to-end software delivery and hardware systems engineering.
-                </p>
-                <p>
-                  Currently at <strong className="text-white font-semibold">ueno bank (ITTI S.A.E.C.A.)</strong>, I lead mobile architecture for 50+ Flutter engineers, migrating legacy monoliths into an independent <span className="text-[#00F5FF] font-medium">Micro-App & App Shell ecosystem</span>, harmonizing BLoC and Riverpod across unified retail and corporate banking products, orchestrating 15-day automated release trains across 3 app stores, and enforcing Fintech RASP threat defense.
-                </p>
-                <p>
-                  Prior to ueno bank, I delivered mission-critical <span className="text-white font-medium">FastAPI Python backends with 100% test coverage</span> and Flutter apps with golden UI tests at <strong className="text-slate-100">PairTree</strong> (adoption enablement platform), built cross-platform Riverpod apps and <span className="text-[#9D00FF] font-medium">Nest.js / TypeScript microservices</span> at <strong className="text-slate-100">Tandamos</strong>, and engineered high-throughput <span className="text-[#00F5FF] font-medium">Spring Boot</span> microservices on Google Cloud Platform at <strong className="text-slate-100">Valtech</strong>.
-                </p>
-                <p>
-                  Holding a formal <strong className="text-white font-semibold">Electrical & Electronics Engineering degree</strong> from Universidad Tecnológica Nacional (UTN), my engineering intuition extends from serial buses (RS485 Modbus) and EV charging protocols (OCPP 1.6) to cloud microservices and modern multi-agent AI workflows.
-                </p>
+                <p dangerouslySetInnerHTML={{ __html: t('about.bioP1') }} />
+                <p dangerouslySetInnerHTML={{ __html: t('about.bioP2') }} />
+                <p dangerouslySetInnerHTML={{ __html: t('about.bioP3') }} />
+                <p dangerouslySetInnerHTML={{ __html: t('about.bioP4') }} />
                 <p className="text-[#A0A0A0] text-sm border-l-2 border-[#9D00FF] pl-4 italic">
-                  "I look for innovative Python & Flutter projects where architectural patterns, rigorous test coverage, and automated release trains convert complex business challenges into reliable, high-scale engineering engines."
+                  {t('about.quote')}
                 </p>
               </div>
 
               <div className="pt-4 border-t border-white/10 flex flex-wrap gap-4 items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-mono text-[#A0A0A0]">
                   <span className="w-2 h-2 rounded-full bg-[#00F5FF]" />
-                  <span>Languages: Spanish (Native), English (Professional)</span>
+                  <span>{t('about.languages')}</span>
                 </div>
                 <button
                   onClick={() => onNavigate('contact')}
                   className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors"
                 >
-                  <span>Connect with Eugenio</span>
+                  <span>{t('about.connect')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -155,7 +150,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
             {/* Quick Skills Summary Bar */}
             <div className="p-6 rounded-[24px] bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-3">
               <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold">
-                Core Competencies at a Glance
+                {t('about.competenciesTitle')}
               </h4>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -189,16 +184,16 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                 </div>
                 <div>
                   <span className="text-[11px] font-mono text-[#00F5FF] uppercase tracking-wider font-bold">
-                    Academic Degree
+                    {t('about.academicDegree')}
                   </span>
                   <h3 className="text-base font-bold text-white leading-snug mt-0.5">
-                    Engineer’s degree, Electrical & Electronics Engineering
+                    {t('about.degreeTitle')}
                   </h3>
                   <p className="text-xs text-[#A0A0A0] mt-0.5">
-                    {PERSONAL_INFO.education.institution} · 2000 – 2020
+                    {PERSONAL_INFO.education.institution} · {PERSONAL_INFO.education.period}
                   </p>
                   <p className="text-xs font-mono text-[#A0A0A0] mt-1">
-                    Graduated as <strong className="text-white">Ingeniero Electrónico</strong>
+                    {t('about.graduatedAs')} <strong className="text-white">{t('about.ingeniero')}</strong>
                   </p>
                 </div>
               </div>
@@ -207,18 +202,16 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-[#00F5FF] flex items-center gap-1.5">
                     <Cpu className="w-4 h-4 text-[#00F5FF]" />
-                    Capstone Project: Smart Lub
+                    {t('about.capstoneTitle')}
                   </span>
                   <span className="text-[10px] font-mono bg-white/[0.05] text-[#00F5FF] px-2 py-0.5 rounded border border-[#00F5FF]/30 font-bold">
-                    Commercial Product
+                    {t('about.commercialProduct')}
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                  An electronic telemetry device engineered for <strong className="text-white font-semibold">Vulcano Lubricación</strong>. It reads industrial equipment data over an <strong className="text-[#00F5FF]">RS485 differential bus</strong>, transmits packet streams over Ethernet or Wi-Fi, and stores metrics into databases for downstream monitoring.
-                </p>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal" dangerouslySetInnerHTML={{ __html: t('about.capstoneDesc') }} />
                 <div className="pt-2 flex items-center gap-2 text-[11px] text-[#A0A0A0] border-t border-white/10">
                   <Award className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                  <span>Commissioned by the company and became part of a commercialized product.</span>
+                  <span>{t('about.capstoneNote')}</span>
                 </div>
               </div>
 
@@ -226,10 +219,10 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
               <div className="space-y-2 pt-2">
                 <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A0A0A0] flex items-center gap-1.5">
                   <Wrench className="w-3.5 h-3.5 text-[#9D00FF]" />
-                  The Electronics-to-Cloud Advantage
+                  {t('about.electronicsAdvantage')}
                 </h4>
                 <p className="text-xs text-[#A0A0A0] leading-relaxed">
-                  Understanding signal integrity, hardware interrupts, and serial communication creates a developer who writes remarkably robust, leak-free Flutter code and resilient distributed backend APIs.
+                  {t('about.electronicsDesc')}
                 </p>
               </div>
             </div>
@@ -239,17 +232,17 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
               <div className="space-y-1">
                 <div className="text-xs font-mono text-[#00F5FF] font-bold flex items-center gap-2 uppercase tracking-wide">
                   <span className="w-2 h-2 rounded-full bg-[#00F5FF] animate-ping" />
-                  Ready to Collaborate
+                  {t('about.readyToCollaborate')}
                 </div>
                 <p className="text-xs text-slate-300">
-                  Seeking innovative Python & Flutter projects where architecture and scale matter.
+                  {t('about.seekingProjects')}
                 </p>
               </div>
               <button
                 onClick={() => onNavigate('contact')}
                 className="px-5 py-2.5 rounded-xl bg-[#00F5FF] text-black text-xs font-extrabold uppercase tracking-wider whitespace-nowrap hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,245,255,0.4)] transition-all flex-shrink-0"
               >
-                Reach Out
+                {t('about.reachOut')}
               </button>
             </div>
           </div>
@@ -259,9 +252,9 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
         <div className="p-8 rounded-[24px] bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-2xl space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div>
-              <h3 className="text-lg font-bold text-white">Full-Spectrum Technical Matrix</h3>
+              <h3 className="text-lg font-bold text-white">{t('about.matrixTitle')}</h3>
               <p className="text-xs text-[#A0A0A0]">
-                Filter technologies by domain to inspect Eugenio's production stack
+                {t('about.matrixSubtitle')}
               </p>
             </div>
 
@@ -277,7 +270,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                       : 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.05]'
                   }`}
                 >
-                  {filter}
+                  {t(`about.filters.${filter}`)}
                 </button>
               ))}
             </div>

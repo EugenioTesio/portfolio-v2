@@ -1,21 +1,17 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import {
   Briefcase,
   Calendar,
   MapPin,
   ChevronDown,
   ChevronUp,
-  Award,
-  Sparkles,
-  CheckCircle2,
   Filter,
   X,
-  Layers,
   ArrowRight
 } from 'lucide-react';
-import { EXPERIENCES, CAPABILITIES } from '../data/portfolioData';
-import { ExperienceItem } from '../types';
+import { usePortfolioData } from '../data/portfolio';
 
 interface ExperienceSectionProps {
   selectedCapabilityId: string | null;
@@ -28,6 +24,8 @@ export default function ExperienceSection({
   onClearCapabilityFilter,
   onNavigateToProjects
 }: ExperienceSectionProps) {
+  const { t } = useTranslation();
+  const { EXPERIENCES, CAPABILITIES } = usePortfolioData();
   const [expandedRoles, setExpandedRoles] = useState<Record<string, boolean>>({
     'itti-ueno': true,
     'pairtree': true
@@ -55,22 +53,21 @@ export default function ExperienceSection({
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
               <Briefcase className="w-3.5 h-3.5" />
-              <span className="font-bold tracking-[2px]">02. EXPERIENCE HIGHLIGHTS</span>
+              <span className="font-bold tracking-[2px]">{t('experience.sectionBadge')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Production Evidence Backing <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] to-[#9D00FF]">What I Can Do</span>
+              {t('experience.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] to-[#9D00FF]">{t('experience.titleHighlight')}</span>
             </h2>
             <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
-              Demonstrated track record of technical leadership, architectural transformations, and mission-critical production deliveries.
+              {t('experience.subtitle')}
             </p>
           </div>
 
-          {/* Action indicator */}
           <button
             onClick={onNavigateToProjects}
             className="self-start md:self-auto inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white font-mono transition-colors"
           >
-            <span>Explore Associated Projects</span>
+            <span>{t('experience.exploreProjects')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -89,7 +86,7 @@ export default function ExperienceSection({
                   <Filter className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#00F5FF] font-bold">Filtering Proof for Capability:</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#00F5FF] font-bold">{t('experience.filteringFor')}</span>
                   <p className="text-sm font-bold text-white">{selectedCapability.title}</p>
                 </div>
               </div>
@@ -98,7 +95,7 @@ export default function ExperienceSection({
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-mono border border-white/10 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
-                <span>Show All Roles</span>
+                <span>{t('experience.showAllRoles')}</span>
               </button>
             </motion.div>
           )}
@@ -134,7 +131,7 @@ export default function ExperienceSection({
                         </span>
                         {exp.current && (
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-white/[0.05] text-[#00F5FF] border border-[#00F5FF]/30">
-                            Current Role
+                            {t('experience.currentRole')}
                           </span>
                         )}
                       </div>
@@ -172,7 +169,7 @@ export default function ExperienceSection({
                   {/* Capability Alignment Tags */}
                   <div className="mb-5 flex flex-wrap items-center gap-2">
                     <span className="text-[11px] font-mono text-[#A0A0A0] uppercase tracking-wider mr-1">
-                      Validated Capabilities:
+                      {t('experience.validatedCapabilities')}
                     </span>
                     {exp.backedCapabilities.map((capId) => {
                       const cap = CAPABILITIES.find(c => c.id === capId);
@@ -197,13 +194,13 @@ export default function ExperienceSection({
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold">
-                        Engineering Highlights & Verification:
+                        {t('experience.engineeringHighlights')}
                       </h4>
                       <button
                         onClick={() => toggleExpand(exp.id)}
                         className="text-xs font-mono font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white flex items-center gap-1 transition-colors"
                       >
-                        <span>{isExpanded ? 'Collapse' : 'Expand Details'}</span>
+                        <span>{isExpanded ? t('experience.collapse') : t('experience.expandDetails')}</span>
                         {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                       </button>
                     </div>

@@ -1,22 +1,19 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import {
   FolderGit2,
   ExternalLink,
   Layers,
-  Server,
-  Cpu,
-  Radio,
   ArrowRight,
   CheckCircle2,
   X,
   AlertCircle,
   TrendingUp,
   Sparkles,
-  Terminal,
-  ShieldCheck
+  Terminal
 } from 'lucide-react';
-import { PROJECTS } from '../data/portfolioData';
+import { usePortfolioData } from '../data/portfolio';
 import { ProjectItem } from '../types';
 
 interface ProjectsGalleryProps {
@@ -24,15 +21,17 @@ interface ProjectsGalleryProps {
 }
 
 export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProps) {
+  const { t } = useTranslation();
+  const { PROJECTS } = usePortfolioData();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'mobile' | 'backend' | 'devops' | 'iot'>('all');
   const [activeModalProject, setActiveModalProject] = useState<ProjectItem | null>(null);
 
   const filters = [
-    { id: 'all', label: 'All Projects' },
-    { id: 'mobile', label: 'Mobile & Flutter' },
-    { id: 'backend', label: 'Backend & APIs' },
-    { id: 'iot', label: 'IoT & Hardware' }
-  ];
+    { id: 'all', label: t('projects.filters.all') },
+    { id: 'mobile', label: t('projects.filters.mobile') },
+    { id: 'backend', label: t('projects.filters.backend') },
+    { id: 'iot', label: t('projects.filters.iot') }
+  ] as const;
 
   const filteredProjects = selectedFilter === 'all'
     ? PROJECTS
@@ -53,13 +52,13 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
               <FolderGit2 className="w-3.5 h-3.5" />
-              <span className="font-bold tracking-[2px]">03. PROJECTS GALLERY</span>
+              <span className="font-bold tracking-[2px]">{t('projects.sectionBadge')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Flagship Engineering & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">Architecture Case Studies</span>
+              {t('projects.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('projects.titleHighlight')}</span>
             </h2>
             <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
-              Explore in-depth architectural deep-dives from enterprise mobile banking overhauls to physical RS485 industrial IoT systems.
+              {t('projects.subtitle')}
             </p>
           </div>
 
@@ -102,7 +101,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                   {project.featured && (
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.05] text-[#FF00E5] border border-[#FF00E5]/30 flex items-center gap-1 font-bold">
                       <Sparkles className="w-2.5 h-2.5" />
-                      Featured
+                      {t('projects.featured')}
                     </span>
                   )}
                 </div>
@@ -137,7 +136,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                   ))}
                   {project.technologies.length > 4 && (
                     <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-lg bg-white/[0.02] text-[#A0A0A0] border border-white/5">
-                      +{project.technologies.length - 4} more
+                      {t('projects.moreTech', { count: project.technologies.length - 4 })}
                     </span>
                   )}
                 </div>
@@ -150,7 +149,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                   onClick={() => openProjectDetail(project)}
                   className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white border border-white/10 hover:border-[#00F5FF]/40 transition-all group/btn"
                 >
-                  <span>Open Architecture Case Study</span>
+                  <span>{t('projects.openCaseStudy')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform text-[#00F5FF]" />
                 </button>
               </div>
@@ -175,7 +174,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 id="close-project-modal-btn"
                 onClick={() => setActiveModalProject(null)}
                 className="absolute top-5 right-5 p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[#A0A0A0] hover:text-white border border-white/10 transition-colors"
-                aria-label="Close modal"
+                aria-label={t('projects.closeModal')}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -188,7 +187,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                   </span>
                   {activeModalProject.featured && (
                     <span className="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[#FF00E5] border border-[#FF00E5]/30">
-                      Flagship Initiative
+                      {t('projects.flagshipInitiative')}
                     </span>
                   )}
                 </div>
@@ -214,7 +213,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
               <div className="space-y-2">
                 <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-[#00F5FF]" />
-                  Project Overview
+                  {t('projects.projectOverview')}
                 </h4>
                 <p className="text-sm text-slate-300 leading-relaxed font-normal">
                   {activeModalProject.overview}
@@ -226,7 +225,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 <div className="p-5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
                   <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider">
                     <AlertCircle className="w-4 h-4" />
-                    <span>The Engineering Challenge</span>
+                    <span>{t('projects.challenge')}</span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     {activeModalProject.challenge}
@@ -236,7 +235,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 <div className="p-5 rounded-2xl bg-white/[0.03] border border-[#00F5FF]/30 space-y-2">
                   <div className="flex items-center gap-2 text-[#00F5FF] font-bold text-xs uppercase tracking-wider">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Engineered Solution</span>
+                    <span>{t('projects.solution')}</span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     {activeModalProject.solution}
@@ -248,7 +247,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
               <div className="space-y-3">
                 <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold flex items-center gap-1.5">
                   <Terminal className="w-3.5 h-3.5 text-[#00F5FF]" />
-                  Key Architectural Decisions
+                  {t('projects.architectureDecisions')}
                 </h4>
                 <div className="space-y-2">
                   {activeModalProject.architectureHighlights.map((highlight, idx) => (
@@ -264,7 +263,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
               <div className="space-y-3">
                 <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#9D00FF] font-bold flex items-center gap-1.5">
                   <TrendingUp className="w-3.5 h-3.5 text-[#9D00FF]" />
-                  Quantifiable Results
+                  {t('projects.quantifiableResults')}
                 </h4>
                 <div className="space-y-2">
                   {activeModalProject.results.map((result, idx) => (
@@ -279,7 +278,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
               {/* Technologies Used */}
               <div className="space-y-2 pt-2 border-t border-white/10">
                 <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#A0A0A0] font-bold">
-                  Full Technology Stack
+                  {t('projects.fullTechStack')}
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {activeModalProject.technologies.map((t) => (
@@ -313,7 +312,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                   onClick={() => setActiveModalProject(null)}
                   className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-mono uppercase tracking-wider border border-white/10 transition-colors"
                 >
-                  Close Case Study
+                  {t('projects.closeCaseStudy')}
                 </button>
               </div>
             </motion.div>

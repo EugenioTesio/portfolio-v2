@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
@@ -19,15 +20,23 @@ import {
 } from 'lucide-react';
 import { getBlogPosts } from '../data/blogLoader';
 import { BlogPost } from '../types';
+import { Locale } from '../data/portfolio';
 import HtmlArticleBody from './HtmlArticleBody';
 
 export default function BlogSection() {
+  const { t, i18n } = useTranslation();
+  const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
-  const allPosts = useMemo(() => getBlogPosts(), []);
+  const allPosts = useMemo(() => getBlogPosts(locale), [locale]);
+
+  useEffect(() => {
+    setSelectedPost(null);
+    setSelectedCategory('all');
+  }, [locale]);
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(allPosts.map(p => p.category)));
@@ -59,20 +68,19 @@ export default function BlogSection() {
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
               <BookOpen className="w-3.5 h-3.5" />
-              <span className="font-bold tracking-[2px]">04. TECHNICAL BLOG & REPOSITORY</span>
+              <span className="font-bold tracking-[2px]">{t('blog.sectionBadge')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Engineering Notes Rendered from <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">Local Articles</span>
+              {t('blog.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('blog.titleHighlight')}</span>
             </h2>
             <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
-              Practical guides on large-scale Flutter architecture, RASP hardening, and industrial IoT — parsed from repository HTML field guides.
+              {t('blog.subtitle')}
             </p>
           </div>
 
-          {/* Local Repository Indicator */}
           <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono text-[#A0A0A0] self-start md:self-auto backdrop-blur-md">
             <FileCode2 className="w-4 h-4 text-[#00F5FF]" />
-            <span>Source: /src/content/blog/*.md, *.html</span>
+            <span>{t('blog.sourceIndicator', { locale })}</span>
           </div>
         </div>
 
@@ -100,7 +108,7 @@ export default function BlogSection() {
             <Search className="w-4 h-4 text-[#A0A0A0] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search articles & tags..."
+              placeholder={t('blog.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00F5FF]/50 transition-colors font-mono backdrop-blur-md"
@@ -176,7 +184,7 @@ export default function BlogSection() {
                   onClick={() => setSelectedPost(post)}
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors group/btn"
                 >
-                  <span>Read Article</span>
+                  <span>{t('blog.readArticle')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform text-[#00F5FF]" />
                 </button>
               </div>
@@ -186,12 +194,12 @@ export default function BlogSection() {
 
         {filteredPosts.length === 0 && (
           <div className="text-center py-16 p-8 rounded-[24px] bg-white/[0.02] border border-white/10 text-[#A0A0A0] space-y-3 backdrop-blur-xl">
-            <p className="text-sm">No articles matched your search query "{searchQuery}".</p>
+            <p className="text-sm">{t('blog.noResults', { query: searchQuery })}</p>
             <button
               onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
               className="text-xs font-mono font-bold uppercase tracking-wider text-[#00F5FF] underline underline-offset-4"
             >
-              Reset filters
+              {t('blog.resetFilters')}
             </button>
           </div>
         )}
@@ -215,7 +223,7 @@ export default function BlogSection() {
                   className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 transition-colors font-mono"
                 >
                   <ArrowLeft className="w-4 h-4 text-[#00F5FF]" />
-                  <span>Back to Articles</span>
+                  <span>{t('blog.backToArticles')}</span>
                 </button>
 
                 <div className="flex items-center gap-3">
@@ -226,12 +234,12 @@ export default function BlogSection() {
                     {copiedSlug === selectedPost.slug ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-[#00F5FF]" />
-                        <span className="text-[#00F5FF] font-bold">Copied!</span>
+                        <span className="text-[#00F5FF] font-bold">{t('blog.copied')}</span>
                       </>
                     ) : (
                       <>
                         <Share2 className="w-3.5 h-3.5 text-[#00F5FF]" />
-                        <span>Share</span>
+                        <span>{t('blog.share')}</span>
                       </>
                     )}
                   </button>
@@ -240,7 +248,7 @@ export default function BlogSection() {
                     id="close-reader-btn"
                     onClick={() => setSelectedPost(null)}
                     className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[#A0A0A0] hover:text-white border border-white/10 transition-colors"
-                    aria-label="Close reader"
+                    aria-label={t('blog.closeReader')}
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -262,7 +270,7 @@ export default function BlogSection() {
                     {selectedPost.readTime}
                   </span>
                   <span className="text-[#00F5FF] font-mono text-[10px] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-[#00F5FF]/30 font-bold">
-                    Loaded from: {selectedPost.filename}
+                    {t('blog.loadedFrom', { filename: selectedPost.filename })}
                   </span>
                 </div>
 
@@ -300,7 +308,7 @@ export default function BlogSection() {
                   </div>
                   <div>
                     <div className="text-xs font-bold text-white">{selectedPost.author}</div>
-                    <div className="text-[11px] text-[#A0A0A0] font-mono">Mobile Expert & Systems Architect</div>
+                    <div className="text-[11px] text-[#A0A0A0] font-mono">{t('blog.authorRole')}</div>
                   </div>
                 </div>
 
@@ -308,7 +316,7 @@ export default function BlogSection() {
                   onClick={() => setSelectedPost(null)}
                   className="px-6 py-2.5 rounded-xl bg-[#00F5FF] text-black text-xs font-extrabold uppercase tracking-wider hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,245,255,0.4)] transition-all"
                 >
-                  Done Reading
+                  {t('blog.doneReading')}
                 </button>
               </div>
             </motion.div>

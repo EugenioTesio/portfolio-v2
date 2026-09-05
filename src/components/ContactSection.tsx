@@ -1,5 +1,6 @@
 import { useState, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import {
   Mail,
@@ -15,17 +16,30 @@ import {
   ShieldCheck,
   RefreshCw
 } from 'lucide-react';
-import { ContactFormData, ContactValidationErrors, NotificationReceipt } from '../types';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { ContactValidationErrors, NotificationReceipt } from '../types';
+import { usePortfolioData } from '../data/portfolio';
+
+const INQUIRY_TYPE_KEYS = [
+  'flutter',
+  'fastapi',
+  'leadership',
+  'devsecops',
+  'iot',
+  'general',
+] as const;
+
+type InquiryTypeKey = typeof INQUIRY_TYPE_KEYS[number];
 
 export default function ContactSection() {
+  const { t } = useTranslation(['common', 'contact']);
+  const { PERSONAL_INFO } = usePortfolioData();
   const formId = useId();
 
-  const [formData, setFormData] = useState<ContactFormData>({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
-    inquiryType: 'Flutter & Mobile Architecture',
+    inquiryType: 'flutter' as InquiryTypeKey,
     message: ''
   });
 
@@ -41,16 +55,16 @@ export default function ContactSection() {
   // Real-time validation
   const errors: ContactValidationErrors = {
     name: touched.name && formData.name.trim().length < 2
-      ? 'Please enter your name (at least 2 characters).'
+      ? t('contact:validation.name')
       : undefined,
     email: touched.email && !emailRegex.test(formData.email.trim())
-      ? 'Please enter a valid email address (e.g., name@company.com).'
+      ? t('contact:validation.email')
       : undefined,
     subject: touched.subject && formData.subject.trim().length < 3
-      ? 'Please provide a subject or project title (min 3 characters).'
+      ? t('contact:validation.subject')
       : undefined,
     message: touched.message && formData.message.trim().length < 20
-      ? `Message must be at least 20 characters (currently ${formData.message.trim().length}).`
+      ? t('contact:validation.message', { count: formData.message.trim().length })
       : undefined
   };
 
@@ -60,13 +74,15 @@ export default function ContactSection() {
     formData.subject.trim().length >= 3 &&
     formData.message.trim().length >= 20;
 
-  const handleBlur = (field: keyof ContactFormData) => {
+  const handleBlur = (field: keyof typeof formData) => {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
 
-  const handleChange = (field: keyof ContactFormData, value: string) => {
+  const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const inquiryTypeLabel = t(`contact:inquiryTypes.${formData.inquiryType}`);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,14 +97,13 @@ export default function ContactSection() {
     if (!isFormValid) return;
 
     setIsSubmitting(true);
-    setSubmissionStep('Validating email gateway & security tokens...');
+    setSubmissionStep(t('contact:submission.validating'));
 
-    // Simulate multi-step notification pipeline
     await new Promise(r => setTimeout(r, 600));
-    setSubmissionStep(`Dispatching email notification to ${PERSONAL_INFO.email}...`);
+    setSubmissionStep(t('contact:submission.dispatching', { email: PERSONAL_INFO.email }));
     
     await new Promise(r => setTimeout(r, 700));
-    setSubmissionStep('Verifying delivery audit receipt...');
+    setSubmissionStep(t('contact:submission.verifying'));
 
     await new Promise(r => setTimeout(r, 500));
 
@@ -97,7 +112,7 @@ export default function ContactSection() {
       timestamp: new Date().toISOString(),
       senderName: formData.name,
       senderEmail: formData.email,
-      inquiryType: formData.inquiryType,
+      inquiryType: inquiryTypeLabel,
       subject: formData.subject,
       messageSnippet: formData.message.substring(0, 80) + (formData.message.length > 80 ? '...' : ''),
       targetEmail: PERSONAL_INFO.email,
@@ -132,7 +147,7 @@ export default function ContactSection() {
       name: '',
       email: '',
       subject: '',
-      inquiryType: 'Flutter & Mobile Architecture',
+      inquiryType: 'flutter',
       message: ''
     });
     setTouched({});
@@ -140,11 +155,11 @@ export default function ContactSection() {
   };
 
   const mailtoUrl = `mailto:${PERSONAL_INFO.email}?subject=${encodeURIComponent(
-    `[Portfolio Inquiry] ${formData.subject || 'Project Discussion'}`
+    `${t('contact:mailto.subjectPrefix')} ${formData.subject || t('contact:mailto.defaultSubject')}`
   )}&body=${encodeURIComponent(
-    `Hi Eugenio,\n\nMy name is ${formData.name || '[Your Name]'}.\nInquiry Type: ${formData.inquiryType}\n\n${
+    `${t('contact:mailto.greeting')}\n\n${t('contact:mailto.nameLine', { name: formData.name || t('contact:mailto.yourName') })}\n${t('contact:mailto.inquiryLine', { type: inquiryTypeLabel })}\n\n${
       formData.message || ''
-    }\n\nBest regards,\n${formData.name || ''}\n${formData.email || ''}`
+    }\n\n${t('contact:mailto.bestRegards')}\n${formData.name || ''}\n${formData.email || ''}`
   )}`;
 
   return (
@@ -154,13 +169,13 @@ export default function ContactSection() {
         <div className="space-y-3 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
             <Mail className="w-3.5 h-3.5" />
-            <span className="font-bold tracking-[2px]">05. CONTACT & COLLABORATION</span>
+            <span className="font-bold tracking-[2px]">{t('contactSection.sectionBadge')}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Initiate a Conversation with <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">Real-Time Notification</span>
+            {t('contactSection.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('contactSection.titleHighlight')}</span>
           </h2>
           <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
-            Have a project, technical leadership role, or complex Flutter/Python architecture to discuss? Reach out directly below.
+            {t('contactSection.subtitle')}
           </p>
         </div>
 
@@ -169,7 +184,7 @@ export default function ContactSection() {
           <div className="lg:col-span-5 space-y-6">
             <div className="p-8 rounded-[24px] bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-2xl space-y-6">
               <h3 className="text-xl font-bold text-white tracking-tight">
-                Direct Channels & Coordinates
+                {t('contactSection.directChannels')}
               </h3>
 
               <div className="space-y-4">
@@ -177,7 +192,7 @@ export default function ContactSection() {
                 <div className="p-4 rounded-2xl bg-black/30 border border-white/10 space-y-2">
                   <div className="text-[10px] font-mono text-[#00F5FF] font-bold uppercase tracking-wider flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-[#00F5FF]" />
-                    Primary Email
+                    {t('contactSection.primaryEmail')}
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <a
@@ -190,7 +205,7 @@ export default function ContactSection() {
                       id="copy-email-btn"
                       onClick={handleCopyDirectEmail}
                       className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white transition-colors flex-shrink-0 border border-white/10"
-                      title="Copy email address"
+                      title={t('contactSection.copyEmail')}
                     >
                       {copiedEmail ? (
                         <Check className="w-4 h-4 text-[#00F5FF]" />
@@ -205,13 +220,13 @@ export default function ContactSection() {
                 <div className="p-4 rounded-2xl bg-black/30 border border-white/10 space-y-1">
                   <div className="text-[10px] font-mono text-[#9D00FF] font-bold uppercase tracking-wider flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-[#9D00FF]" />
-                    Base Location
+                    {t('contactSection.baseLocation')}
                   </div>
                   <div className="text-sm font-semibold text-white">
                     {PERSONAL_INFO.location}
                   </div>
                   <div className="text-xs text-[#A0A0A0]">
-                    UTC-3 (Argentina Standard Time) · Remote Worldwide
+                    {t('contactSection.timezone')}
                   </div>
                 </div>
 
@@ -219,18 +234,16 @@ export default function ContactSection() {
                 <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
                   <div className="text-[10px] font-mono text-[#00F5FF] font-bold uppercase tracking-wider flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-[#00F5FF]" />
-                    Turnaround SLA
+                    {t('contactSection.turnaroundSla')}
                   </div>
-                  <p className="text-xs text-[#A0A0A0] leading-relaxed">
-                    Messages generate instant delivery audit notifications and are reviewed within <strong className="text-white">24 hours</strong>.
-                  </p>
+                  <p className="text-xs text-[#A0A0A0] leading-relaxed" dangerouslySetInnerHTML={{ __html: t('contactSection.turnaroundDesc') }} />
                 </div>
               </div>
 
               {/* Security Guarantee */}
               <div className="pt-2 border-t border-white/10 flex items-center gap-2 text-xs font-mono text-[#A0A0A0]">
                 <ShieldCheck className="w-4 h-4 text-[#00F5FF]" />
-                <span>Anti-Spam & Real-Time TLS Verified</span>
+                <span>{t('contactSection.securityNote')}</span>
               </div>
             </div>
           </div>
@@ -254,10 +267,10 @@ export default function ContactSection() {
                       </div>
                       <div>
                         <h4 className="text-base font-bold text-white">
-                          Email Notification Dispatched!
+                          {t('contactSection.emailDispatched')}
                         </h4>
                         <p className="text-xs text-[#A0A0A0]">
-                          Your message has been processed and routed to Eugenio Tesio.
+                          {t('contactSection.emailDispatchedDesc')}
                         </p>
                       </div>
                     </div>
@@ -265,29 +278,29 @@ export default function ContactSection() {
                     {/* Cryptographic Delivery Receipt Details */}
                     <div className="p-5 rounded-2xl bg-black/40 border border-white/10 font-mono text-xs space-y-3">
                       <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <span className="text-[#A0A0A0]">AUDIT RECEIPT:</span>
+                        <span className="text-[#A0A0A0]">{t('contactSection.auditReceipt')}</span>
                         <span className="text-[#00F5FF] font-bold">{receipt.receiptId}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-[11px]">
                         <div>
-                          <span className="text-[#A0A0A0] block">Sender:</span>
+                          <span className="text-[#A0A0A0] block">{t('contactSection.sender')}</span>
                           <span className="text-slate-200">{receipt.senderName}</span>
                         </div>
                         <div>
-                          <span className="text-[#A0A0A0] block">Sender Email:</span>
+                          <span className="text-[#A0A0A0] block">{t('contactSection.senderEmail')}</span>
                           <span className="text-slate-200 truncate block">{receipt.senderEmail}</span>
                         </div>
                         <div>
-                          <span className="text-[#A0A0A0] block">Inquiry Type:</span>
+                          <span className="text-[#A0A0A0] block">{t('contactSection.inquiryType')}</span>
                           <span className="text-slate-200">{receipt.inquiryType}</span>
                         </div>
                         <div>
-                          <span className="text-[#A0A0A0] block">Timestamp:</span>
+                          <span className="text-[#A0A0A0] block">{t('contactSection.timestamp')}</span>
                           <span className="text-slate-200">{new Date(receipt.timestamp).toLocaleTimeString()}</span>
                         </div>
                       </div>
                       <div className="border-t border-white/10 pt-2 text-[11px]">
-                        <span className="text-[#A0A0A0] block mb-0.5">Subject:</span>
+                        <span className="text-[#A0A0A0] block mb-0.5">{t('contactSection.subject')}</span>
                         <span className="text-white font-semibold">{receipt.subject}</span>
                       </div>
                     </div>
@@ -299,7 +312,7 @@ export default function ContactSection() {
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 text-xs font-semibold border border-white/10 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5 text-[#00F5FF]" />
-                        <span>Open in Desktop Email Client</span>
+                        <span>{t('contactSection.openDesktopEmail')}</span>
                       </a>
 
                       <button
@@ -307,7 +320,7 @@ export default function ContactSection() {
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00F5FF] text-black text-xs font-extrabold uppercase tracking-wider hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,245,255,0.4)] transition-all"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
-                        <span>Send Another Message</span>
+                        <span>{t('contactSection.sendAnother')}</span>
                       </button>
                     </div>
                   </motion.div>
@@ -315,9 +328,9 @@ export default function ContactSection() {
                   /* Live Form */
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                      <h3 className="text-lg font-bold text-white">Send Direct Inquiry</h3>
+                      <h3 className="text-lg font-bold text-white">{t('contactSection.sendInquiry')}</h3>
                       <span className="text-[10px] font-mono text-[#00F5FF] uppercase tracking-wider font-bold">
-                        * Real-Time TLS Validation
+                        {t('contactSection.tlsValidation')}
                       </span>
                     </div>
 
@@ -325,18 +338,18 @@ export default function ContactSection() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center text-xs">
                         <label htmlFor={`${formId}-name`} className="font-medium text-slate-300">
-                          Your Full Name *
+                          {t('contactSection.fullName')}
                         </label>
                         {touched.name && !errors.name && formData.name && (
                           <span className="text-[#00F5FF] text-[11px] font-mono flex items-center gap-1 font-bold">
-                            <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" /> Valid
+                            <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" /> {t('contactSection.valid')}
                           </span>
                         )}
                       </div>
                       <input
                         id={`${formId}-name`}
                         type="text"
-                        placeholder="e.g. Elena Rostova"
+                        placeholder={t('contactSection.namePlaceholder')}
                         value={formData.name}
                         onChange={(e) => handleChange('name', e.target.value)}
                         onBlur={() => handleBlur('name')}
@@ -359,18 +372,18 @@ export default function ContactSection() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center text-xs">
                         <label htmlFor={`${formId}-email`} className="font-medium text-slate-300">
-                          Your Email Address *
+                          {t('contactSection.emailAddress')}
                         </label>
                         {touched.email && !errors.email && formData.email && (
                           <span className="text-[#00F5FF] text-[11px] font-mono flex items-center gap-1 font-bold">
-                            <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" /> Valid
+                            <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" /> {t('contactSection.valid')}
                           </span>
                         )}
                       </div>
                       <input
                         id={`${formId}-email`}
                         type="email"
-                        placeholder="e.g. elena@techscale.io"
+                        placeholder={t('contactSection.emailPlaceholder')}
                         value={formData.email}
                         onChange={(e) => handleChange('email', e.target.value)}
                         onBlur={() => handleBlur('email')}
@@ -394,39 +407,37 @@ export default function ContactSection() {
                       {/* Inquiry Type */}
                       <div className="space-y-1.5">
                         <label htmlFor={`${formId}-inquiryType`} className="block text-xs font-medium text-slate-300">
-                          Inquiry Focus
+                          {t('contactSection.inquiryFocus')}
                         </label>
                         <select
                           id={`${formId}-inquiryType`}
                           value={formData.inquiryType}
-                          onChange={(e) => handleChange('inquiryType', e.target.value)}
+                          onChange={(e) => handleChange('inquiryType', e.target.value as InquiryTypeKey)}
                           className="w-full px-3 py-3 rounded-xl bg-[#050505] text-white text-sm border border-white/10 focus:outline-none focus:border-[#00F5FF]/50"
                         >
-                          <option value="Flutter & Mobile Architecture">Flutter & Mobile Architecture</option>
-                          <option value="FastAPI / Python Microservices">FastAPI / Python Microservices</option>
-                          <option value="Full Stack / Tech Leadership">Full Stack / Tech Leadership</option>
-                          <option value="DevSecOps & Release Trains">DevSecOps & Release Trains</option>
-                          <option value="IoT & Hardware Systems">IoT & Hardware Systems</option>
-                          <option value="General Technical Inquiry">General Technical Inquiry</option>
+                          {INQUIRY_TYPE_KEYS.map((key) => (
+                            <option key={key} value={key}>
+                              {t(`contact:inquiryTypes.${key}`)}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
-                      {/* Subject */}
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-center text-xs">
                           <label htmlFor={`${formId}-subject`} className="font-medium text-slate-300">
-                            Subject *
+                            {t('contactSection.subjectLabel')}
                           </label>
                           {touched.subject && !errors.subject && formData.subject && (
                             <span className="text-[#00F5FF] text-[11px] font-mono flex items-center gap-1 font-bold">
-                              <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" /> Valid
+                              <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" /> {t('contactSection.valid')}
                             </span>
                           )}
                         </div>
                         <input
                           id={`${formId}-subject`}
                           type="text"
-                          placeholder="e.g. Lead Mobile Architect Opportunity"
+                          placeholder={t('contactSection.subjectPlaceholder')}
                           value={formData.subject}
                           onChange={(e) => handleChange('subject', e.target.value)}
                           onBlur={() => handleBlur('subject')}
@@ -450,18 +461,18 @@ export default function ContactSection() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center text-xs">
                         <label htmlFor={`${formId}-message`} className="font-medium text-slate-300">
-                          Message Body *
+                          {t('contactSection.messageBody')}
                         </label>
                         <span className={`font-mono text-[11px] ${
                           formData.message.trim().length >= 20 ? 'text-[#00F5FF]' : 'text-slate-500'
                         }`}>
-                          {formData.message.trim().length}/20 chars min
+                          {t('contactSection.charsMin', { count: formData.message.trim().length })}
                         </span>
                       </div>
                       <textarea
                         id={`${formId}-message`}
                         rows={4}
-                        placeholder="Share your goals, project scope, team size, or technical challenge..."
+                        placeholder={t('contactSection.messagePlaceholder')}
                         value={formData.message}
                         onChange={(e) => handleChange('message', e.target.value)}
                         onBlur={() => handleBlur('message')}
@@ -500,7 +511,7 @@ export default function ContactSection() {
                       }`}
                     >
                       <Send className="w-4 h-4" />
-                      <span>{isSubmitting ? 'Dispatching Notification...' : 'Dispatch Email Notification'}</span>
+                      <span>{isSubmitting ? t('contactSection.dispatching') : t('contactSection.dispatchEmail')}</span>
                     </button>
                   </form>
                 )}

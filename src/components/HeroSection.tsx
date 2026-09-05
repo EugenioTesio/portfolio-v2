@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, DragEvent, ChangeEvent } from 'react';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import {
   Smartphone,
   Server,
@@ -20,7 +21,7 @@ import {
   UploadCloud,
   Check
 } from 'lucide-react';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { usePortfolioData } from '../data/portfolio';
 import regeneratedProfileImage from '../assets/images/regenerated_image_1788456283242.jpg';
 
 interface HeroSectionProps {
@@ -28,6 +29,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onNavigate }: HeroSectionProps) {
+  const { t } = useTranslation();
+  const { PERSONAL_INFO } = usePortfolioData();
   const [profileImg, setProfileImg] = useState<string>(() => {
     return localStorage.getItem('eugenio_profile_img') || regeneratedProfileImage;
   });
@@ -111,8 +114,8 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md shadow-[0_0_15px_rgba(0,245,255,0.15)]"
           >
             <span className="w-2 h-2 rounded-full bg-[#00F5FF] animate-pulse" />
-            <span className="text-[#A0A0A0]">CURRENT STATUS:</span>
-            <span className="font-semibold text-white tracking-wide">Mobile Expert & Systems Architect @ ueno bank</span>
+            <span className="text-[#A0A0A0]">{t('hero.currentStatus')}</span>
+            <span className="font-semibold text-white tracking-wide">{t('hero.currentRole')}</span>
           </motion.div>
 
           <motion.div
@@ -138,26 +141,21 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
             >
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span className="font-bold tracking-[2px]">00. EXECUTIVE OVERVIEW</span>
+                <span className="font-bold tracking-[2px]">{t('hero.sectionBadge')}</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white">
-                <span className="bg-gradient-to-r from-white via-[#E0E0E0] to-[#A0A0A0] bg-clip-text text-transparent block">
-                  Eugenio Tesio
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]">
+                <span className="inline-block bg-gradient-to-r from-white via-[#E0E0E0] to-[#A0A0A0] bg-clip-text text-transparent [-webkit-text-fill-color:transparent]">
+                  {t('hero.headlineName')}
                 </span>
                 <span className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#A0A0A0] block mt-1">
-                  Architecting <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">High-Scale</span> Mobile & Distributed Cloud Systems
+                  {t('hero.headlineTitle')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('hero.headlineHighlight')}</span> {t('hero.headlineSuffix')}
                 </span>
               </h1>
               
-              {/* Comprehensive Overview Covering All Experience */}
               <div className="space-y-3 text-[#A0A0A0] text-base leading-relaxed pt-2">
-                <p>
-                  I'm a <strong className="text-white font-semibold">Mobile Expert</strong>, <strong className="text-white font-semibold">Systems Architect</strong>, and <strong className="text-white font-semibold">Electronics Engineer</strong> with over 14 years of end-to-end software engineering, hardware telemetry, and AI-accelerated delivery experience. I specialize in designing, modernizing, and scaling mission-critical platforms using <span className="text-[#00F5FF] font-medium">Flutter (BLoC & Riverpod)</span>, <span className="text-white font-medium">Python (FastAPI)</span>, <span className="text-[#9D00FF] font-medium">Java (Spring Boot)</span>, <span className="text-[#00F5FF] font-medium">Google Cloud Platform</span>, and <span className="text-[#FF00E5] font-medium">Multi-Agent AI Engineering</span>.
-                </p>
-                <p className="text-sm sm:text-base">
-                  At <strong className="text-white">ueno bank (ITTI S.A.E.C.A.)</strong>, I lead mobile architecture for 50+ Flutter engineers, orchestrating the migration to a modular Micro-App & App Shell ecosystem, pioneering multi-agent AI development workflows (Cursor, GitHub Copilot, Spec-Driven Development), harmonizing retail & corporate apps, establishing a 15-day multi-store release train, and hardening security with Fintech RASP. My career spans delivering <strong className="text-white">100% backend test coverage with FastAPI</strong> at <span className="text-slate-200">PairTree</span> (adoption platform), building scalable <span className="text-slate-200">Nest.js & Riverpod</span> apps at <span className="text-slate-200">Tandamos</span>, powering enterprise GCP Pub/Sub microservices at <span className="text-slate-200">Valtech</span>, and a decade of full-stack engineering with <strong className="text-[#00F5FF]">zero mobile store rejections</strong>.
-                </p>
+                <p dangerouslySetInnerHTML={{ __html: t('hero.overviewP1') }} />
+                <p className="text-sm sm:text-base" dangerouslySetInnerHTML={{ __html: t('hero.overviewP2') }} />
               </div>
             </motion.div>
 
@@ -170,24 +168,24 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
             >
               <span className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-white/[0.08] to-white/[0.03] border border-[#00F5FF]/50 text-xs font-mono text-white flex items-center gap-1.5 hover:border-[#00F5FF] transition-all shadow-[0_0_15px_rgba(0,245,255,0.2)]">
                 <Bot className="w-3.5 h-3.5 text-[#00F5FF] animate-pulse" />
-                <span className="text-[#00F5FF] font-bold">Multi-Agent AI & LLMs</span>
-                <span className="text-slate-300">· SDD & CodeGen</span>
+                <span className="text-[#00F5FF] font-bold">{t('hero.chipAi')}</span>
+                <span className="text-slate-300">· {t('hero.chipAiSub')}</span>
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#00F5FF]/40 transition-colors">
                 <Layers className="w-3.5 h-3.5 text-[#00F5FF]" />
-                ueno bank · Micro-Apps & RASP
+                {t('hero.chipUeno')}
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#9D00FF]/40 transition-colors">
                 <Server className="w-3.5 h-3.5 text-[#9D00FF]" />
-                PairTree · 100% FastAPI Pytest
+                {t('hero.chipPairtree')}
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#00F5FF]/40 transition-colors">
                 <Cpu className="w-3.5 h-3.5 text-[#00F5FF]" />
-                Valtech · Spring Boot & GCP
+                {t('hero.chipValtech')}
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#FF00E5]/40 transition-colors">
                 <GraduationCap className="w-3.5 h-3.5 text-[#FF00E5]" />
-                UTN · Electronics Engineer & IoT
+                {t('hero.chipUtn')}
               </span>
             </motion.div>
 
@@ -203,7 +201,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 onClick={() => onNavigate('projects')}
                 className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#00F5FF] text-black font-extrabold uppercase text-xs tracking-wider hover:brightness-110 hover:shadow-[0_0_25px_rgba(0,245,255,0.5)] active:scale-95 transition-all cursor-pointer"
               >
-                <span>View Case Studies</span>
+                <span>{t('hero.viewCaseStudies')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -213,7 +211,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-white text-xs uppercase tracking-wider font-semibold transition-all"
               >
                 <Briefcase className="w-4 h-4 text-[#00F5FF]" />
-                <span>Career Timeline</span>
+                <span>{t('hero.careerTimeline')}</span>
               </button>
 
               <button
@@ -222,7 +220,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-white/[0.04] text-[#A0A0A0] hover:text-white text-xs uppercase tracking-wider font-medium transition-all"
               >
                 <Mail className="w-4 h-4" />
-                <span>Direct Contact</span>
+                <span>{t('hero.directContact')}</span>
               </button>
             </motion.div>
 
@@ -234,20 +232,20 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
               className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/10"
             >
               <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-[#00F5FF]">14+ Yrs</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">Software & IoT</div>
+                <div className="text-2xl font-extrabold font-mono text-[#00F5FF]">{t('hero.metricYears')}</div>
+                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricYearsLabel')}</div>
               </div>
               <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-[#9D00FF]">50+</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">Engineers Scaled</div>
+                <div className="text-2xl font-extrabold font-mono text-[#9D00FF]">{t('hero.metricEngineers')}</div>
+                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricEngineersLabel')}</div>
               </div>
               <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-white">100%</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">Backend Coverage</div>
+                <div className="text-2xl font-extrabold font-mono text-white">{t('hero.metricCoverage')}</div>
+                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricCoverageLabel')}</div>
               </div>
               <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-[#00F5FF]">0</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">Store Rejections</div>
+                <div className="text-2xl font-extrabold font-mono text-[#00F5FF]">{t('hero.metricRejections')}</div>
+                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricRejectionsLabel')}</div>
               </div>
             </motion.div>
           </div>
@@ -271,7 +269,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
               >
                 <img
                   src={profileImg}
-                  alt="Eugenio Tesio - Mobile Expert & Systems Architect"
+                  alt={t('hero.profileAlt')}
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     if (e.currentTarget.src.includes('profile-image-2')) {
@@ -291,8 +289,8 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 {isDragging && (
                   <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 z-20 pointer-events-none border-2 border-dashed border-[#00F5FF]">
                     <UploadCloud className="w-12 h-12 text-[#00F5FF] animate-bounce mb-3" />
-                    <p className="text-white font-bold text-sm">Drop your photo here</p>
-                    <p className="text-[#A0A0A0] text-xs mt-1 font-mono">Updates avatar across portfolio</p>
+                    <p className="text-white font-bold text-sm">{t('hero.dropPhoto')}</p>
+                    <p className="text-[#A0A0A0] text-xs mt-1 font-mono">{t('hero.dropPhotoHint')}</p>
                   </div>
                 )}
 
@@ -315,18 +313,18 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      title="Upload or change photo"
+                      title={t('hero.uploadPhoto')}
                       className="px-2.5 py-1 rounded-full bg-black/75 hover:bg-black border border-white/20 hover:border-[#00F5FF]/60 backdrop-blur-md text-[11px] font-mono text-slate-200 hover:text-[#00F5FF] flex items-center gap-1.5 transition-all shadow-md active:scale-95"
                     >
                       {justUploaded ? (
                         <>
                           <Check className="w-3 h-3 text-emerald-400" />
-                          <span className="text-emerald-400">Updated!</span>
+                          <span className="text-emerald-400">{t('hero.updated')}</span>
                         </>
                       ) : (
                         <>
                           <Camera className="w-3 h-3 text-[#00F5FF]" />
-                          <span>Change Photo</span>
+                          <span>{t('hero.changePhoto')}</span>
                         </>
                       )}
                     </button>
@@ -338,25 +336,25 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-xl bg-black/80 border border-white/15 backdrop-blur-md">
                       <div className="text-[10px] font-mono text-[#00F5FF] font-bold uppercase tracking-wider">
-                        Leadership
+                        {t('hero.leadership')}
                       </div>
                       <div className="text-xs font-semibold text-white">
-                        50+ Mobile Devs
+                        {t('hero.leadershipValue')}
                       </div>
                       <div className="text-[10px] text-[#A0A0A0]">
-                        Micro-App Arch
+                        {t('hero.leadershipSub')}
                       </div>
                     </div>
 
                     <div className="p-2.5 rounded-xl bg-black/80 border border-white/15 backdrop-blur-md">
                       <div className="text-[10px] font-mono text-[#9D00FF] font-bold uppercase tracking-wider">
-                        Release SLA
+                        {t('hero.releaseSla')}
                       </div>
                       <div className="text-xs font-semibold text-white">
-                        15-Day Cadence
+                        {t('hero.releaseSlaValue')}
                       </div>
                       <div className="text-[10px] text-[#A0A0A0]">
-                        3 App Stores
+                        {t('hero.releaseSlaSub')}
                       </div>
                     </div>
                   </div>
@@ -367,11 +365,11 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
               <div className="pt-4 mt-2 border-t border-white/10 flex items-center justify-between">
                 <div className="space-y-0.5">
                   <div className="text-xs font-bold text-white tracking-wide">
-                    Mobile Expert & Systems Architect
+                    {t('hero.profileRole')}
                   </div>
                   <div className="text-[11px] font-mono text-[#A0A0A0] flex items-center gap-1.5">
                     <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" />
-                    <span>Verified Production Track Record</span>
+                    <span>{t('hero.verifiedTrack')}</span>
                   </div>
                 </div>
 
@@ -379,7 +377,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                   onClick={() => onNavigate('about')}
                   className="inline-flex items-center gap-1 text-xs font-mono font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors"
                 >
-                  <span>Full Bio</span>
+                  <span>{t('hero.fullBio')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

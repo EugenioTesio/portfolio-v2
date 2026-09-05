@@ -1,0 +1,30 @@
+{
+  "validation": {
+    "name": "Ingresa tu nombre (al menos 2 caracteres).",
+    "email": "Ingresa una dirección de email válida (ej. nombre@empresa.com).",
+    "subject": "Proporciona un asunto o título del proyecto (mín. 3 caracteres).",
+    "message": "El mensaje debe tener al menos 20 caracteres (actualmente {{count}})."
+  },
+  "submission": {
+    "validating": "Validando gateway de email y tokens de seguridad...",
+    "dispatching": "Enviando notificación de email a {{email}}...",
+    "verifying": "Verificando recibo de auditoría de entrega..."
+  },
+  "inquiryTypes": {
+    "flutter": "Flutter y arquitectura mobile",
+    "fastapi": "FastAPI / microservicios Python",
+    "leadership": "Full stack / liderazgo técnico",
+    "devsecops": "DevSecOps y trenes de release",
+    "iot": "IoT y sistemas de hardware",
+    "general": "Consulta técnica general"
+  },
+  "mailto": {
+    "subjectPrefix": "[Consulta Portfolio]",
+    "defaultSubject": "Discusión de proyecto",
+    "greeting": "Hola Eugenio,",
+    "nameLine": "Mi nombre es {{name}}.",
+    "inquiryLine": "Tipo de consulta: {{type}}",
+    "yourName": "[Tu nombre]",
+    "bestRegards": "Saludos,"
+  }
+}

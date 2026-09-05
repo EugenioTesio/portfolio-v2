@@ -1,0 +1,30 @@
+{
+  "validation": {
+    "name": "Please enter your name (at least 2 characters).",
+    "email": "Please enter a valid email address (e.g., name@company.com).",
+    "subject": "Please provide a subject or project title (min 3 characters).",
+    "message": "Message must be at least 20 characters (currently {{count}})."
+  },
+  "submission": {
+    "validating": "Validating email gateway & security tokens...",
+    "dispatching": "Dispatching email notification to {{email}}...",
+    "verifying": "Verifying delivery audit receipt..."
+  },
+  "inquiryTypes": {
+    "flutter": "Flutter & Mobile Architecture",
+    "fastapi": "FastAPI / Python Microservices",
+    "leadership": "Full Stack / Tech Leadership",
+    "devsecops": "DevSecOps & Release Trains",
+    "iot": "IoT & Hardware Systems",
+    "general": "General Technical Inquiry"
+  },
+  "mailto": {
+    "subjectPrefix": "[Portfolio Inquiry]",
+    "defaultSubject": "Project Discussion",
+    "greeting": "Hi Eugenio,",
+    "nameLine": "My name is {{name}}.",
+    "inquiryLine": "Inquiry Type: {{type}}",
+    "yourName": "[Your Name]",
+    "bestRegards": "Best regards,"
+  }
+}
