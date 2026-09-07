@@ -6,7 +6,7 @@ export const PERSONAL_INFO = {
   role: 'Mobile Expert & Systems Architect',
   subtitle: 'Senior Flutter & Python Enthusiast · Electronics Engineer',
   location: 'San Francisco, Córdoba, Argentina',
-  email: 'eugenio.tesio@itti.digital',
+  email: 'eugeniotesio@gmail.com',
   image: regeneratedProfileImage,
   bio: `I'm Eugenio Tesio, a passionate Mobile Expert, Systems Architect, and Electronics Engineer with over 14 years of professional software engineering and hardware telemetry experience. I specialize in designing and scaling high-velocity mobile platforms and resilient backends with Flutter (BLoC & Riverpod), Python (FastAPI), Java (Spring Boot), and Google Cloud Platform. 
 
@@ -27,7 +27,7 @@ Currently serving as Mobile Expert at ueno bank (ITTI S.A.E.C.A.), I pioneered t
   socialLinks: {
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
-    email: 'mailto:eugenio.tesio@itti.digital'
+    email: 'mailto:eugeniotesio@gmail.com'
   }
 };
 

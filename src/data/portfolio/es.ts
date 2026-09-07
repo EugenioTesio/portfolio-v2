@@ -6,7 +6,7 @@ export const PERSONAL_INFO = {
   role: 'Experto Mobile y Arquitecto de Sistemas',
   subtitle: 'Entusiasta Senior de Flutter y Python · Ingeniero Electrónico',
   location: 'San Francisco, Córdoba, Argentina',
-  email: 'eugenio.tesio@itti.digital',
+  email: 'eugeniotesio@gmail.com',
   image: regeneratedProfileImage,
   bio: `Soy Eugenio Tesio, Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico, con más de 14 años de experiencia profesional en ingeniería de software y telemetría de hardware. Me especializo en diseñar y escalar plataformas móviles de alta velocidad y backends resilientes con Flutter (BLoC y Riverpod), Python (FastAPI), Java (Spring Boot) y Google Cloud Platform. 
 
@@ -27,7 +27,7 @@ Actualmente soy Experto Mobile en ueno bank (ITTI S.A.E.C.A.), donde lideré la 
   socialLinks: {
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
-    email: 'mailto:eugenio.tesio@itti.digital'
+    email: 'mailto:eugeniotesio@gmail.com'
   }
 };
 
