@@ -26,10 +26,7 @@ export default function ExperienceSection({
 }: ExperienceSectionProps) {
   const { t } = useTranslation();
   const { EXPERIENCES, CAPABILITIES } = usePortfolioData();
-  const [expandedRoles, setExpandedRoles] = useState<Record<string, boolean>>({
-    'itti-ueno': true,
-    'pairtree': true
-  });
+  const [expandedRoles, setExpandedRoles] = useState<Record<string, boolean>>({});
 
   const toggleExpand = (id: string) => {
     setExpandedRoles(prev => ({
@@ -116,7 +113,7 @@ export default function ExperienceSection({
                 className="relative pl-10 md:pl-20 group"
               >
                 {/* Timeline Marker */}
-                <div className="absolute left-1.5 md:left-5.5 top-6 -translate-x-1/2 w-6 h-6 rounded-full bg-[#050505] border-2 border-[#00F5FF] flex items-center justify-center shadow-[0_0_15px_rgba(0,245,255,0.6)] group-hover:scale-125 transition-transform z-10">
+                <div className="absolute left-4 md:left-8 top-6 -translate-x-1/2 w-6 h-6 rounded-full bg-[#050505] border-2 border-[#00F5FF] flex items-center justify-center shadow-[0_0_15px_rgba(0,245,255,0.6)] group-hover:scale-125 transition-transform z-10">
                   <div className={`w-2 h-2 rounded-full ${exp.current ? 'bg-[#00F5FF] animate-ping' : 'bg-[#00F5FF]'}`} />
                 </div>
 

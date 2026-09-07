@@ -146,32 +146,6 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                 </button>
               </div>
             </div>
-
-            {/* Quick Skills Summary Bar */}
-            <div className="p-6 rounded-[24px] bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-3">
-              <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold">
-                {t('about.competenciesTitle')}
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'Flutter (BLoC / Riverpod)',
-                  'Python (FastAPI)',
-                  'Java (Spring Boot)',
-                  'Google Cloud Platform',
-                  'Linux Servers',
-                  'GitHub Actions & CI/CD',
-                  'Micro-App Architecture',
-                  'RASP Fintech Hardening'
-                ].map((skill) => (
-                  <span
-                    key={skill}
-                    className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-300 hover:border-[#00F5FF]/40 transition-colors"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Right: UTN Degree & Commercialized Smart Lub Highlight */}

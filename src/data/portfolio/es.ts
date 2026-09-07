@@ -26,7 +26,8 @@ Actualmente soy Experto Mobile en ueno bank (ITTI S.A.E.C.A.), donde lideré la 
   ],
   socialLinks: {
     github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    linkedin: 'https://www.linkedin.com/in/eugenio-tesio/',
+    whatsapp: 'https://wa.me/5493564599945',
     email: 'mailto:eugeniotesio@gmail.com'
   }
 };
