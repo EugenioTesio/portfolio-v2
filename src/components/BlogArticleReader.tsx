@@ -129,6 +129,16 @@ export default function BlogArticleReader({
         </div>
       </div>
 
+      {post.coverImage && (
+        <div className="overflow-hidden rounded-2xl border border-white/10">
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="h-48 sm:h-64 w-full object-cover"
+          />
+        </div>
+      )}
+
       {post.format === 'html' ? (
         <HtmlArticleBody html={post.content || ''} />
       ) : (

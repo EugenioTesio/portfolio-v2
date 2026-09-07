@@ -68,6 +68,7 @@ export interface BlogPost {
   filename: string;
   format?: 'markdown' | 'html';
   content?: string;
+  coverImage?: string;
 }
 
 export interface ContactFormData {

@@ -110,57 +110,68 @@ export default function BlogSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="group rounded-[24px] bg-white/[0.03] border border-white/10 hover:border-[#00F5FF]/40 p-6 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 shadow-2xl hover:shadow-[0_0_35px_rgba(0,245,255,0.12)]"
+              className="group rounded-[24px] bg-white/[0.03] border border-white/10 hover:border-[#00F5FF]/40 overflow-hidden flex flex-col justify-between backdrop-blur-xl transition-all duration-300 shadow-2xl hover:shadow-[0_0_35px_rgba(0,245,255,0.12)]"
             >
-              <div>
-                <div className="flex items-center justify-between text-xs text-[#A0A0A0] font-mono mb-4">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[#00F5FF] border border-[#00F5FF]/30">
-                    {post.category}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#A0A0A0]" />
-                      {post.readTime}
+              {post.coverImage && (
+                <div className="aspect-[16/9] overflow-hidden border-b border-white/10">
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
+              )}
+              <div className="p-6 flex flex-col justify-between flex-1">
+                <div>
+                  <div className="flex items-center justify-between text-xs text-[#A0A0A0] font-mono mb-4">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[#00F5FF] border border-[#00F5FF]/30">
+                      {post.category}
                     </span>
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#A0A0A0]" />
+                        {post.readTime}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-[#00F5FF] transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+
+                  <p className="text-xs text-[#A0A0A0] leading-relaxed mb-6 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {post.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-white/[0.04] text-slate-300 border border-white/10"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-white mb-3 group-hover:text-[#00F5FF] transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#A0A0A0] flex items-center gap-1.5">
+                    <Calendar className="w-3 h-3 text-[#00F5FF]" />
+                    {post.date}
+                  </span>
 
-                <p className="text-xs text-[#A0A0A0] leading-relaxed mb-6 line-clamp-3">
-                  {post.excerpt}
-                </p>
-
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-white/[0.04] text-slate-300 border border-white/10"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
+                  <a
+                    id={`read-article-btn-${post.slug}`}
+                    href={getBlogArticlePath(post.slug, locale)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors group/btn"
+                  >
+                    <span>{t('blog.readArticle')}</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform text-[#00F5FF]" />
+                  </a>
                 </div>
-              </div>
-
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[11px] font-mono text-[#A0A0A0] flex items-center gap-1.5">
-                  <Calendar className="w-3 h-3 text-[#00F5FF]" />
-                  {post.date}
-                </span>
-
-                <a
-                  id={`read-article-btn-${post.slug}`}
-                  href={getBlogArticlePath(post.slug, locale)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors group/btn"
-                >
-                  <span>{t('blog.readArticle')}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform text-[#00F5FF]" />
-                </a>
               </div>
             </motion.article>
           ))}

@@ -1,5 +1,14 @@
 import { BlogPost } from '../types';
 import { getPortfolioData, Locale } from './portfolio';
+import iotCover from '../assets/images/blog/iot-rs485-to-cloud.jpg';
+import raspCover from '../assets/images/blog/rasp-mobile-security.jpg';
+import flutterBankingCover from '../assets/images/blog/large-scale-flutter-banking-architecture.jpg';
+
+const BLOG_COVERS: Record<string, string> = {
+  'iot-rs485-to-cloud': iotCover,
+  'rasp-mobile-security': raspCover,
+  'large-scale-flutter-banking-architecture': flutterBankingCover,
+};
 
 const markdownModulesEn = import.meta.glob('../content/blog/en/*.md', {
   query: '?raw',
@@ -57,6 +66,7 @@ export function getBlogPosts(locale: Locale = 'en'): BlogPost[] {
     return {
       ...post,
       format,
+      coverImage: BLOG_COVERS[post.slug],
       content: content || fallbackContent(post, format),
     };
   });
