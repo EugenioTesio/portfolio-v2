@@ -153,7 +153,8 @@
     "closeReader": "Cerrar lector",
     "loadedFrom": "Cargado desde: {{filename}}",
     "authorRole": "Experto Mobile y Arquitecto de Sistemas",
-    "doneReading": "Terminar lectura"
+    "doneReading": "Terminar lectura",
+    "articleNotFound": "Artículo no encontrado."
   },
   "contactSection": {
     "sectionBadge": "05. CONTACTO Y COLABORACIÓN",

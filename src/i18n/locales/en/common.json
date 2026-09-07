@@ -153,7 +153,8 @@
     "closeReader": "Close reader",
     "loadedFrom": "Loaded from: {{filename}}",
     "authorRole": "Mobile Expert & Systems Architect",
-    "doneReading": "Done Reading"
+    "doneReading": "Done Reading",
+    "articleNotFound": "Article not found."
   },
   "contactSection": {
     "sectionBadge": "05. CONTACT & COLLABORATION",
