@@ -1,6 +1,15 @@
-<p>Cuando más de cincuenta ingenieros, repartidos en muchos squads, intentan entregar una app bancaria como un monolito Flutter clásico, el fallo es organizativo antes que técnico: las colas de merge se atascan, los tiempos de CI explotan y un defecto en tarjetas congela un release que pagos nunca tocó.</p>
+<p>Cuando más de cincuenta ingenieros, repartidos en muchos squads, intentan entregar una aplicación bancaria a gran escala como un monolito Flutter clásico, el fallo es organizativo antes que técnico: las colas de merge se atascan, los tiempos de CI explotan y un defecto en la sección de perfil congela un release que el checkout nunca tocó.</p>
 
 <p>Este artículo es una guía de campo para la arquitectura que corrige eso — sin pretender que las micro-apps de Flutter se despliegan de forma independiente como los micro-frontends web. Son <strong>módulos en tiempo de compilación</strong> ensamblados por un <strong>app shell</strong> en un único binario de tienda. Los squads son dueños de las <strong>micro-apps</strong> (un dominio por paquete). Nunca se importan entre sí. Se integran a través del shell y se comunican mediante un <strong>capability registry</strong>, pub/sub tipado y el router. Esa distinción explica la mayoría de los compromisos que siguen.</p>
+
+<aside class="callout">
+  <p><strong>TL;DR:</strong></p>
+  <ul>
+    <li><strong>Arquitectura App Shell:</strong> Una app anfitriona ligera orquesta micro-apps independientes, manejando el enrutamiento, la inyección de dependencias y el arranque.</li>
+    <li><strong>Aislamiento Estricto:</strong> Las micro-apps nunca se importan entre sí; se comunican a través de un registro de capacidades, delegación de rutas o buses de eventos tipados.</li>
+    <li><strong>Plataforma como Kernel:</strong> Un equipo de plataforma dedicado gestiona las dependencias compartidas (BOM), pipelines de CI y wrappers core, permitiendo a los squads de producto moverse rápido sin romper la compilación.</li>
+  </ul>
+</aside>
 
 <aside class="callout">
   <p><strong>Qué no es esto.</strong> No es una licencia para partir carpetas “por limpieza”. Si tienes menos de tres squads, un monolito modular bien delimitado sale más barato. Esta arquitectura existe para que muchos equipos avancen en paralelo sin compartir una tabla de rutas, un pubspec ni un modelo mental de todo el árbol.</p>
@@ -11,44 +20,50 @@
 <p>Los síntomas son aburridos y caros:</p>
 <ul>
   <li><strong>Tormentas de merge</strong> sobre la tabla global de rutas, el theme y el árbol de dependencias.</li>
-  <li><strong>CI que no se puede localizar.</strong> Un cambio de copy en extractos vuelve a ejecutar golden tests de onboarding.</li>
-  <li><strong>Deriva de state management.</strong> Un squad estandariza BLoC para ledgers; otro estandariza Riverpod para formularios; nadie es dueño del límite.</li>
-  <li><strong>Un solo binario, un solo radio de explosión.</strong> Pagos no puede salir porque tarjetas falló un screenshot test.</li>
+  <li><strong>CI que no se puede localizar.</strong> Un cambio de copy en ajustes vuelve a ejecutar golden tests de onboarding.</li>
+  <li><strong>Deriva de state management.</strong> Un squad estandariza BLoC para el feed; otro estandariza Riverpod para formularios; nadie es dueño del límite.</li>
+  <li><strong>Un solo binario, un solo radio de explosión.</strong> El checkout no puede salir porque el perfil falló un screenshot test.</li>
 </ul>
 
-<p>La banca lo empeora. Sigues teniendo un listing de App Store, uno de Google Play, a menudo una tercera tienda para dispositivos sin servicios de Google, una superficie RASP compartida y un regulador al que no le importa que “esa pantalla es de otro squad”. La arquitectura tiene que aislar el <em>trabajo</em>, no aislar la <em>responsabilidad</em>.</p>
+<p>Las aplicaciones bancarias empresariales grandes lo empeoran. Sigues teniendo un listing de App Store, uno de Google Play, a menudo una tercera tienda para dispositivos sin servicios de Google, una superficie de seguridad compartida y stakeholders a los que no les importa que “esa pantalla es de otro squad”. La arquitectura tiene que aislar el <em>trabajo</em>, no aislar la <em>responsabilidad</em>.</p>
 
 <h2>Tres principios que de verdad escalan</h2>
 
 <p>Todo lo demás es un detalle de implementación de tres reglas.</p>
 <ol>
-  <li><strong>Composición sobre herencia.</strong> Las micro-apps y los SDK de vendors los ensambla el shell. Nadie hereda de “la app del banco”. Las jerarquías profundas se convierten en política imposible de mergear.</li>
+  <li><strong>Composición sobre herencia.</strong> Las micro-apps y los SDK de vendors los ensambla el shell. Nadie hereda de “la app principal”. Las jerarquías profundas se convierten en política imposible de mergear.</li>
   <li><strong>Ciclo de vida coordinado.</strong> El shell arranca una vez, registra cada micro-app y llama al <code>bootstrap</code> de cada paquete durante el startup. El I/O pesado pertenece a servicios lazy, no a un init bloqueante.</li>
-  <li><strong>Sin imports directos entre micro-apps.</strong> Si pagos necesita un carrusel de cuentas, se lo pide al registry. El acoplamiento en compile-time es cómo la ley de Conway se convierte en un monolito distribuido con pasos extra.</li>
+  <li><strong>Sin imports directos entre micro-apps.</strong> Si el checkout necesita un widget de dirección de usuario, se lo pide al registry. El acoplamiento en compile-time es cómo la ley de Conway se convierte en un monolito distribuido con pasos extra.</li>
 </ol>
 
 <figure class="diagram-frame">
   <figcaption>Figura 1. El app shell orquesta las micro-apps y el kit de plataforma compartido</figcaption>
   <pre class="mermaid">
 flowchart TB
-  subgraph shell [AppShell]
-    router[RouterAgnostic]
-    di[DependencyInjection]
-    registry[CapabilityRegistry]
-    guards[AuthAndRouteGuards]
+  subgraph shell [App Shell]
+    direction TB
+    router[Router Agnostic]
+    di[Dependency Injection]
+    registry[Capability Registry]
+    guards[Auth & Route Guards]
   end
-  subgraph microapps [MicroApps]
+  
+  subgraph microapps [Micro-Apps]
+    direction LR
     auth[Auth]
-    payments[Payments]
-    accounts[Accounts]
-    cards[Cards]
+    checkout[Checkout]
+    profile[Profile]
+    feed[Feed]
     onboarding[Onboarding]
   end
-  subgraph platform [SharedPlatform]
-    bom[DependencyBOM]
-    design[DesignSystem]
-    wrappers[VendorWrappers]
+  
+  subgraph platform [Shared Platform]
+    direction LR
+    bom[Dependency BOM]
+    design[Design System]
+    wrappers[Vendor Wrappers]
   end
+  
   shell --> microapps
   microapps --> platform
   registry --> microapps
@@ -65,40 +80,53 @@ flowchart TB
 <p>El único compile target que se publica en las tiendas. Registra cada micro-app, arranca el capability registry, agrega rutas y localization delegates, cablea la inyección de dependencias y es dueño de los session guards. Los squads de producto no editan este repositorio salvo mediante un PR de integración revisado. El shell es deliberadamente delgado: orquestación, no lógica de negocio.</p>
 
 <h3>Micro-apps</h3>
-<p>Un dominio por paquete: pagos, cuentas, tarjetas, extractos, onboarding. Cada micro-app expone rutas protegidas y públicas, handlers de <strong>InteropApi</strong> para otros paquetes (<code>registerRequest</code>, <code>registerWidget</code>), localization delegates, dependencias inyectables y un hook <code>bootstrap</code> de una sola vez. Cada paquete también incluye un <strong>isolated runner</strong> (una app <code>example/</code>) para que un squad pueda hacer hot-reload de su mundo en segundos sin ensamblar el host.</p>
+<p>Un dominio por paquete: checkout, perfil, feed, ajustes, onboarding. Cada micro-app expone rutas protegidas y públicas, handlers de <strong>InteropApi</strong> para otros paquetes (<code>registerRequest</code>, <code>registerWidget</code>), localization delegates, dependencias inyectables y un hook <code>bootstrap</code> de una sola vez. Cada paquete también incluye un <strong>isolated runner</strong> (una app <code>example/</code>) para que un squad pueda hacer hot-reload de su mundo en segundos sin ensamblar el host.</p>
 
 <h3>Kit de plataforma compartido</h3>
-<p>Design system, abstracciones de networking, storage, facades de analytics, observabilidad, señales de fraude y <strong>wrappers</strong> alrededor de SDK de vendors. Los squads consumen interfaces. El equipo de plataforma intercambia implementaciones de Google versus Huawei, o un nuevo crash reporter, sin un refactor de cincuenta archivos.</p>
+<p>Design system, abstracciones de networking, storage, facades de analytics, observabilidad, señales de seguridad y <strong>wrappers</strong> alrededor de SDK de vendors. Los squads consumen interfaces. El equipo de plataforma intercambia implementaciones de Google versus Huawei, o un nuevo crash reporter, sin un refactor de cincuenta archivos.</p>
 
 <h3>Plugins solo del squad</h3>
-<p>Algunas capacidades no se comparten: NFC contactless, liveness para KYC, una cámara propietaria de escaneo de tarjetas. Esas viven en paquetes del squad que las necesita. Son la excepción que confirma la regla del BOM más abajo.</p>
+<p>Algunas capacidades no se comparten: un escáner de código de barras propietario, un reproductor de video especializado o una integración de hardware a medida. Esas viven en paquetes del squad que las necesita. Son la excepción que confirma la regla del BOM más abajo.</p>
 
 <figure class="diagram-frame">
   <figcaption>Figura 2. Las dependencias fluyen en un solo sentido. Los imports entre micro-apps están prohibidos</figcaption>
   <pre class="mermaid">
-flowchart BT
-  host[AppShell]
-  payments[PaymentsMicroApp]
-  accounts[AccountsMicroApp]
-  cards[CardsMicroApp]
-  shared[SharedContracts]
-  design[DesignSystem]
-  bom[DependencyBOM]
-  host --> payments
-  host --> accounts
-  host --> cards
-  payments --> shared
-  accounts --> shared
-  cards --> shared
-  payments --> design
-  accounts --> design
-  cards --> design
-  payments --> bom
-  accounts --> bom
-  cards --> bom
-  payments -.->|forbidden| accounts
-  accounts -.->|forbidden| cards
-  cards -.->|forbidden| payments
+flowchart TD
+  host[App Shell]
+  
+  subgraph microapps [Micro-Apps]
+    direction LR
+    checkout[Checkout MicroApp]
+    profile[Profile MicroApp]
+    feed[Feed MicroApp]
+  end
+  
+  subgraph shared [Shared Platform]
+    direction LR
+    contracts[Shared Contracts]
+    design[Design System]
+    bom[Dependency BOM]
+  end
+  
+  host --> checkout
+  host --> profile
+  host --> feed
+  
+  checkout --> contracts
+  profile --> contracts
+  feed --> contracts
+  
+  checkout --> design
+  profile --> design
+  feed --> design
+  
+  checkout --> bom
+  profile --> bom
+  feed --> bom
+  
+  checkout -.->|forbidden| profile
+  profile -.->|forbidden| feed
+  feed -.->|forbidden| checkout
 </pre>
 </figure>
 
@@ -127,20 +155,42 @@ sequenceDiagram
   participant Main as HostMain
   participant Shell as AppShell
   participant Auth as AuthMicroApp
-  participant Pay as PaymentsMicroApp
-  participant Acct as AccountsMicroApp
+  participant Checkout as CheckoutMicroApp
+  participant Profile as ProfileMicroApp
   participant Reg as CapabilityRegistry
+  
+  activate Main
   Main->>Shell: registerMicroApp auth
-  Main->>Shell: registerMicroApp payments
-  Main->>Shell: registerMicroApp accounts
+  Main->>Shell: registerMicroApp checkout
+  Main->>Shell: registerMicroApp profile
+  
   Main->>Shell: bootstrap
+  activate Shell
+  
   Shell->>Auth: bootstrap
-  Shell->>Pay: bootstrap
-  Shell->>Acct: bootstrap
+  activate Auth
+  Auth-->>Shell: done
+  deactivate Auth
+  
+  Shell->>Checkout: bootstrap
+  activate Checkout
+  Checkout-->>Shell: done
+  deactivate Checkout
+  
+  Shell->>Profile: bootstrap
+  activate Profile
+  Profile-->>Shell: done
+  deactivate Profile
+  
   Shell->>Reg: registerAllInteropRoutes
   Shell->>Shell: aggregateRoutes
   Shell->>Shell: aggregateLocalizations
-  Shell->>Main: runApp with merged router
+  
+  Shell-->>Main: ready
+  deactivate Shell
+  
+  Main->>Main: runApp with merged router
+  deactivate Main
 </pre>
 </figure>
 
@@ -159,32 +209,42 @@ sequenceDiagram
 
 <h2>Cuatro formas en que hablan las micro-apps</h2>
 
-<p>Bajo acoplamiento no es “sin comunicación”. Las UIs bancarias son mosaicos: la pantalla de inicio es un host de widgets de cinco squads. Necesitas un conjunto pequeño y nombrado de canales — y debes rechazar un quinto.</p>
+<p>Bajo acoplamiento no es “sin comunicación”. Las UIs complejas son mosaicos: la pantalla de inicio es un host de widgets de cinco squads. Necesitas un conjunto pequeño y nombrado de canales — y debes rechazar un quinto.</p>
 
 <figure class="diagram-frame">
   <figcaption>Figura 4. Cuatro modos de comunicación. Elige el más estrecho que funcione</figcaption>
   <pre class="mermaid">
 flowchart TB
-  caller[CallingMicroApp]
-  caller -->|"full flow then return"| routerHandoff[RouterHandoff]
-  caller -->|"embed UI plus logic"| getWidget[interop.getWidget]
-  caller -->|"request a result"| makeRequest[interop.makeRequest]
-  caller -->|"something happened"| pubSub[TypedPubSub]
-  routerHandoff --> authPkg[AuthMicroApp]
-  getWidget --> accountsPkg[AccountsMicroApp]
-  makeRequest --> profilePkg[ProfileMicroApp]
-  pubSub --> platformBus[PlatformEventBus]
+  caller[Calling MicroApp]
+  
+  subgraph modes [Communication Modes]
+    direction TB
+    routerHandoff[Router Handoff]
+    getWidget[interop.getWidget]
+    makeRequest[interop.makeRequest]
+    pubSub[Typed Pub/Sub]
+  end
+  
+  caller -->|"full flow then return"| routerHandoff
+  caller -->|"embed UI plus logic"| getWidget
+  caller -->|"request a result"| makeRequest
+  caller -->|"something happened"| pubSub
+  
+  routerHandoff --> authPkg[Auth MicroApp]
+  getWidget --> profilePkg[Profile MicroApp]
+  makeRequest --> settingsPkg[Settings MicroApp]
+  pubSub --> platformBus[Platform EventBus]
 </pre>
 </figure>
 
 <h3>1. Router hand-off</h3>
-<p>Delega un flujo entero — login, KYC, vinculación de dispositivo — y pasa una ubicación de retorno vía query parameter (por ejemplo <code>re_direct=/home</code>). El callee hace pop con un resultado. Es la herramienta correcta cuando el usuario debe salir de tu micro-app. Pros: back stack obvio, fácil de deep-link. Contras: no puedes embeber una rebanada de ese flujo en un dashboard.</p>
+<p>Delega un flujo entero — login, verificación de identidad, vinculación de dispositivo — y pasa una ubicación de retorno vía query parameter (por ejemplo <code>re_direct=/home</code>). El callee hace pop con un resultado. Es la herramienta correcta cuando el usuario debe salir de tu micro-app. Pros: back stack obvio, fácil de deep-link. Contras: no puedes embeber una rebanada de ese flujo en un dashboard.</p>
 
 <h3>2. Widgets de interop — <code>getWidget</code></h3>
-<p>El dueño registra un handler con <code>interop.registerWidget('/accounts/balance-card', …)</code>. Los callers embeben UI con <code>interop.getWidget(route, params)</code>. El dueño construye el widget con su propio estado y use cases. El squad de home nunca importa accounts. Pros: reutilización real de UI entre squads. Contras: sorpresas de layout, huecos asíncronos mientras el widget carga, y una pantalla de inicio que falla a trozos en vez de como unidad. Pasa siempre un placeholder de error.</p>
+<p>El dueño registra un handler con <code>interop.registerWidget('/profile/summary-card', …)</code>. Los callers embeben UI con <code>interop.getWidget(route, params)</code>. El dueño construye el widget con su propio estado y use cases. El squad de home nunca importa el paquete de perfil. Pros: reutilización real de UI entre squads. Contras: sorpresas de layout, huecos asíncronos mientras el widget carga, y una pantalla de inicio que falla a trozos en vez de como unidad. Pasa siempre un placeholder de error.</p>
 
 <h3>3. Requests de interop — <code>makeRequest</code></h3>
-<p>El dueño registra un handler con <code>interop.registerRequest('/profile/device-info', …)</code>. Los callers obtienen datos con <code>interop.makeRequest(route, params)</code> — request/response de aspecto síncrono para info de dispositivo, disponibilidad biométrica, un perfil sanitizado. Los parámetros son un diccionario; el contrato vive en el catálogo de interop, no en un paquete de modelos compartido del que todos dependen. Pros: sin enredo de UI. Contras: maps sin tipar, “route not found” en runtime y la tentación de contrabandear DTOs como strings JSON para siempre. Publica el catálogo. Versiona las rutas. Rechaza claves requeridas desconocidas.</p>
+<p>El dueño registra un handler con <code>interop.registerRequest('/settings/device-info', …)</code>. Los callers obtienen datos con <code>interop.makeRequest(route, params)</code> — request/response de aspecto síncrono para info de dispositivo, disponibilidad biométrica, una configuración sanitizada. Los parámetros son un diccionario; el contrato vive en el catálogo de interop, no en un paquete de modelos compartido del que todos dependen. Pros: sin enredo de UI. Contras: maps sin tipar, “route not found” en runtime y la tentación de contrabandear DTOs como strings JSON para siempre. Publica el catálogo. Versiona las rutas. Rechaza claves requeridas desconocidas.</p>
 
 <h3>Cómo funciona InteropApi</h3>
 <p>Piensa InteropApi como HTTP interno: cada micro-app publica rutas en el bootstrap; los callers las dirigen por path. El shell es dueño de un único <strong>InteropRegistry</strong> que despacha al paquete propietario. Ningún caller importa al dueño — solo el string de la ruta y el contrato del catálogo.</p>
@@ -196,24 +256,24 @@ sequenceDiagram
   participant Shell as AppShell
   participant Reg as InteropRegistry
   participant Catalog as InteropCatalog
-  participant Owner as AccountsMicroApp
+  participant Owner as ProfileMicroApp
   participant Caller as HomeMicroApp
 
-  Note over Shell,Owner: Bootstrap
+  Note over Shell,Owner: Bootstrap Phase
   Shell->>Owner: bootstrap
-  Owner->>Reg: registerRequest("/accounts/summary", handler)
-  Owner->>Reg: registerWidget("/accounts/balance-card", handler)
+  Owner->>Reg: registerRequest("/profile/summary", handler)
+  Owner->>Reg: registerWidget("/profile/summary-card", handler)
   Reg->>Catalog: publish routes
 
-  Note over Caller,Owner: Runtime makeRequest
-  Caller->>Reg: makeRequest("/accounts/summary", params)
+  Note over Caller,Owner: Runtime: makeRequest
+  Caller->>Reg: makeRequest("/profile/summary", params)
   Reg->>Owner: dispatch handler
   Owner->>Owner: run use case
   Owner-->>Reg: result map
   Reg-->>Caller: result map
 
-  Note over Caller,Owner: Runtime getWidget
-  Caller->>Reg: getWidget("/accounts/balance-card", params)
+  Note over Caller,Owner: Runtime: getWidget
+  Caller->>Reg: getWidget("/profile/summary-card", params)
   Reg->>Owner: dispatch handler
   Owner->>Owner: build Widget with providers
   Owner-->>Reg: Widget
@@ -224,7 +284,7 @@ sequenceDiagram
 <p>El registro es del lado del dueño (<code>registerRequest</code>, <code>registerWidget</code>). La invocación es del lado del caller (<code>makeRequest</code>, <code>getWidget</code>). El registry resuelve la ruta, valida los parámetros requeridos contra el catálogo y reenvía al handler. Si la ruta falta o los params están mal, falla rápido con un error tipado — no con un widget nulo en la pantalla de inicio.</p>
 
 <h3>4. Pub/sub tipado</h3>
-<p>Sesión establecida, sesión caída, error no capturado, cambió el bag de remote-config, se refresó la lista de cuentas. Son hechos del mundo, no requests. El equipo de plataforma es dueño de los tipos de canal. Los squads deben cancelar suscripciones cuando un widget se dispose. Pros: muchos listeners, sin ciclo de import. Contras: un bus global es cómo vuelve el acoplamiento oculto. Si necesitas request/response, no es un evento.</p>
+<p>Sesión establecida, sesión caída, error no capturado, cambió el bag de remote-config, se refrescó el feed. Son hechos del mundo, no requests. El equipo de plataforma es dueño de los tipos de canal. Los squads deben cancelar suscripciones cuando un widget se dispose. Pros: muchos listeners, sin ciclo de import. Contras: un bus global es cómo vuelve el acoplamiento oculto. Si necesitas request/response, no es un evento.</p>
 
 <div class="tradeoff-grid">
   <section class="tradeoff pro">
@@ -267,7 +327,7 @@ sequenceDiagram
       analytics/
     commons/             # helpers locales a esta micro-app
     features/
-      transfer/
+      checkout/
         data/
           models/
           data_sources/
@@ -287,7 +347,7 @@ sequenceDiagram
 <p>El estado de presentación (Riverpod, BLoC o similar) vive bajo <code>features/*/presentation</code>. Las capas de domain y data se construyen a través del injector que provee el shell — no con un <code>ProviderContainer()</code> ad hoc dentro de handlers de interop. Dos sistemas de DI en un paquete es cómo los tests flakean y las fugas de memoria se esconden en callbacks de <code>registerRequest</code>.</p>
 
 <h3>InteropApi vive en el borde del paquete</h3>
-<p>Los handlers de <code>registerRequest</code> llaman use cases. Los handlers de <code>registerWidget</code> devuelven widgets construidos con los providers del dueño. Los widgets compartidos usados solo por interop viven en <code>features/shared</code>. La capa de interop es la API pública de tu micro-app hacia el resto del banco — documenta cada ruta en el catálogo.</p>
+<p>Los handlers de <code>registerRequest</code> llaman use cases. Los handlers de <code>registerWidget</code> devuelven widgets construidos con los providers del dueño. Los widgets compartidos usados solo por interop viven en <code>features/shared</code>. La capa de interop es la API pública de tu micro-app hacia el resto de la aplicación — documenta cada ruta en el catálogo.</p>
 
 <h3>La config es código, no folklore</h3>
 <ul>
@@ -297,14 +357,14 @@ sequenceDiagram
   <li><strong>Navegación desde el notifier, no desde el widget,</strong> usando la abstracción de router inyectada que expone el shell.</li>
 </ul>
 
-<p>El isolated runner es el producto de onboarding. Un ingeniero nuevo debería clonar un repositorio, ejecutar un comando y ver transferencias — no esperar la matriz de flavors del host, el signing y otros cincuenta paquetes para resolver.</p>
+<p>El isolated runner es el producto de onboarding. Un ingeniero nuevo debería clonar un repositorio, ejecutar un comando y ver el flujo de checkout — no esperar la matriz de flavors del host, el signing y otros cincuenta paquetes para resolver.</p>
 
 <h2>El sistema operativo de plataforma</h2>
 
 <p>A esta escala el equipo de plataforma no es “la gente que hace tickets que nadie quiere”. Son el kernel.</p>
 
 <h3>Un bill of materials de dependencias</h3>
-<p>Pub no puede meter dos versiones del mismo paquete en un binario. Si pagos fija <code>http ^0.13</code> y tarjetas fija <code>http ^1.1</code>, el host no compila. La solución es un paquete BOM: las micro-apps dependen del BOM, no de pub.dev, salvo plugins de squad realmente encapsulados. Dart workspaces (SDK 3.6+) y Melos son la versión del ecosistema de la misma idea — una resolución, un lockfile. Una organización bancaria igualmente quiere el BOM como artefacto de <em>política</em>: subir Dio es un RFC de plataforma, no un drive-by en el sprint de un squad.</p>
+<p>Pub no puede meter dos versiones del mismo paquete en un binario. Si checkout fija <code>http ^0.13</code> y perfil fija <code>http ^1.1</code>, el host no compila. La solución es un paquete BOM: las micro-apps dependen del BOM, no de pub.dev, salvo plugins de squad realmente encapsulados. Dart workspaces (SDK 3.6+) y Melos son la versión del ecosistema de la misma idea — una resolución, un lockfile. Una organización de ingeniería grande igualmente quiere el BOM como artefacto de <em>política</em>: subir Dio es un RFC de plataforma, no un drive-by en el sprint de un squad.</p>
 
 <h3>Wrappers, no SDK en código de feature</h3>
 <p>Analytics, crash reporting, remote config, geolocalización y secure storage tienen dos vidas en Android: Google Mobile Services y Huawei Mobile Services. El código de feature que importa un plugin de vendor se reescribirá dos veces. Envuélvelos. El wrapper es también donde adjuntas un atributo <code>microapp</code> a cada evento y crash, que es la única forma de que un dashboard unificado pagine al squad correcto.</p>
@@ -318,13 +378,13 @@ sequenceDiagram
 <h2>Extras bancarios que los libros omiten</h2>
 
 <h3>Deep links y acciones declarativas</h3>
-<p>Las herramientas de campaña y las push notifications envían JSON: “abrir pago por el monto X”. Cada micro-app registra parsers por <code>actionType</code>; el shell los agrega. Los deep links apuntan a rutas de micro-apps concretas — el router del shell debe saber qué paquete es dueño de qué path. Parsers y deep links deben pasar por los mismos auth guards que las rutas tipadas. Así se entrega un flujo de temporada sin esperar review de tienda — y así se entrega por accidente un gadget de navegación sin autenticación si se saltan los guards.</p>
+<p>Las herramientas de campaña y las push notifications envían JSON: “abrir checkout para el ítem X”. Cada micro-app registra parsers por <code>actionType</code>; el shell los agrega. Los deep links apuntan a rutas de micro-apps concretas — el router del shell debe saber qué paquete es dueño de qué path. Parsers y deep links deben pasar por los mismos auth guards que las rutas tipadas. Así se entrega un flujo de temporada sin esperar review de tienda — y así se entrega por accidente un gadget de navegación sin autenticación si se saltan los guards.</p>
 
 <h3>Observabilidad unificada</h3>
 <p>Estampa <code>microapp</code> (y feature, cuando sirva) en cada evento de analytics y crash report. Si no, paginarás al squad equivocado a las 2 a. m. Un proyecto, una taxonomía, atributos de ownership obligatorios. Migrar dashboards legacy es un programa, no un ticket.</p>
 
 <h3>Los módulos en compile-time igual inflan el binario</h3>
-<p>El tree-shaking ayuda. No borra un SDK nativo de KYC que la mayoría de usuarios nunca abrirá. Mide con <code>flutter build --analyze-size</code>, publica Android App Bundles y sé implacable con los plugins solo del squad. Flutter no es un runtime de micro-frontends; no puedes descargar un grafo de features más tarde.</p>
+<p>El tree-shaking ayuda. No borra un SDK nativo de verificación de identidad que la mayoría de usuarios nunca abrirá. Mide con <code>flutter build --analyze-size</code>, publica Android App Bundles y sé implacable con los plugins solo del squad. Flutter no es un runtime de micro-frontends; no puedes descargar un grafo de features más tarde.</p>
 
 <h3>PCI y RASP son concerns del shell</h3>
 <p>Los datos de tarjeta nunca deberían entrar en el heap de Dart de un squad si un tokenizer puede detenerlos en el SDK. Detección de root, hooking y checks de debugger pertenecen al shell, de forma uniforme. Una micro-app que “implementa su propio jailbreak check” es un hallazgo, no una feature.</p>
@@ -337,27 +397,32 @@ sequenceDiagram
   <figcaption>Figura 6. El equipo de plataforma como kernel; los squads alineados al stream son dueños de las micro-apps</figcaption>
   <pre class="mermaid">
 flowchart LR
-  subgraph platformTeam [PlatformTeam]
-    shellOwn[AppShell]
-    ciOwn[ReusableCI]
-    bomOwn[BOMAndWrappers]
-    catalogOwn[InteropCatalog]
+  subgraph platformTeam [Platform Team]
+    direction TB
+    shellOwn[App Shell]
+    ciOwn[Reusable CI]
+    bomOwn[BOM & Wrappers]
+    catalogOwn[Interop Catalog]
   end
-  subgraph squads [StreamAlignedSquads]
-    paySquad[PaymentsSquad]
-    accSquad[AccountsSquad]
-    cardSquad[CardsSquad]
+  
+  subgraph squads [Stream-Aligned Squads]
+    direction TB
+    checkoutSquad[Checkout Squad]
+    profileSquad[Profile Squad]
+    feedSquad[Feed Squad]
   end
-  platformTeam -->|"contracts templates and trains"| squads
-  paySquad --> paymentsPkg[PaymentsMicroApp]
-  accSquad --> accountsPkg[AccountsMicroApp]
-  cardSquad --> cardsPkg[CardsMicroApp]
+  
+  platformTeam -->|"contracts, templates & trains"| squads
+  
+  checkoutSquad --> checkoutPkg[Checkout MicroApp]
+  profileSquad --> profilePkg[Profile MicroApp]
+  feedSquad --> feedPkg[Feed MicroApp]
 </pre>
 </figure>
 
 <p>Una micro-app, un squad dueño. Los paquetes compartidos tienen un steward nombrado, no “quien lo tocó último”. El equipo de plataforma es un cuello de botella por diseño: upgrades de BOM, integración en el shell, nuevos tipos de broadcast, plantillas de CI. Ese cuello de botella es más barato que doce versiones de Dio. Dótale de gente. Si plataforma son dos personas sosteniendo doce squads, no tienes plataforma. Tienes una cola de sprints bloqueados.</p>
 
-<p>La integración en el shell es una checklist, no folklore: clase container, nombre único, rutas, handlers de interop, parsers, localización, DI, bootstrap, claves de remote-config, deep links, atributos de crash, eventos de analytics. Hasta que esa checklist sea aburrida, cada paquete nuevo será un incidente de producción.</p>
+<p>La integración en el shell es una checklist, not folklore: clase container, nombre único, rutas, handlers de interop, parsers, localización, DI, bootstrap, claves de remote-config, deep links, atributos de crash, eventos de analytics. Hasta que esa checklist sea aburrida, cada paquete nuevo será un incidente de producción.</p>
 
 <h2>Pros y contras, sin el slideware</h2>
 
@@ -383,11 +448,11 @@ flowchart LR
     <tr>
       <td>Producto</td>
       <td>Una app cohesionada, una identidad, un listing de tienda, design system compartido.</td>
-      <td>Proceso compartido, superficie RASP compartida, tamaño de binario compartido. Un crash nativo en cualquier SDK afecta a todos.</td>
+      <td>Proceso compartido, superficie de seguridad compartida, tamaño de binario compartido. Un crash nativo en cualquier SDK afecta a todos.</td>
     </tr>
     <tr>
       <td>Calidad</td>
-      <td>El CI de la micro-app es rápido. Puedes golden-testear un flujo sin arrancar el banco.</td>
+      <td>El CI de la micro-app es rápido. Puedes golden-testear un flujo sin arrancar toda la app.</td>
       <td>End-to-end sigue necesitando el shell. Los agujeros de interop aparecen solo cuando se componen los grafos.</td>
     </tr>
     <tr>
@@ -403,14 +468,14 @@ flowchart LR
   </tbody>
 </table>
 
-<p>La arquitectura también falla de formas características. Hacer bootstrap de todo infla el startup. Las llamadas a <code>getWidget</code> convierten la pantalla de inicio en un sistema distribuido. Un paquete “compartido” que en secreto depende del dominio de un squad infecta a todos. Las fugas de ciclo de vida — un socket o una suscripción a stream que sobrevive al dispose del widget — se vuelven bugs de datos en un banco, no casos límite académicos.</p>
+<p>La arquitectura también falla de formas características. Hacer bootstrap de todo infla el startup. Las llamadas a <code>getWidget</code> convierten la pantalla de inicio en un sistema distribuido. Un paquete “compartido” que en secreto depende del dominio de un squad infecta a todos. Las fugas de ciclo de vida — un socket o una suscripción a stream que sobrevive al dispose del widget — se vuelven bugs de datos en producción, no casos límite académicos.</p>
 
 <h2>Cuándo no hacer esto</h2>
 
 <ul>
   <li><strong>Menos de tres squads.</strong> Gastarás más tiempo en el shell que en el producto. Usa paquetes para el design system y detente.</li>
   <li><strong>Sin equipo de plataforma.</strong> Sin stewards de CI, BOM y el catálogo de interop, este diseño se pudre en una federación de apps Flutter incompatibles que igual tienen que compilar juntas.</li>
-  <li><strong>Necesidad de deployability independiente de verdad.</strong> Flutter no te dará eso en la tienda. Si necesitas entregar tarjetas sin un binario, estás hablando de UI dirigida por servidor o de una superficie web, no de otro paquete Dart.</li>
+  <li><strong>Necesidad de deployability independiente de verdad.</strong> Flutter no te dará eso en la tienda. Si necesitas entregar una feature sin una actualización de binario, estás hablando de UI dirigida por servidor o de una superficie web, no de otro paquete Dart.</li>
   <li><strong>Micro-apps como carpetas, no como paquetes.</strong> Si todo sigue en un repo sin isolated runner ni prohibición de imports, has renombrado un monolito, no lo has modularizado.</li>
 </ul>
 
