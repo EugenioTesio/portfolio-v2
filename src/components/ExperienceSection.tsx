@@ -9,7 +9,9 @@ import {
   ChevronUp,
   Filter,
   X,
-  ArrowRight
+  ArrowRight,
+  Factory,
+  GraduationCap
 } from 'lucide-react';
 import { usePortfolioData } from '../data/portfolio';
 
@@ -113,8 +115,12 @@ export default function ExperienceSection({
                 className="relative pl-10 md:pl-20 group"
               >
                 {/* Timeline Marker */}
-                <div className="absolute left-4 md:left-8 top-6 -translate-x-1/2 w-6 h-6 rounded-full bg-[#050505] border-2 border-[#00F5FF] flex items-center justify-center shadow-[0_0_15px_rgba(0,245,255,0.6)] group-hover:scale-125 transition-transform z-10">
-                  <div className={`w-2 h-2 rounded-full ${exp.current ? 'bg-[#00F5FF] animate-ping' : 'bg-[#00F5FF]'}`} />
+                <div className="absolute left-4 md:left-8 top-6 -translate-x-1/2 w-7 h-7 rounded-full bg-[#050505] border-2 border-[#00F5FF] flex items-center justify-center shadow-[0_0_15px_rgba(0,245,255,0.6)] group-hover:scale-125 transition-transform z-10">
+                  {exp.kind === 'education' ? (
+                    <GraduationCap className="w-3.5 h-3.5 text-[#00F5FF]" />
+                  ) : (
+                    <Factory className={`w-3.5 h-3.5 text-[#00F5FF] ${exp.current ? 'animate-pulse' : ''}`} />
+                  )}
                 </div>
 
                 {/* Experience Card */}

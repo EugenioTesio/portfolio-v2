@@ -11,6 +11,7 @@ export interface SkillCapability {
 
 export interface ExperienceItem {
   id: string;
+  kind: 'job' | 'education';
   role: string;
   company: string;
   location?: string;

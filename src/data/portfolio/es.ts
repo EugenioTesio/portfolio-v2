@@ -108,6 +108,7 @@ export const CAPABILITIES: SkillCapability[] = [
 export const EXPERIENCES: ExperienceItem[] = [
   {
     id: 'itti-ueno',
+    kind: 'job',
     role: 'Experto Mobile',
     company: 'ITTI S.A.E.C.A. | ueno bank',
     location: 'San Francisco / Remoto',
@@ -191,6 +192,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     id: 'pairtree',
+    kind: 'job',
     role: 'Desarrollador Full Stack',
     company: 'PairTree',
     location: 'Seattle, WA (Remoto)',
@@ -239,6 +241,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     id: 'tandamos',
+    kind: 'job',
     role: 'Desarrollador Full Stack',
     company: 'Tandamos',
     period: 'Feb. 2022 – May. 2023',
@@ -277,6 +280,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     id: 'valtech',
+    kind: 'job',
     role: 'Desarrollador Backend',
     company: 'Valtech',
     period: 'Sep. 2021 – Feb. 2022',
@@ -316,6 +320,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     id: 'freelance',
+    kind: 'job',
     role: 'Desarrollador Full Stack',
     company: 'Freelance y contratación',
     period: 'Abr. 2011 – Ago. 2021',
@@ -369,6 +374,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     id: 'utn-education',
+    kind: 'education',
     role: 'Ingeniero Electrónico (proyecto de graduación: Smart Lub)',
     company: 'Universidad Tecnológica Nacional (UTN)',
     period: '2000 – 2020',
