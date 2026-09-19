@@ -3,9 +3,20 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
+const SITE_URL = (process.env.VITE_SITE_URL || 'https://eugenio-tesio-porfolio.web.app').replace(/\/$/, '');
+
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'html-site-url',
+        transformIndexHtml(html: string) {
+          return html.replaceAll('%SITE_URL%', SITE_URL);
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
