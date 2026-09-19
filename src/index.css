@@ -87,7 +87,7 @@
 /* HTML blog articles */
 .html-article {
   color: #cbd5e1;
-  font-size: 0.95rem;
+  font-size: 1.125rem;
   line-height: 1.75;
 }
 
@@ -97,7 +97,7 @@
 
 .html-article h2 {
   color: #00f5ff;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 2.25rem 0 0.85rem;
@@ -107,7 +107,7 @@
 
 .html-article h3 {
   color: #c084fc;
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin: 1.6rem 0 0.6rem;
 }
@@ -143,7 +143,7 @@
 
 .html-article code {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #00f5ff;
   background: rgba(255, 255, 255, 0.05);
   padding: 0.1rem 0.4rem;
@@ -156,7 +156,7 @@
   border-radius: 1rem;
   padding: 1.1rem 1.15rem;
   overflow-x: auto;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   line-height: 1.65;
   margin: 0 0 1.25rem;
 }
@@ -180,7 +180,7 @@
   width: 100%;
   border-collapse: collapse;
   margin: 0 0 1.35rem;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
 }
 
 .html-article th,
@@ -194,7 +194,7 @@
 .html-article th {
   color: #00f5ff;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -210,7 +210,7 @@
 
 .html-article .diagram-frame figcaption {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #00f5ff;
@@ -253,7 +253,7 @@
 
 .html-article .tradeoff h3 {
   margin-top: 0;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-family: 'JetBrains Mono', monospace;

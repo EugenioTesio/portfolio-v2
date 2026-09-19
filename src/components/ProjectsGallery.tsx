@@ -110,7 +110,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#00F5FF] transition-colors">
                   {project.title}
                 </h3>
-                <p className="text-xs text-[#A0A0A0] leading-relaxed mb-5">
+                <p className="text-sm text-[#A0A0A0] leading-relaxed mb-5">
                   {project.tagline}
                 </p>
 
@@ -194,7 +194,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                   {activeModalProject.title}
                 </h3>
-                <p className="text-sm text-[#A0A0A0]">
+                <p className="text-base text-[#A0A0A0]">
                   {activeModalProject.tagline}
                 </p>
               </div>
@@ -215,7 +215,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                   <Layers className="w-3.5 h-3.5 text-[#00F5FF]" />
                   {t('projects.projectOverview')}
                 </h4>
-                <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                <p className="text-base text-slate-300 leading-relaxed font-normal">
                   {activeModalProject.overview}
                 </p>
               </div>
@@ -227,7 +227,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                     <AlertCircle className="w-4 h-4" />
                     <span>{t('projects.challenge')}</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-sm text-slate-300 leading-relaxed">
                     {activeModalProject.challenge}
                   </p>
                 </div>
@@ -237,7 +237,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                     <CheckCircle2 className="w-4 h-4" />
                     <span>{t('projects.solution')}</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-sm text-slate-300 leading-relaxed">
                     {activeModalProject.solution}
                   </p>
                 </div>
@@ -251,7 +251,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 </h4>
                 <div className="space-y-2">
                   {activeModalProject.architectureHighlights.map((highlight, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
+                    <div key={idx} className="flex items-start gap-2.5 text-sm text-slate-300">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#00F5FF] mt-1.5 flex-shrink-0" />
                       <span>{highlight}</span>
                     </div>
@@ -267,7 +267,7 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
                 </h4>
                 <div className="space-y-2">
                   {activeModalProject.results.map((result, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-200">
+                    <div key={idx} className="flex items-start gap-2.5 text-sm text-slate-200">
                       <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-[#00F5FF]" />
                       <span>{result}</span>
                     </div>

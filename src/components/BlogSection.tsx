@@ -139,7 +139,7 @@ export default function BlogSection() {
                     {post.title}
                   </h3>
 
-                  <p className="text-xs text-[#A0A0A0] leading-relaxed mb-6 line-clamp-3">
+                  <p className="text-sm text-[#A0A0A0] leading-relaxed mb-6 line-clamp-3">
                     {post.excerpt}
                   </p>
 

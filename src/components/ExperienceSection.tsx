@@ -159,7 +159,7 @@ export default function ExperienceSection({
                   </div>
 
                   {/* Summary */}
-                  <p className="text-sm text-slate-300 my-4 leading-relaxed font-normal">
+                  <p className="text-base text-slate-300 my-4 leading-relaxed font-normal">
                     {exp.summary}
                   </p>
 
@@ -226,7 +226,7 @@ export default function ExperienceSection({
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-[#A0A0A0] leading-relaxed pl-3 border-l border-white/10">
+                              <p className="text-sm text-[#A0A0A0] leading-relaxed pl-3 border-l border-white/10">
                                 {bp.text}
                               </p>
                             </div>

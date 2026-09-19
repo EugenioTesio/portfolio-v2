@@ -122,12 +122,12 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                 </span>
               </div>
 
-              <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
+              <div className="space-y-4 text-slate-300 text-base leading-relaxed font-normal">
                 <p dangerouslySetInnerHTML={{ __html: t('about.bioP1') }} />
                 <p dangerouslySetInnerHTML={{ __html: t('about.bioP2') }} />
                 <p dangerouslySetInnerHTML={{ __html: t('about.bioP3') }} />
                 <p dangerouslySetInnerHTML={{ __html: t('about.bioP4') }} />
-                <p className="text-[#A0A0A0] text-sm border-l-2 border-[#9D00FF] pl-4 italic">
+                <p className="text-[#A0A0A0] text-base border-l-2 border-[#9D00FF] pl-4 italic">
                   {t('about.quote')}
                 </p>
               </div>
@@ -182,7 +182,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                     {t('about.commercialProduct')}
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed font-normal" dangerouslySetInnerHTML={{ __html: t('about.capstoneDesc') }} />
+                <p className="text-sm text-slate-300 leading-relaxed font-normal" dangerouslySetInnerHTML={{ __html: t('about.capstoneDesc') }} />
                 <div className="pt-2 flex items-center gap-2 text-[11px] text-[#A0A0A0] border-t border-white/10">
                   <Award className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                   <span>{t('about.capstoneNote')}</span>
@@ -195,7 +195,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                   <Wrench className="w-3.5 h-3.5 text-[#9D00FF]" />
                   {t('about.electronicsAdvantage')}
                 </h4>
-                <p className="text-xs text-[#A0A0A0] leading-relaxed">
+                <p className="text-sm text-[#A0A0A0] leading-relaxed">
                   {t('about.electronicsDesc')}
                 </p>
               </div>
@@ -265,7 +265,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                     {tech.proficiency}
                   </span>
                 </div>
-                <p className="text-xs text-[#A0A0A0] leading-relaxed">
+                <p className="text-sm text-[#A0A0A0] leading-relaxed">
                   {tech.highlight}
                 </p>
               </div>

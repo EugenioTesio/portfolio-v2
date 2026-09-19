@@ -122,7 +122,7 @@ export default function ContactSection() {
                   <h3 className="text-xl font-bold text-white tracking-tight">
                     {t('contactSection.directChannels')}
                   </h3>
-                  <p className="text-sm text-[#A0A0A0]">
+                  <p className="text-base text-[#A0A0A0]">
                     {t('contactSection.channelsIntro')}
                   </p>
                 </div>
@@ -250,7 +250,7 @@ export default function ContactSection() {
                       {t('contactSection.turnaroundSla')}
                     </span>
                     <p
-                      className="text-xs text-[#A0A0A0] leading-relaxed"
+                      className="text-sm text-[#A0A0A0] leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: t('contactSection.turnaroundDesc') }}
                     />
                   </div>

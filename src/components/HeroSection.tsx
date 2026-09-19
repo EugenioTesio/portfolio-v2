@@ -155,7 +155,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
               
               <div className="space-y-3 text-[#A0A0A0] text-base leading-relaxed pt-2">
                 <p dangerouslySetInnerHTML={{ __html: t('hero.overviewP1') }} />
-                <p className="text-sm sm:text-base" dangerouslySetInnerHTML={{ __html: t('hero.overviewP2') }} />
+                <p className="text-base" dangerouslySetInnerHTML={{ __html: t('hero.overviewP2') }} />
               </div>
             </motion.div>
 
