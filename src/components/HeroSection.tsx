@@ -144,11 +144,11 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 <span className="font-bold tracking-[2px]">{t('hero.sectionBadge')}</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]">
-                <span className="inline-block bg-gradient-to-r from-white via-[#E0E0E0] to-[#A0A0A0] bg-clip-text text-transparent [-webkit-text-fill-color:transparent]">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-none">
+                <span className="inline-block leading-[1.25] pb-[0.18em] bg-gradient-to-r from-white via-[#E0E0E0] to-[#A0A0A0] bg-clip-text text-transparent [-webkit-text-fill-color:transparent]">
                   {t('hero.headlineName')}
                 </span>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#A0A0A0] block mt-1">
+                <span className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#A0A0A0] block mt-1 leading-snug">
                   {t('hero.headlineTitle')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('hero.headlineHighlight')}</span> {t('hero.headlineSuffix')}
                 </span>
               </h1>
