@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, DragEvent, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -16,10 +16,7 @@ import {
   GraduationCap,
   ExternalLink,
   Mail,
-  Bot,
-  Camera,
-  UploadCloud,
-  Check
+  Bot
 } from 'lucide-react';
 import { usePortfolioData } from '../data/portfolio';
 import regeneratedProfileImage from '../assets/images/regenerated_image_1788456283242.jpg';
@@ -34,10 +31,6 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
   const [profileImg, setProfileImg] = useState<string>(() => {
     return localStorage.getItem('eugenio_profile_img') || regeneratedProfileImage;
   });
-  const [isDragging, setIsDragging] = useState(false);
-  const [justUploaded, setJustUploaded] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     // If user previously stored an older placeholder, migrate it to the new regenerated image
     const stored = localStorage.getItem('eugenio_profile_img');
@@ -59,43 +52,6 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
     return () => window.removeEventListener('eugenio-avatar-update', handleAvatarUpdate);
   }, []);
 
-  const processFile = (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      if (dataUrl) {
-        setProfileImg(dataUrl);
-        localStorage.setItem('eugenio_profile_img', dataUrl);
-        window.dispatchEvent(new CustomEvent('eugenio-avatar-update', { detail: dataUrl }));
-        setJustUploaded(true);
-        setTimeout(() => setJustUploaded(false), 3500);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processFile(file);
-  };
-
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) processFile(file);
-  };
-
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
   return (
     <section
       id="hero"
@@ -258,15 +214,8 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="rounded-[28px] bg-white/[0.03] border border-white/15 backdrop-blur-2xl p-4 sm:p-5 shadow-2xl relative group overflow-hidden hover:border-[#00F5FF]/40 transition-all duration-500 shadow-black/80"
             >
-              {/* Profile Image Container with Drag & Drop */}
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                className={`relative w-full h-[420px] sm:h-[480px] rounded-[22px] overflow-hidden bg-black/40 border transition-all duration-300 ${
-                  isDragging ? 'border-[#00F5FF] ring-4 ring-[#00F5FF]/20 scale-[0.99]' : 'border-white/10'
-                }`}
-              >
+              {/* Profile Image Container */}
+              <div className="relative w-full h-[420px] sm:h-[480px] rounded-[22px] overflow-hidden bg-black/40 border border-white/10 transition-all duration-300">
                 <img
                   src={profileImg}
                   alt={t('hero.profileAlt')}
@@ -285,49 +234,11 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-[#00F5FF]/10 via-transparent to-[#9D00FF]/15 pointer-events-none" />
 
-                {/* Dragging Overlay */}
-                {isDragging && (
-                  <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 z-20 pointer-events-none border-2 border-dashed border-[#00F5FF]">
-                    <UploadCloud className="w-12 h-12 text-[#00F5FF] animate-bounce mb-3" />
-                    <p className="text-white font-bold text-sm">{t('hero.dropPhoto')}</p>
-                    <p className="text-[#A0A0A0] text-xs mt-1 font-mono">{t('hero.dropPhotoHint')}</p>
-                  </div>
-                )}
-
                 {/* Top Overlay Badge */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
+                <div className="absolute top-4 left-4 z-10 pointer-events-none">
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/75 border border-[#00F5FF]/40 backdrop-blur-md text-[11px] font-mono text-[#00F5FF] font-bold shadow-lg">
                     <span className="w-2 h-2 rounded-full bg-[#00F5FF] animate-pulse" />
                     <span>EUGENIO TESIO</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 pointer-events-auto">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="hero-profile-upload"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      title={t('hero.uploadPhoto')}
-                      className="px-2.5 py-1 rounded-full bg-black/75 hover:bg-black border border-white/20 hover:border-[#00F5FF]/60 backdrop-blur-md text-[11px] font-mono text-slate-200 hover:text-[#00F5FF] flex items-center gap-1.5 transition-all shadow-md active:scale-95"
-                    >
-                      {justUploaded ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-400" />
-                          <span className="text-emerald-400">{t('hero.updated')}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Camera className="w-3 h-3 text-[#00F5FF]" />
-                          <span>{t('hero.changePhoto')}</span>
-                        </>
-                      )}
-                    </button>
                   </div>
                 </div>
 
