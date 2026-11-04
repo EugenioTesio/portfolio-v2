@@ -34,4 +34,4 @@
 - Validation pass 1 (2026-11-04): All items passed.
 - Mentions of Flutter/Dart/Firestore/version numbers are **subject-matter facts for the article**, not portfolio implementation choices.
 - Research against Dart advisory GHSA-frr6-h895-5pxp and Firebase eMudhra remediation guide is captured in Assumptions and FR-001–FR-008.
-- No clarification questions outstanding; ready for `/speckit-plan` (or `/speckit-clarify` if editorial preferences need tightening).
+- Clarification session 2026-11-04 complete (5/5): publish date 2026-11-04; focused upgrade-friction required; illustration-only cover; 1–2 diagrams; slug `flutter-mitm-security-alert`. Checklist 16/16 still passing.
