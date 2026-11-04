@@ -3,11 +3,13 @@ import { getPortfolioData, Locale } from './portfolio';
 import iotCover from '../assets/images/blog/iot-rs485-to-cloud.jpg';
 import raspCover from '../assets/images/blog/rasp-mobile-security.jpg';
 import flutterBankingCover from '../assets/images/blog/large-scale-flutter-banking-architecture.jpg';
+import flutterMitmCover from '../assets/images/blog/flutter-mitm-security-alert.jpg';
 
 const BLOG_COVERS: Record<string, string> = {
   'iot-rs485-to-cloud': iotCover,
   'rasp-mobile-security': raspCover,
   'large-scale-flutter-banking-architecture': flutterBankingCover,
+  'flutter-mitm-security-alert': flutterMitmCover,
 };
 
 const markdownModulesEn = import.meta.glob('../content/blog/en/*.md', {

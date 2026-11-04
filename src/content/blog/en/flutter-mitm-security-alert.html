@@ -1,0 +1,139 @@
+<p>In late October 2026, Flutter and Dart shipped a high-severity security release that most teams will feel as “just bump the SDK.” Treat it as more than a routine upgrade. Compromised intermediate Certificate Authority certificates mean an attacker on the network path can forge TLS credentials that look legitimate to unpatched app binaries — including binaries that talk to your backends and to Cloud Firestore.</p>
+
+<p>This article expands a short security alert into a field guide: what actually broke, who is in scope, why an OS update does not save last week’s APK, what versions to ship, how Firestore fits, and the upgrade friction you will hit when older Flutter lines jump to a patched baseline. It is not a claim that your specific app was exploited. It is a claim that <strong>shipping a rebuild</strong> is the control that matters.</p>
+
+<aside class="callout">
+  <p><strong>Primary sources.</strong> Prefer the Dart/Flutter advisory and Firebase’s eMudhra remediation guide over social summaries. Version floors below are accurate as of those publications; always re-check the advisory before you cut a release.</p>
+</aside>
+
+<h2>What happened</h2>
+
+<p>In October 2026, intermediate CA certificates issued by <strong>eMudhra</strong> were publicly disclosed as compromised. The underlying issue was weak key-generation entropy: attackers able to derive private keys can mint TLS/HTTPS certificates for arbitrary domains that chain to those intermediates.</p>
+
+<p>Google became aware around <strong>19 October 2026</strong>. The Dart SDK security advisory (GHSA-frr6-h895-5pxp) followed around <strong>23 October 2026</strong>, classifying the issue as <strong>High</strong> under improper certificate validation (CWE-295).</p>
+
+<p>For Flutter and Dart apps that make outbound TLS with <code>dart:io</code>, the uncomfortable detail is architectural: on several platforms the runtime validates certificate chains with a <strong>compiled-in BoringSSL engine</strong> and does <em>not</em> consume OS-managed intermediate certificate blocklists the way browsers and some native stacks do. Distrusting the bad intermediates in the OS trust store therefore does not automatically protect an already-installed Flutter binary.</p>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 1. Trust path: OS/browser stores vs embedded validation in the app binary</figcaption>
+  <pre class="mermaid">
+flowchart LR
+  subgraph osPath [OS or browser trust]
+    osUpdate[OS_CA_blocklist]
+    browser[Browser_or_Security_framework]
+  end
+  subgraph appPath [Embedded in binary]
+    boring[BoringSSL_in_dart_io]
+    pluginStore[Plugin_trust_bundle]
+  end
+  attacker[Network_MitM]
+  server[Backend_HTTPS]
+  attacker -->|forged_cert| boring
+  attacker -->|forged_cert| pluginStore
+  osUpdate -.->|does_not_reach| boring
+  browser -->|not_used_by_dart_io_Android_Windows| boring
+  boring --> server
+  pluginStore --> server
+</pre>
+</figure>
+
+<h2>Who is affected</h2>
+
+<p>Be precise. Conflating “Flutter on every platform” with “every TLS stack” produces both false calm and false panic.</p>
+
+<h3>Flutter / Dart <code>dart:io</code> TLS validation</h3>
+
+<ul>
+  <li><strong>In scope:</strong> Android, Windows, and Linux environments that have not updated their system CA bundle (including many static containers).</li>
+  <li><strong>Out of scope for this path:</strong> Web, iOS, and macOS — those rely on browser or Apple <code>Security.framework</code> certificate verification for the corresponding Dart/Flutter networking path described in the advisory.</li>
+</ul>
+
+<p>If you ship Android or Windows Flutter clients that open HTTPS with the standard Dart networking stack, you are in the rebuild set until users run a binary built on a patched SDK.</p>
+
+<h3>Cloud Firestore is a separate trust story</h3>
+
+<p>Firebase documented that Cloud Firestore clients can carry an <strong>embedded trust store</strong> that also needed the eMudhra-related roots removed. That means Apple (and Windows) Flutter apps that use Firestore can still need a <strong>plugin update and republish</strong> even when the Dart advisory says iOS/macOS are outside the <code>dart:io</code> BoringSSL scope. Do not skip the Firestore section because “iOS was fine for dart:io.”</p>
+
+<h2>Why OS updates alone are not enough</h2>
+
+<p>Operating systems and browsers pushed emergency distrust for the compromised intermediates. That protects software that asks the OS or browser every time it validates a chain.</p>
+
+<p>Flutter/Dart on the affected platforms embeds validation logic (and, for some plugins, a trust bundle) <strong>inside the application binary</strong>. An end-user who updates Android but keeps your pre-patch APK installed still runs the old verifier. The remediation sequence is therefore:</p>
+
+<ol>
+  <li>Upgrade the SDK / plugins that contain the fix.</li>
+  <li><strong>Rebuild</strong> the app.</li>
+  <li><strong>Redeploy</strong> through your store or distribution channel.</li>
+  <li><strong>Urge users to update</strong> — previously installed builds remain vulnerable until they do.</li>
+</ol>
+
+<figure class="diagram-frame">
+  <figcaption>Figure 2. Remediation flow: patch is not complete until users run the new binary</figcaption>
+  <pre class="mermaid">
+flowchart TD
+  upgrade[Upgrade_Flutter_Dart_and_plugins]
+  rebuild[Rebuild_release_binaries]
+  redeploy[Redeploy_to_stores]
+  users[Users_install_update]
+  upgrade --> rebuild --> redeploy --> users
+  old[Old_installed_builds] -.->|still_vulnerable| mitm[MitM_risk]
+  users --> fixed[Patched_trust_path]
+</pre>
+</figure>
+
+<h2>Remediation checklist</h2>
+
+<p>Minimum floors from the official advisory (re-verify at release time):</p>
+
+<ul>
+  <li><strong>Flutter:</strong> stable <strong>3.47.8+</strong> (patched beta line also exists; prefer current patched stable for production).</li>
+  <li><strong>Dart:</strong> stable <strong>3.13.7+</strong>.</li>
+  <li>Rebuild Android, Windows, and affected Linux targets.</li>
+  <li>Redeploy and push users onto the new build (store release notes, forced update policies where you already have them, support macros).</li>
+</ul>
+
+<p>On Android 14+, patched Dart also improves future posture by loading system roots from the updatable Conscrypt APEX module — but that still does not resurrect old binaries in the wild.</p>
+
+<h2>Cloud Firestore</h2>
+
+<p>If your Flutter app uses Cloud Firestore on <strong>Apple or Windows</strong> platforms, update the plugin, rebuild, and republish:</p>
+
+<ul>
+  <li><strong>Preferred:</strong> <code>cloud_firestore</code> <strong>7.1.0+</strong> (or the FlutterFire BoM that includes that fix).</li>
+  <li><strong>Backports</strong> for teams not yet on the latest major: <strong>6.10.1</strong> (iOS/macOS) and <strong>6.10.2</strong> (Windows).</li>
+</ul>
+
+<p>Again: the trust bundle lives in the client. Server-side changes and OS updates do not rewrite the binary your users already installed.</p>
+
+<p>If you do <strong>not</strong> use Cloud Firestore, you can skip the plugin bump — but you still owe the Flutter/Dart SDK rebuild for Android/Windows/Linux <code>dart:io</code> clients.</p>
+
+<h2>Upgrade friction (focused, not a migration guide)</h2>
+
+<p>Landing on Flutter 3.47.8+ from a recent 3.44/3.47 line is often a contained exercise: Kotlin/Gradle adjustments, rebuild, regression pass.</p>
+
+<p>Jumping from much older lines (for example mid-3.2x) can surface tooling floors that are <strong>not the vulnerability</strong>, but they are the tax of getting onto a patched SDK:</p>
+
+<ul>
+  <li>Newer JDK / Gradle expectations and declarative Android plugin DSL migrations.</li>
+  <li>Raised Android <code>minSdk</code> (commonly discussed around 24+) and iOS deployment target bumps on modern Flutter toolchains.</li>
+</ul>
+
+<p>Those floors are product decisions. Raising minimum OS versions can drop users who cannot update their devices. Document the trade-off for stakeholders: security rebuild versus addressable market. Do not confuse “we had to raise minSdk to ship 3.47.8” with “minSdk was the CVE.”</p>
+
+<h2>Transitional mitigations (temporary only)</h2>
+
+<p>If you are blocked mid-upgrade, short-lived tactics appear in community and vendor notes — for example temporary Android Gradle Plugin / built-in Kotlin flags while tooling catches up, staying on Firestore backport lines, or adding certificate/public-key pinning for your own APIs.</p>
+
+<p><strong>None of these replace shipping a patched rebuild.</strong> Treat them as bridges with an explicit expiration, not as the security program.</p>
+
+<h2>References</h2>
+
+<ul>
+  <li><a href="https://github.com/dart-lang/sdk/security/advisories/GHSA-frr6-h895-5pxp" target="_blank" rel="noopener noreferrer">Dart advisory GHSA-frr6-h895-5pxp — TLS MitM due to compromised eMudhra intermediate CAs</a></li>
+  <li><a href="https://firebase.google.com/support/guides/compromised-emudhra-intermediate-ca" target="_blank" rel="noopener noreferrer">Firebase — Updates required to remediate the eMudhra certificate compromise</a></li>
+  <li><a href="https://lnkd.in/p/dJjFXhwg" target="_blank" rel="noopener noreferrer">Author’s LinkedIn security alert (prompt for this article)</a></li>
+</ul>
+
+<h2>Closing</h2>
+
+<p>Certificate distrust only helps the verifier that learns about it. For affected Flutter and Dart binaries, that verifier ships inside your release artifact. Upgrade, rebuild, redeploy, and move users forward — and if Firestore is on the table for Apple or Windows, patch that trust bundle in the same release train.</p>

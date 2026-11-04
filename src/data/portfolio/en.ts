@@ -586,6 +586,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'flutter-mitm-security-alert',
+    title: 'Flutter TLS MitM Alert: eMudhra CA Compromise, Who Must Rebuild, and Upgrade Friction',
+    excerpt: 'Compromised eMudhra intermediates, dart:io trust on Android/Windows/Linux, Firestore plugin floors, and why OS updates do not fix last week’s binary.',
+    date: 'Nov 04, 2026',
+    readTime: '13 min read',
+    category: 'Security',
+    tags: ['Flutter', 'Dart', 'TLS', 'Security', 'Firebase', 'MitM'],
+    author: 'Eugenio Tesio',
+    filename: 'flutter-mitm-security-alert.html',
+    format: 'html'
+  },
+  {
     slug: 'large-scale-flutter-banking-architecture',
     title: 'Architecting a Large-Scale Flutter Banking App for 50+ Engineers',
     excerpt: 'App shell, micro-apps, capability registry, and internal package structure — how squads integrate and communicate without importing each other.',
