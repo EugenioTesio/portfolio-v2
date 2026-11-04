@@ -2,35 +2,44 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import {
-  Smartphone,
   Server,
   Layers,
-  ShieldCheck,
   Cpu,
   ArrowRight,
   CheckCircle2,
   MapPin,
   Sparkles,
-  Award,
   Briefcase,
   GraduationCap,
-  ExternalLink,
   Mail,
-  Bot
+  Bot,
+  Download,
 } from 'lucide-react';
 import { usePortfolioData } from '../data/portfolio';
 import regeneratedProfileImage from '../assets/images/regenerated_image_1788456283242.jpg';
+import { downloadCv } from '../utils/downloadCv';
 
 interface HeroSectionProps {
   onNavigate: (sectionId: string) => void;
 }
 
 export default function HeroSection({ onNavigate }: HeroSectionProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { PERSONAL_INFO } = usePortfolioData();
+  const [isGeneratingCv, setIsGeneratingCv] = useState(false);
   const [profileImg, setProfileImg] = useState<string>(() => {
     return localStorage.getItem('eugenio_profile_img') || regeneratedProfileImage;
   });
+
+  const handleDownloadCv = async () => {
+    if (isGeneratingCv) return;
+    setIsGeneratingCv(true);
+    try {
+      await downloadCv(i18n.language);
+    } finally {
+      setIsGeneratingCv(false);
+    }
+  };
   useEffect(() => {
     // If user previously stored an older placeholder, migrate it to the new regenerated image
     const stored = localStorage.getItem('eugenio_profile_img');
@@ -168,6 +177,17 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
               >
                 <Briefcase className="w-4 h-4 text-[#00F5FF]" />
                 <span>{t('hero.careerTimeline')}</span>
+              </button>
+
+              <button
+                id="hero-download-cv-btn"
+                type="button"
+                onClick={handleDownloadCv}
+                disabled={isGeneratingCv}
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-white text-xs uppercase tracking-wider font-semibold transition-all disabled:opacity-60 disabled:cursor-wait"
+              >
+                <Download className="w-4 h-4 text-[#00F5FF]" />
+                <span>{t('hero.downloadCv')}</span>
               </button>
 
               <button
