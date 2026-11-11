@@ -2,7 +2,12 @@
 
 “We use BLoC.”
 
-That is useful information in an architecture discussion. It tells us something about how the team represents changes and delivers state to widgets. It leaves several questions open: Who owns application data? Where do reusable business rules live? How do features communicate? What happens when two requests finish out of order?
+That is useful information in an architecture discussion. It tells us something about how the team represents changes and delivers state to widgets. It leaves several questions open:
+
+- Who owns application data?
+- Where do reusable business rules live?
+- How do features communicate?
+- What happens when two requests finish out of order?
 
 Flutter discussions often compress these decisions into one choice: Provider, Riverpod, BLoC, MobX, or GetX. That makes package comparisons easier, but design conversations less precise.
 
@@ -46,11 +51,24 @@ The presentation pattern defines those relationships. A state-management mechani
 - **View:** `TransactionsScreen` renders the model's current data and forwards interactions.
 - **Controller:** `TransactionsController.refresh()` interprets the input and tells the model what to do.
 - **Model:** an observable `TransactionsModel` holds the data or screen-facing state that views read.
-- **Possible Flutter wiring:** the model exposes a `ValueNotifier`, `ChangeNotifier`, or stream; the view uses `ValueListenableBuilder`, Provider, or `StreamBuilder` to observe it.
+- **Possible Flutter wiring:** the model exposes a `ValueNotifier`, `ChangeNotifier`, or `stream`; the view uses `ValueListenableBuilder`, `Provider`, or `StreamBuilder` to observe it.
 
 **Example: MVC + ValueNotifier**
 
 ```dart
+class TransactionsState {
+  const TransactionsState({
+    this.isLoading = false,
+    this.items = const [],
+  });
+
+  const TransactionsState.initial() : this();
+  const TransactionsState.loading() : this(isLoading: true);
+
+  final bool isLoading;
+  final List<Transaction> items;
+}
+
 class TransactionsModel {
   final state = ValueNotifier(const TransactionsState.initial());
   // repository updates `state.value` after fetch

@@ -14,7 +14,7 @@ export default function PortfolioPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'about', 'experience', 'projects', 'blog', 'contact'];
+      const sections = ['hero', 'about', 'experience', 'projects', 'contact'];
       const scrollPosition = window.scrollY + 200;
 
       for (const sectionId of sections) {

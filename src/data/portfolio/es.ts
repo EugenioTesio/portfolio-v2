@@ -609,18 +609,6 @@ export const BLOG_POSTS: BlogPost[] = [
     format: 'html'
   },
   {
-    slug: 'rasp-mobile-security',
-    title: 'Endurecimiento móvil fintech: implementación de RASP, detección de root y WebViews seguras',
-    excerpt: 'RASP en el app shell, postura multi-vector y WebViews en sandbox — cómo un binario bancario trata el teléfono como hostil sin cincuenta chequeos de jailbreak por squad.',
-    date: '5 dic 2024',
-    readTime: '13 min de lectura',
-    category: 'Seguridad',
-    tags: ['RASP', 'Security', 'Fintech', 'Flutter', 'Root Detection'],
-    author: 'Eugenio Tesio',
-    filename: 'rasp-mobile-security.html',
-    format: 'html'
-  },
-  {
     slug: 'iot-rs485-to-cloud',
     title: 'De RS485 y OCPP 1.6 a backends en la nube: lecciones de telemetría IoT industrial',
     excerpt: 'CRC en el cable, logs duraderos en el edge e ingesta idempotente — cómo Smart Lub y OCPP 1.6 sobreviven EMI, apagones y replay sin inventar medición.',

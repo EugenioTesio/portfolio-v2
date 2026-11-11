@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Mail } from 'lucide-react';
+import { Locale } from '../data/portfolio';
+import { BLOG_FROM_PORTFOLIO_STATE, getBlogIndexPath } from '../utils/blogUrls';
 import LanguageToggle from './LanguageToggle';
 
 interface NavbarProps {
@@ -10,9 +13,11 @@ interface NavbarProps {
 }
 
 export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const blogPath = getBlogIndexPath(locale);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,11 +27,10 @@ export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
+  const sectionItems = [
     { id: 'about', label: t('nav.about') },
     { id: 'experience', label: t('nav.experience') },
     { id: 'projects', label: t('nav.projects') },
-    { id: 'blog', label: t('nav.blog') },
     { id: 'contact', label: t('nav.contact') },
   ];
 
@@ -34,6 +38,18 @@ export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
     onNavigate(id);
     setMobileMenuOpen(false);
   };
+
+  const navLinkClass = (isActive: boolean) =>
+    `px-3 py-2 text-base font-medium rounded-md transition-colors ${
+      isActive ? 'bg-accent text-page' : 'text-muted hover:text-ink'
+    }`;
+
+  const mobileLinkClass = (isActive: boolean) =>
+    `w-full text-left px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
+      isActive
+        ? 'bg-accent text-page'
+        : 'text-muted hover:text-ink hover:bg-surface'
+    }`;
 
   return (
     <header
@@ -57,23 +73,34 @@ export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
           </button>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => {
+            {sectionItems.slice(0, 3).map((item) => {
               const isActive = activeSection === item.id;
               return (
                 <button
                   key={item.id}
                   id={`nav-link-${item.id}`}
                   onClick={() => handleLinkClick(item.id)}
-                  className={`px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                    isActive
-                      ? 'bg-accent text-page'
-                      : 'text-muted hover:text-ink'
-                  }`}
+                  className={navLinkClass(isActive)}
                 >
                   {item.label}
                 </button>
               );
             })}
+            <Link
+              id="nav-link-blog"
+              to={blogPath}
+              state={BLOG_FROM_PORTFOLIO_STATE}
+              className={navLinkClass(false)}
+            >
+              {t('nav.blog')}
+            </Link>
+            <button
+              id="nav-link-contact"
+              onClick={() => handleLinkClick('contact')}
+              className={navLinkClass(activeSection === 'contact')}
+            >
+              {t('nav.contact')}
+            </button>
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
@@ -110,19 +137,29 @@ export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-page border-b border-line px-4 pt-3 pb-6 space-y-1 mt-3"
           >
-            {navItems.map((item) => (
+            {sectionItems.slice(0, 3).map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleLinkClick(item.id)}
-                className={`w-full text-left px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
-                  activeSection === item.id
-                    ? 'bg-accent text-page'
-                    : 'text-muted hover:text-ink hover:bg-surface'
-                }`}
+                className={mobileLinkClass(activeSection === item.id)}
               >
                 {item.label}
               </button>
             ))}
+            <Link
+              to={blogPath}
+              state={BLOG_FROM_PORTFOLIO_STATE}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block ${mobileLinkClass(false)}`}
+            >
+              {t('nav.blog')}
+            </Link>
+            <button
+              onClick={() => handleLinkClick('contact')}
+              className={mobileLinkClass(activeSection === 'contact')}
+            >
+              {t('nav.contact')}
+            </button>
             <div className="pt-2">
               <button
                 onClick={() => handleLinkClick('contact')}

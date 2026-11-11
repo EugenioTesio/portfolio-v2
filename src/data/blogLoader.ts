@@ -1,13 +1,11 @@
 import { BlogPost } from '../types';
 import { getPortfolioData, Locale } from './portfolio';
 import iotCover from '../assets/images/blog/iot-rs485-to-cloud.jpg';
-import raspCover from '../assets/images/blog/rasp-mobile-security.jpg';
 import flutterMitmCover from '../assets/images/blog/flutter-mitm-security-alert.jpg';
 import flutterArchitectureCover from '../assets/images/blog/flutter-presentation-architecture-vs-state-management-cover.jpg';
 
 const BLOG_COVERS: Record<string, string> = {
   'iot-rs485-to-cloud': iotCover,
-  'rasp-mobile-security': raspCover,
   'flutter-mitm-security-alert': flutterMitmCover,
   'flutter-presentation-architecture-vs-state-management': flutterArchitectureCover,
 };
