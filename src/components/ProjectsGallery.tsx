@@ -1,18 +1,6 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import {
-  FolderGit2,
-  ExternalLink,
-  Layers,
-  ArrowRight,
-  CheckCircle2,
-  X,
-  AlertCircle,
-  TrendingUp,
-  Sparkles,
-  Terminal
-} from 'lucide-react';
+import { ExternalLink, ArrowRight, X } from 'lucide-react';
 import { usePortfolioData } from '../data/portfolio';
 import { ProjectItem } from '../types';
 
@@ -37,6 +25,9 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
     ? PROJECTS
     : PROJECTS.filter(p => p.category === selectedFilter);
 
+  const featuredProjects = filteredProjects.filter(project => project.featured);
+  const otherProjects = filteredProjects.filter(project => !project.featured);
+
   const openProjectDetail = (project: ProjectItem) => {
     setActiveModalProject(project);
     if (onSelectProject) {
@@ -45,34 +36,28 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
   };
 
   return (
-    <section id="projects" className="py-24 relative bg-transparent border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+    <section id="projects" className="py-[5.5rem] border-t border-line">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md">
-              <FolderGit2 className="w-3.5 h-3.5" />
-              <span className="font-bold tracking-[2px]">{t('projects.sectionBadge')}</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              {t('projects.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('projects.titleHighlight')}</span>
+          <div className="space-y-3 max-w-[65ch]">
+            <h2 className="text-4xl sm:text-5xl font-semibold text-ink tracking-tight leading-snug">
+              {t('projects.title')} {t('projects.titleHighlight')}
             </h2>
-            <p className="text-[#A0A0A0] max-w-2xl text-base sm:text-lg">
+            <p className="text-xl leading-[1.6] text-muted">
               {t('projects.subtitle')}
             </p>
           </div>
 
-          {/* Category Filters */}
-          <div className="flex flex-wrap gap-1.5 p-1 bg-black/40 rounded-xl border border-white/10 self-start md:self-auto">
+          <div className="flex flex-wrap gap-2">
             {filters.map((f) => (
               <button
                 key={f.id}
                 id={`project-filter-${f.id}`}
-                onClick={() => setSelectedFilter(f.id as any)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all ${
+                onClick={() => setSelectedFilter(f.id)}
+                className={`px-3 py-1.5 rounded-lg text-base font-medium transition-colors ${
                   selectedFilter === f.id
-                    ? 'bg-[#00F5FF] text-black font-bold shadow-[0_0_15px_rgba(0,245,255,0.3)]'
-                    : 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.05]'
+                    ? 'bg-accent text-page'
+                    : 'text-muted hover:text-ink'
                 }`}
               >
                 {f.label}
@@ -81,244 +66,163 @@ export default function ProjectsGallery({ onSelectProject }: ProjectsGalleryProp
           </div>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="group rounded-[24px] bg-white/[0.03] border border-white/10 hover:border-[#00F5FF]/40 p-6 flex flex-col justify-between backdrop-blur-xl transition-all duration-300 shadow-2xl hover:shadow-[0_0_35px_rgba(0,245,255,0.15)]"
-            >
-              <div>
-                {/* Header with Category Badge & Featured Tag */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[#00F5FF] border border-[#00F5FF]/30">
-                    {project.categoryLabel}
-                  </span>
-                  {project.featured && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.05] text-[#FF00E5] border border-[#FF00E5]/30 flex items-center gap-1 font-bold">
-                      <Sparkles className="w-2.5 h-2.5" />
-                      {t('projects.featured')}
-                    </span>
-                  )}
+        {featuredProjects.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featuredProjects.map((project) => (
+              <article
+                key={project.id}
+                className="rounded-2xl bg-surface border border-line p-6 flex flex-col gap-4"
+              >
+                <p className="text-base text-faint">{project.categoryLabel}</p>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-semibold text-ink">{project.title}</h3>
+                  <p className="text-lg leading-relaxed text-muted">{project.tagline}</p>
                 </div>
-
-                {/* Project Title & Tagline */}
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#00F5FF] transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-sm text-[#A0A0A0] leading-relaxed mb-5">
-                  {project.tagline}
-                </p>
-
-                {/* Key Metrics Chips */}
-                <div className="grid grid-cols-2 gap-2 mb-5">
-                  {project.metrics.slice(0, 2).map((metric, i) => (
-                    <div key={i} className="p-3 rounded-2xl bg-black/30 border border-white/10">
-                      <div className="text-sm font-extrabold font-mono text-[#00F5FF]">{metric.value}</div>
-                      <div className="text-[10px] text-[#A0A0A0] truncate uppercase tracking-wider">{metric.label}</div>
+                <dl className="grid grid-cols-2 gap-4">
+                  {project.metrics.slice(0, 2).map((metric) => (
+                    <div key={metric.label}>
+                      <dt className="text-base text-faint">{metric.label}</dt>
+                      <dd className="text-lg font-semibold text-ink">{metric.value}</dd>
                     </div>
                   ))}
-                </div>
-
-                {/* Tech Pills */}
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {project.technologies.slice(0, 4).map((tech) => (
-                    <span
-                      key={tech}
-                      className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-white/[0.04] text-slate-300 border border-white/10"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                  {project.technologies.length > 4 && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-lg bg-white/[0.02] text-[#A0A0A0] border border-white/5">
-                      {t('projects.moreTech', { count: project.technologies.length - 4 })}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                </dl>
                 <button
                   id={`view-project-btn-${project.id}`}
                   onClick={() => openProjectDetail(project)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white border border-white/10 hover:border-[#00F5FF]/40 transition-all group/btn"
+                  className="mt-auto inline-flex items-center gap-1.5 text-lg font-medium text-accent"
                 >
                   <span>{t('projects.openCaseStudy')}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform text-[#00F5FF]" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {otherProjects.length > 0 && (
+          <ul className={`${featuredProjects.length > 0 ? 'mt-8' : ''} divide-y divide-line border-y border-line`}>
+            {otherProjects.map((project) => (
+              <li key={project.id} className="py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="max-w-[65ch]">
+                  <p className="text-base text-faint">{project.categoryLabel}</p>
+                  <h3 className="text-xl font-semibold text-ink mt-1">{project.title}</h3>
+                  <p className="text-lg leading-relaxed text-muted mt-1">{project.tagline}</p>
+                </div>
+                <button
+                  id={`view-project-btn-${project.id}`}
+                  onClick={() => openProjectDetail(project)}
+                  className="inline-flex items-center gap-1.5 text-lg font-medium text-accent shrink-0"
+                >
+                  <span>{t('projects.openCaseStudy')}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {/* Project Detail Modal */}
-      <AnimatePresence>
-        {activeModalProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/85 backdrop-blur-xl">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.25 }}
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[24px] bg-[#050505]/95 border border-white/15 shadow-2xl p-6 sm:p-8 space-y-6 text-slate-200 backdrop-blur-2xl"
-            >
-              {/* Close Button */}
+      {activeModalProject && (
+          <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-page">
+            <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-surface border border-line p-6 sm:p-8 space-y-6">
               <button
                 id="close-project-modal-btn"
                 onClick={() => setActiveModalProject(null)}
-                className="absolute top-5 right-5 p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[#A0A0A0] hover:text-white border border-white/10 transition-colors"
+                className="absolute top-5 right-5 p-2 rounded-lg text-muted hover:text-ink"
                 aria-label={t('projects.closeModal')}
               >
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Modal Top Metadata */}
-              <div className="space-y-2 pr-10">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[#00F5FF] border border-[#00F5FF]/30">
-                    {activeModalProject.categoryLabel}
-                  </span>
-                  {activeModalProject.featured && (
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[#FF00E5] border border-[#FF00E5]/30">
-                      {t('projects.flagshipInitiative')}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              <div className="space-y-2 pr-10 max-w-[65ch]">
+                <p className="text-base text-faint">{activeModalProject.categoryLabel}</p>
+                <h3 className="text-3xl sm:text-4xl font-semibold text-ink tracking-tight leading-snug">
                   {activeModalProject.title}
                 </h3>
-                <p className="text-base text-[#A0A0A0]">
+                <p className="text-xl leading-[1.6] text-muted">
                   {activeModalProject.tagline}
                 </p>
               </div>
 
-              {/* Metrics Highlights */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {activeModalProject.metrics.map((m, idx) => (
-                  <div key={idx} className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
-                    <div className="text-base font-extrabold font-mono text-[#00F5FF]">{m.value}</div>
-                    <div className="text-xs text-[#A0A0A0] uppercase tracking-wider truncate">{m.label}</div>
+              <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {activeModalProject.metrics.map((metric) => (
+                  <div key={metric.label}>
+                    <dt className="text-base text-faint">{metric.label}</dt>
+                    <dd className="text-lg font-semibold text-ink">{metric.value}</dd>
                   </div>
                 ))}
+              </dl>
+
+              <div className="space-y-2 max-w-[65ch]">
+                <h4 className="text-base font-semibold text-ink">{t('projects.projectOverview')}</h4>
+                <p className="text-xl leading-[1.6] text-muted">{activeModalProject.overview}</p>
               </div>
 
-              {/* Overview */}
-              <div className="space-y-2">
-                <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-[#00F5FF]" />
-                  {t('projects.projectOverview')}
-                </h4>
-                <p className="text-base text-slate-300 leading-relaxed font-normal">
-                  {activeModalProject.overview}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <h4 className="text-base font-semibold text-ink">{t('projects.challenge')}</h4>
+                  <p className="text-lg leading-relaxed text-muted">{activeModalProject.challenge}</p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-base font-semibold text-ink">{t('projects.solution')}</h4>
+                  <p className="text-lg leading-relaxed text-muted">{activeModalProject.solution}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 max-w-[65ch]">
+                <h4 className="text-base font-semibold text-ink">{t('projects.architectureDecisions')}</h4>
+                <ul className="space-y-2">
+                  {activeModalProject.architectureHighlights.map((highlight) => (
+                    <li key={highlight} className="text-lg leading-relaxed text-muted">
+                      {highlight}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-3 max-w-[65ch]">
+                <h4 className="text-base font-semibold text-ink">{t('projects.quantifiableResults')}</h4>
+                <ul className="space-y-2">
+                  {activeModalProject.results.map((result) => (
+                    <li key={result} className="text-lg leading-relaxed text-muted">
+                      {result}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-line">
+                <h4 className="text-base font-semibold text-ink">{t('projects.fullTechStack')}</h4>
+                <p className="text-base text-faint leading-relaxed">
+                  {activeModalProject.technologies.join(' · ')}
                 </p>
               </div>
 
-              {/* Challenge vs Solution Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
-                  <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{t('projects.challenge')}</span>
-                  </div>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    {activeModalProject.challenge}
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-white/[0.03] border border-[#00F5FF]/30 space-y-2">
-                  <div className="flex items-center gap-2 text-[#00F5FF] font-bold text-xs uppercase tracking-wider">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>{t('projects.solution')}</span>
-                  </div>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    {activeModalProject.solution}
-                  </p>
-                </div>
-              </div>
-
-              {/* Architecture Highlights */}
-              <div className="space-y-3">
-                <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#00F5FF] font-bold flex items-center gap-1.5">
-                  <Terminal className="w-3.5 h-3.5 text-[#00F5FF]" />
-                  {t('projects.architectureDecisions')}
-                </h4>
-                <div className="space-y-2">
-                  {activeModalProject.architectureHighlights.map((highlight, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-sm text-slate-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00F5FF] mt-1.5 flex-shrink-0" />
-                      <span>{highlight}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Results & Business Outcomes */}
-              <div className="space-y-3">
-                <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#9D00FF] font-bold flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5 text-[#9D00FF]" />
-                  {t('projects.quantifiableResults')}
-                </h4>
-                <div className="space-y-2">
-                  {activeModalProject.results.map((result, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-sm text-slate-200">
-                      <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-[#00F5FF]" />
-                      <span>{result}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Technologies Used */}
-              <div className="space-y-2 pt-2 border-t border-white/10">
-                <h4 className="text-[11px] font-mono uppercase tracking-[2px] text-[#A0A0A0] font-bold">
-                  {t('projects.fullTechStack')}
-                </h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeModalProject.technologies.map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs font-mono px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-300 border border-white/10"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
                 <div className="flex items-center gap-3">
-                  {activeModalProject.links?.map((link, idx) => (
+                  {activeModalProject.links?.map((link) => (
                     <a
-                      key={idx}
+                      key={link.url}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#00F5FF] text-black font-extrabold text-xs uppercase tracking-wider hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,245,255,0.4)] transition-all"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-accent text-page text-lg font-medium"
                     >
                       <span>{link.label}</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-4 h-4" />
                     </a>
                   ))}
                 </div>
                 <button
                   onClick={() => setActiveModalProject(null)}
-                  className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-mono uppercase tracking-wider border border-white/10 transition-colors"
+                  className="px-4 py-2.5 rounded-lg border border-line text-ink text-lg font-medium"
                 >
                   {t('projects.closeCaseStudy')}
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
     </section>
   );
 }

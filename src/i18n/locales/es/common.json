@@ -20,32 +20,33 @@
   },
   "hero": {
     "currentStatus": "ESTADO ACTUAL:",
-    "currentRole": "Experto Mobile y Arquitecto de Sistemas @ ueno bank",
+    "currentRole": "Ex Experto Mobile y Arquitecto de Sistemas @ ueno bank",
     "sectionBadge": "00. RESUMEN EJECUTIVO",
     "headlineName": "Eugenio Tesio",
     "headlineTitle": "Arquitectura de sistemas",
     "headlineHighlight": "a gran escala",
     "headlineSuffix": "Mobile y cloud distribuido",
-    "overviewP1": "Soy <strong class=\"text-white font-semibold\">Experto Mobile</strong>, <strong class=\"text-white font-semibold\">Arquitecto de Sistemas</strong> e <strong class=\"text-white font-semibold\">Ingeniero Electrónico</strong> con más de 14 años de experiencia en ingeniería de software, telemetría de hardware y entrega acelerada con IA. Me especializo en diseñar, modernizar y escalar plataformas críticas con <span class=\"text-[#00F5FF] font-medium\">Flutter (BLoC y Riverpod)</span>, <span class=\"text-white font-medium\">Python (FastAPI)</span>, <span class=\"text-[#9D00FF] font-medium\">Java (Spring Boot)</span>, <span class=\"text-[#00F5FF] font-medium\">Google Cloud Platform</span> e <span class=\"text-[#FF00E5] font-medium\">ingeniería con IA multiagente</span>.",
-    "overviewP2": "En <strong class=\"text-white\">ueno bank (ITTI S.A.E.C.A.)</strong>, lidero la arquitectura mobile para más de 50 ingenieros Flutter, orquestando la migración a un ecosistema Micro-App y App Shell, flujos de desarrollo con IA multiagente (Cursor, GitHub Copilot, Spec-Driven Development), armonización de apps retail y corporativas, tren de releases de 15 días en múltiples stores y endurecimiento de seguridad con RASP fintech. Mi carrera incluye <strong class=\"text-white\">100% de cobertura de tests en FastAPI</strong> en <span class=\"text-slate-200\">PairTree</span>, apps <span class=\"text-slate-200\">Nest.js y Riverpod</span> en <span class=\"text-slate-200\">Tandamos</span>, microservicios GCP Pub/Sub en <span class=\"text-slate-200\">Valtech</span> y una década de ingeniería full-stack con <strong class=\"text-[#00F5FF]\">cero rechazos en stores mobile</strong>.",
+    "overviewP1": "Lideré la arquitectura mobile del equipo de ingeniería en ueno bank hasta noviembre de 2026.",
+    "overviewP2": "Shells modulares en Flutter, un tren de releases de 15 días y defensa ante amenazas. Catorce años entre mobile, Python y hardware.",
     "chipAi": "IA multiagente y LLMs",
     "chipAiSub": "SDD y generación de código",
     "chipUeno": "ueno bank · Micro-Apps y RASP",
     "chipPairtree": "PairTree · 100% Pytest FastAPI",
     "chipValtech": "Valtech · Spring Boot y GCP",
     "chipUtn": "UTN · Ingeniero Electrónico e IoT",
-    "viewCaseStudies": "Ver casos de estudio",
+    "eyebrow": "Ex Experto Mobile · ueno bank",
+    "viewCaseStudies": "Ver el trabajo",
     "careerTimeline": "Línea de carrera",
     "downloadCv": "Descargar CV",
     "directContact": "Contacto directo",
     "metricYears": "14+ años",
-    "metricYearsLabel": "Software e IoT",
+    "metricYearsLabel": "Años",
     "metricEngineers": "50+",
-    "metricEngineersLabel": "Ingenieros escalados",
+    "metricEngineersLabel": "Ingenieros",
     "metricCoverage": "100%",
     "metricCoverageLabel": "Cobertura backend",
-    "metricRejections": "0",
-    "metricRejectionsLabel": "Rechazos en stores",
+    "metricReleaseTrain": "15 días",
+    "metricReleaseTrainLabel": "Tren de releases",
     "profileAlt": "Eugenio Tesio - Experto Mobile y Arquitecto de Sistemas",
     "leadership": "Liderazgo",
     "leadershipValue": "50+ devs mobile",
@@ -59,15 +60,39 @@
   },
   "about": {
     "sectionBadge": "01. SOBRE MÍ",
-    "title": "Ingeniería de sistemas con",
+    "title": "Electrónica, y después software.",
     "titleHighlight": "rigor de ingeniería",
-    "subtitle": "Un ingeniero de software que conecta fundamentos de hardware eléctrico con arquitectura mobile a gran escala y backends cloud distribuidos.",
+    "subtitle": "El título es de electrónica. El trabajo desde entonces es arquitectura mobile, servicios en Python y el camino de un dispositivo a un release.",
     "yearsExp": "14+ años exp.",
     "bioP1": "¡Hola! Soy <strong class=\"text-white font-semibold\">Eugenio Tesio</strong>, Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico con más de 14 años de entrega de software y sistemas de hardware.",
-    "bioP2": "Actualmente en <strong class=\"text-white font-semibold\">ueno bank (ITTI S.A.E.C.A.)</strong>, lidero la arquitectura mobile para más de 50 ingenieros Flutter, migrando monolitos legacy a un ecosistema <span class=\"text-[#00F5FF] font-medium\">Micro-App y App Shell</span>, armonizando BLoC y Riverpod en productos bancarios retail y corporativos, trenes de release automatizados de 15 días en 3 stores y defensa RASP fintech.",
+    "bioP2": "Más recientemente en <strong class=\"text-white font-semibold\">ueno bank (ITTI S.A.E.C.A.)</strong> hasta nov. 2026, lideré la arquitectura mobile para más de 50 ingenieros Flutter, migrando monolitos legacy a un ecosistema <span class=\"text-[#00F5FF] font-medium\">Micro-App y App Shell</span>, armonizando BLoC y Riverpod en productos bancarios retail y corporativos, trenes de release automatizados de 15 días en 3 stores y defensa RASP fintech.",
     "bioP3": "Antes de ueno bank, entregué backends <span class=\"text-white font-medium\">FastAPI con 100% de cobertura de tests</span> y apps Flutter con golden tests en <strong class=\"text-slate-100\">PairTree</strong>, apps Riverpod y <span class=\"text-[#9D00FF] font-medium\">microservicios Nest.js / TypeScript</span> en <strong class=\"text-slate-100\">Tandamos</strong>, y microservicios <span class=\"text-[#00F5FF] font-medium\">Spring Boot</span> de alto throughput en Google Cloud Platform en <strong class=\"text-slate-100\">Valtech</strong>.",
     "bioP4": "Con título formal en <strong class=\"text-white font-semibold\">Ingeniería Eléctrica y Electrónica</strong> de la Universidad Tecnológica Nacional (UTN), mi intuición de ingeniería va desde buses seriales (RS485 Modbus) y protocolos OCPP 1.6 hasta microservicios cloud e IA multiagente.",
-    "quote": "\"Busco proyectos innovadores en Python y Flutter donde los patrones arquitectónicos, la cobertura rigurosa de tests y los trenes de release automatizados conviertan desafíos complejos en motores de ingeniería confiables y escalables.\"",
+    "quote": "Busco proyectos de Python y Flutter donde la arquitectura, la cobertura de tests y el tren de releases son lo que vuelve confiable al producto.",
+    "degreeLead": "Graduado como Ingeniero Electrónico.",
+    "seeRoles": "Ver los roles",
+    "groups": {
+      "mobile": {
+        "title": "Mobile",
+        "items": "Flutter, BLoC, Riverpod, micro-apps, RASP",
+        "proof": "Arquitectura de app shell y releases entregada para el equipo mobile de ueno bank."
+      },
+      "backend": {
+        "title": "Backend",
+        "items": "Python, FastAPI, Java, Spring Boot, Node",
+        "proof": "Servicios FastAPI con cobertura completa de tests, y Spring Boot en GCP."
+      },
+      "delivery": {
+        "title": "Entrega",
+        "items": "Codemagic, GitHub Actions, GCP",
+        "proof": "Tren de releases de 15 días en varias tiendas."
+      },
+      "hardware": {
+        "title": "Hardware",
+        "items": "RS485, OCPP 1.6",
+        "proof": "Smart Lub para Vulcano, y una red de carga de vehículos eléctricos."
+      }
+    },
     "languages": "Idiomas: Español (nativo), Inglés (profesional)",
     "connect": "Conectar con Eugenio",
     "competenciesTitle": "Competencias centrales de un vistazo",
@@ -77,7 +102,7 @@
     "ingeniero": "Ingeniero Electrónico",
     "capstoneTitle": "Proyecto de titulación: Smart Lub",
     "commercialProduct": "Producto comercial",
-    "capstoneDesc": "Dispositivo de telemetría electrónica para <strong class=\"text-white font-semibold\">Vulcano Lubricación</strong>. Lee datos de equipos industriales por un <strong class=\"text-[#00F5FF]\">bus diferencial RS485</strong>, transmite paquetes por Ethernet o Wi-Fi y almacena métricas en bases de datos para monitoreo.",
+    "capstoneDesc": "El proyecto de titulación se convirtió en Smart Lub, un dispositivo de telemetría para Vulcano Lubricación. Lee equipos industriales por un bus RS485, envía los paquetes por Ethernet o Wi-Fi y guarda las métricas para monitoreo. La empresa lo encargó y salió como producto.",
     "capstoneNote": "Encargado por la empresa y convertido en producto comercializado.",
     "electronicsAdvantage": "La ventaja de electrónica a cloud",
     "electronicsDesc": "Entender integridad de señal, interrupciones de hardware y comunicación serial permite escribir código Flutter robusto y APIs backend distribuidas resilientes.",
@@ -207,6 +232,6 @@
     "contact": "Contacto",
     "top": "Arriba",
     "backToTop": "Volver arriba",
-    "copyright": "© {{year}} Eugenio Tesio. Portfolio Immersive UI."
+    "copyright": "© {{year}} Eugenio Tesio."
   }
 }

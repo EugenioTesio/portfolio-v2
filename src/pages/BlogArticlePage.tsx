@@ -29,11 +29,11 @@ export default function BlogArticlePage() {
   if (!post) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center space-y-4 p-8 rounded-[24px] bg-white/[0.03] border border-white/10 backdrop-blur-xl max-w-md">
-          <p className="text-white font-bold">{t('blog.articleNotFound')}</p>
+        <div className="text-center space-y-4 max-w-md">
+          <p className="text-ink font-medium">{t('blog.articleNotFound')}</p>
           <Link
             to="/#blog"
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors font-mono"
+            className="inline-flex items-center gap-2 text-lg font-medium text-accent"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>{t('blog.backToArticles')}</span>

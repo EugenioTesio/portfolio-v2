@@ -10,7 +10,7 @@ export const PERSONAL_INFO = {
   image: regeneratedProfileImage,
   bio: `Soy Eugenio Tesio, Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico, con más de 14 años de experiencia profesional en ingeniería de software y telemetría de hardware. Me especializo en diseñar y escalar plataformas móviles de alta velocidad y backends resilientes con Flutter (BLoC y Riverpod), Python (FastAPI), Java (Spring Boot) y Google Cloud Platform. 
 
-Actualmente soy Experto Mobile en ueno bank (ITTI S.A.E.C.A.), donde lideré la migración arquitectónica a un ecosistema multi-repo de Micro-App y App Shell que coordina a más de 50 ingenieros Flutter, unifiqué las aplicaciones insignia de banca minorista y empresarial, implementé Release Trains automatizados de 15 días hacia Apple App Store, Google Play y Huawei AppGallery, y fortalecí la postura de seguridad con RASP para fintech. En mi trayectoria previa logré 100 % de cobertura de tests en el backend FastAPI de PairTree (plataforma de habilitación de adopciones), entregué microservicios con Riverpod y Nest.js en Tandamos, construí pipelines empresariales de mensajería GCP Pub/Sub en Valtech, y durante una década desarrollé soluciones móviles e IoT a medida (incluidas redes de carga de vehículos eléctricos OCPP 1.6 y dispositivos de telemetría RS485 comercializados) con cero rechazos en las tiendas de aplicaciones.`,
+Más recientemente fui Experto Mobile en ueno bank (ITTI S.A.E.C.A.) hasta nov. 2026, donde lideré la migración arquitectónica a un ecosistema multi-repo de Micro-App y App Shell que coordinó a más de 50 ingenieros Flutter, unifiqué las aplicaciones insignia de banca minorista y empresarial, implementé Release Trains automatizados de 15 días hacia Apple App Store, Google Play y Huawei AppGallery, y fortalecí la postura de seguridad con RASP para fintech. Antes logré 100 % de cobertura de tests en el backend FastAPI de PairTree (plataforma de habilitación de adopciones), entregué microservicios con Riverpod y Nest.js en Tandamos, construí pipelines empresariales de mensajería GCP Pub/Sub en Valtech, y durante una década desarrollé soluciones móviles e IoT a medida (incluidas redes de carga de vehículos eléctricos OCPP 1.6 y dispositivos de telemetría RS485 comercializados) con cero rechazos en las tiendas de aplicaciones.`,
   education: {
     degree: 'Ingeniero Electrónico (Ingeniería Eléctrica y Electrónica)',
     institution: 'Universidad Tecnológica Nacional (UTN) — Facultad Regional San Francisco',
@@ -112,9 +112,8 @@ export const EXPERIENCES: ExperienceItem[] = [
     role: 'Experto Mobile',
     company: 'ITTI S.A.E.C.A. | ueno bank',
     location: 'San Francisco / Remoto',
-    period: 'Sep. 2023 – Actualidad',
-    current: true,
-    summary: 'Autoridad arquitectónica líder en escalabilidad de banca móvil, aceleración con IA multiagente y entrega automatizada en el ecosistema bancario insignia.',
+    period: 'Sep. 2023 – Nov. 2026',
+    summary: 'Lideré la autoridad arquitectónica de la banca móvil, la aceleración con IA multiagente y la entrega automatizada en el ecosistema bancario insignia.',
     featuredStat: {
       value: '50+ ingenieros',
       label: 'Habilitados con arquitectura Micro-App'
@@ -586,6 +585,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'flutter-presentation-architecture-vs-state-management',
+    title: 'Flutter Presentation Architecture vs State Managment',
+    excerpt: 'Cómo encajan MVC, MVP, MVVM, MVI y la gestión de estado—y cómo elegir límites que sobrevivan un cambio de paquete.',
+    date: '11 nov 2026',
+    readTime: '10 min de lectura',
+    category: 'Arquitectura',
+    tags: ['Flutter', 'Arquitectura', 'MVVM', 'MVI', 'BLoC', 'Riverpod'],
+    author: 'Eugenio Tesio',
+    filename: 'flutter-presentation-architecture-vs-state-management.md',
+    format: 'markdown'
+  },
+  {
     slug: 'flutter-mitm-security-alert',
     title: 'Alerta MitM TLS en Flutter: compromiso eMudhra, quién debe hacer rebuild y fricción de upgrade',
     excerpt: 'Intermedios eMudhra comprometidos, confianza dart:io en Android/Windows/Linux, pisos del plugin Firestore y por qué actualizar el SO no arregla el binario de la semana pasada.',
@@ -595,18 +606,6 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ['Flutter', 'Dart', 'TLS', 'Seguridad', 'Firebase', 'MitM'],
     author: 'Eugenio Tesio',
     filename: 'flutter-mitm-security-alert.html',
-    format: 'html'
-  },
-  {
-    slug: 'large-scale-flutter-banking-architecture',
-    title: 'Arquitectura de una app Flutter bancaria a gran escala para más de 50 ingenieros',
-    excerpt: 'App shell, micro-apps, registro de capacidades y estructura de paquetes internos — cómo los squads se integran y se comunican sin importarse entre sí.',
-    date: '4 sep 2026',
-    readTime: '14 min de lectura',
-    category: 'Arquitectura',
-    tags: ['Flutter', 'Banking', 'Micro-Apps', 'App Shell', 'Architecture'],
-    author: 'Eugenio Tesio',
-    filename: 'large-scale-flutter-banking-architecture.html',
     format: 'html'
   },
   {

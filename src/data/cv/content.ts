@@ -78,7 +78,7 @@ const contentEn: CvContent = {
   linkedin: 'linkedin.com/in/eugenio-tesio',
   linkedinUrl: 'https://www.linkedin.com/in/eugenio-tesio/',
   summary:
-    'Mobile Expert, Systems Architect, and Electronics Engineer with over 14 years building high-scale mobile platforms and resilient backends. Specialized in Flutter (BLoC & Riverpod), Python (FastAPI), Java (Spring Boot), GCP, and multi-agent AI engineering. At ueno bank (ITTI) he leads architecture for 50+ Flutter engineers — Micro-App & App Shell, 15-day multi-store Release Trains, Fintech RASP, and AI-accelerated delivery.',
+    'Mobile Expert, Systems Architect, and Electronics Engineer with over 14 years building high-scale mobile platforms and resilient backends. Specialized in Flutter (BLoC & Riverpod), Python (FastAPI), Java (Spring Boot), GCP, and multi-agent AI engineering. At ueno bank (ITTI) through Nov 2026 he led architecture for 50+ Flutter engineers — Micro-App & App Shell, 15-day multi-store Release Trains, Fintech RASP, and AI-accelerated delivery.',
   sectionLabels: {
     impact: 'IMPACT IN NUMBERS',
     skills: 'CORE SKILLS',
@@ -148,7 +148,7 @@ const contentEn: CvContent = {
       role: 'Mobile Expert',
       company: 'ITTI S.A.E.C.A. | ueno bank',
       location: 'San Francisco / Remote',
-      period: 'Sep 2023 – Present',
+      period: 'Sep 2023 – Nov 2026',
       bullets: [
         'Led the architectural migration from monolith to multi-repo Micro-App & App Shell, enabling concurrent development for 50+ Flutter engineers.',
         'Co-led consolidation of Individuos (retail) and Empresas (corporate) banking apps, harmonizing BLoC and Riverpod architectures across 300+ stakeholders.',
@@ -248,7 +248,7 @@ const contentEs: CvContent = {
   linkedin: 'linkedin.com/in/eugenio-tesio',
   linkedinUrl: 'https://www.linkedin.com/in/eugenio-tesio/',
   summary:
-    'Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico con más de 14 años construyendo plataformas móviles de alta escala y backends resilientes. Especializado en Flutter (BLoC y Riverpod), Python (FastAPI), Java (Spring Boot), GCP e ingeniería con IA multiagente. En ueno bank (ITTI) lidera la arquitectura para más de 50 ingenieros Flutter — Micro-App y App Shell, Release Trains de 15 días multi-tienda, RASP fintech y entrega acelerada con IA.',
+    'Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico con más de 14 años construyendo plataformas móviles de alta escala y backends resilientes. Especializado en Flutter (BLoC y Riverpod), Python (FastAPI), Java (Spring Boot), GCP e ingeniería con IA multiagente. En ueno bank (ITTI) hasta nov. 2026 lideró la arquitectura para más de 50 ingenieros Flutter — Micro-App y App Shell, Release Trains de 15 días multi-tienda, RASP fintech y entrega acelerada con IA.',
   sectionLabels: {
     impact: 'IMPACTO EN CIFRAS',
     skills: 'COMPETENCIAS CLAVE',
@@ -318,7 +318,7 @@ const contentEs: CvContent = {
       role: 'Experto Mobile',
       company: 'ITTI S.A.E.C.A. | ueno bank',
       location: 'San Francisco / Remoto',
-      period: 'Sep 2023 – Actualidad',
+      period: 'Sep 2023 – Nov 2026',
       bullets: [
         'Lideré la migración arquitectónica de monolito a Micro-App y App Shell multi-repo, agilizando el desarrollo concurrente para más de 50 ingenieros Flutter.',
         'Colideré la consolidación de las apps bancarias Individuos (retail) y Empresas (corporativa), armonizando arquitecturas BLoC y Riverpod entre más de 300 stakeholders.',
