@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -9,7 +10,7 @@ import typescript from 'highlight.js/lib/languages/typescript';
 import { ArrowLeft, Share2, Check } from 'lucide-react';
 import { BlogPost } from '../types';
 import { Locale } from '../data/portfolio';
-import { getBlogArticleUrl } from '../utils/blogUrls';
+import { getBlogArticleUrl, getBlogIndexPath } from '../utils/blogUrls';
 import HtmlArticleBody from './HtmlArticleBody';
 
 const markdownRehypePlugins: PluggableList = [
@@ -53,11 +54,13 @@ const DEFAULT_TITLE = 'Eugenio Tesio Portfolio';
 
 export default function BlogArticleReader({
   post,
-  backHref = '/#blog',
+  backHref,
   onClose,
 }: BlogArticleReaderProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
+  const resolvedBackHref = backHref ?? getBlogIndexPath(locale);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -78,19 +81,25 @@ export default function BlogArticleReader({
       onClose();
       return;
     }
-    window.location.href = backHref;
+    navigate(resolvedBackHref);
   };
 
   return (
     <div className="relative w-full max-w-3xl mx-auto">
       <div className="flex items-center justify-between pb-5 mb-8">
-        <button
-          onClick={handleBack}
+        <Link
+          to={resolvedBackHref}
+          onClick={(event) => {
+            if (onClose) {
+              event.preventDefault();
+              onClose();
+            }
+          }}
           className="inline-flex items-center gap-2 text-lg font-medium text-muted hover:text-ink"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('blog.backToArticles')}</span>
-        </button>
+        </Link>
 
         <button
           onClick={handleCopyLink}

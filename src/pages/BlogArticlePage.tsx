@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import BlogArticleReader from '../components/BlogArticleReader';
 import { getBlogPostBySlug } from '../data/blogLoader';
 import { Locale } from '../data/portfolio';
+import { getBlogIndexPath } from '../utils/blogUrls';
 
 export default function BlogArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -20,6 +21,7 @@ export default function BlogArticlePage() {
   }, [lngParam, i18n]);
 
   const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
+  const backHref = getBlogIndexPath(locale);
 
   const post = useMemo(() => {
     if (!slug) return undefined;
@@ -32,7 +34,7 @@ export default function BlogArticlePage() {
         <div className="text-center space-y-4 max-w-md">
           <p className="text-ink font-medium">{t('blog.articleNotFound')}</p>
           <Link
-            to="/#blog"
+            to={backHref}
             className="inline-flex items-center gap-2 text-lg font-medium text-accent"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -45,7 +47,7 @@ export default function BlogArticlePage() {
 
   return (
     <div className="min-h-screen py-12 sm:py-24 px-3 sm:px-6">
-      <BlogArticleReader post={post} backHref="/#blog" />
+      <BlogArticleReader post={post} backHref={backHref} />
     </div>
   );
 }

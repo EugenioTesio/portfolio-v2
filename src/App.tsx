@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import PortfolioPage from './pages/PortfolioPage';
+import BlogIndexPage from './pages/BlogIndexPage';
 import BlogArticlePage from './pages/BlogArticlePage';
 
 export default function App() {
@@ -8,6 +9,7 @@ export default function App() {
       <div className="relative z-10">
         <Routes>
           <Route path="/" element={<PortfolioPage />} />
+          <Route path="/blog" element={<BlogIndexPage />} />
           <Route path="/blog/:slug" element={<BlogArticlePage />} />
         </Routes>
       </div>

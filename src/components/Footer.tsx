@@ -1,20 +1,22 @@
+import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { usePortfolioData } from '../data/portfolio';
+import { Locale, usePortfolioData } from '../data/portfolio';
+import { getBlogIndexPath } from '../utils/blogUrls';
 
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
 }
 
 export default function Footer({ onNavigate }: FooterProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { PERSONAL_INFO } = usePortfolioData();
+  const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
 
-  const links = [
+  const sectionLinks = [
     { id: 'about', label: t('footer.about') },
     { id: 'experience', label: t('footer.experience') },
     { id: 'projects', label: t('footer.projects') },
-    { id: 'blog', label: t('footer.blog') },
     { id: 'contact', label: t('footer.contact') },
   ];
 
@@ -27,7 +29,7 @@ export default function Footer({ onNavigate }: FooterProps) {
             <p className="text-base text-faint mt-1">{t('footer.subtitle')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-base text-muted">
-            {links.map((link) => (
+            {sectionLinks.slice(0, 3).map((link) => (
               <button
                 key={link.id}
                 onClick={() => onNavigate(link.id)}
@@ -36,6 +38,18 @@ export default function Footer({ onNavigate }: FooterProps) {
                 {link.label}
               </button>
             ))}
+            <Link
+              to={getBlogIndexPath(locale)}
+              className="hover:text-ink transition-colors"
+            >
+              {t('footer.blog')}
+            </Link>
+            <button
+              onClick={() => onNavigate('contact')}
+              className="hover:text-ink transition-colors"
+            >
+              {t('footer.contact')}
+            </button>
           </div>
           <button
             id="back-to-top-btn"
