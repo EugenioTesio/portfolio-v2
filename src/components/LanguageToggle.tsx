@@ -9,7 +9,7 @@ export default function LanguageToggle() {
 
   return (
     <div
-      className="flex items-center gap-0.5 p-0.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md"
+      className="flex items-center gap-0.5 p-0.5 rounded-lg bg-surface border border-line"
       role="group"
       aria-label={t('languageToggle.label')}
     >
@@ -22,10 +22,10 @@ export default function LanguageToggle() {
             onClick={() => i18n.changeLanguage(locale)}
             aria-pressed={isActive}
             aria-label={t(`languageToggle.${locale}`)}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
+            className={`px-2.5 py-1 rounded-md text-base font-medium transition-colors ${
               isActive
-                ? 'bg-[#00F5FF] text-black shadow-[0_0_12px_rgba(0,245,255,0.35)]'
-                : 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.05]'
+                ? 'bg-accent text-page'
+                : 'text-muted hover:text-ink'
             }`}
           >
             {locale.toUpperCase()}

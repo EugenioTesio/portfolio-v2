@@ -123,11 +123,20 @@
 .html-article ul,
 .html-article ol {
   margin: 0 0 1.1rem;
-  padding-left: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.html-article ul {
+  list-style-type: disc;
+}
+
+.html-article ol {
+  list-style-type: decimal;
 }
 
 .html-article li {
   margin: 0.35rem 0;
+  display: list-item;
 }
 
 .html-article li::marker {

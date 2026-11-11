@@ -51,15 +51,43 @@ The presentation pattern defines those relationships. A state-management mechani
 **Example: MVC + ValueNotifier**
 
 ```dart
-ValueListenableBuilder<TransactionsState>(
-  valueListenable: model.state,
-  builder: (context, state, _) => Column(
-    children: [
-      TextButton(onPressed: controller.refresh, child: const Text('Refresh')),
-      Expanded(child: TransactionsBody(state: state)),
-    ],
-  ),
-)
+class TransactionsModel {
+  final state = ValueNotifier(const TransactionsState.initial());
+  // repository updates `state.value` after fetch
+}
+
+class TransactionsController {
+  TransactionsController(this._model);
+  final TransactionsModel _model;
+
+  Future<void> refresh() => _model.load(); // model owns the data change
+}
+
+class TransactionsScreen extends StatefulWidget {
+  const TransactionsScreen({super.key});
+
+  @override
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen> {
+  late final model = TransactionsModel(/* repo */);
+  late final controller = TransactionsController(model);
+
+  @override
+  Widget build(BuildContext context) {
+    // View observes the model; input goes to the controller.
+    return ValueListenableBuilder<TransactionsState>(
+      valueListenable: model.state,
+      builder: (context, state, _) => Column(
+        children: [
+          TextButton(onPressed: controller.refresh, child: const Text('Refresh')),
+          Expanded(child: TransactionsBody(state: state)),
+        ],
+      ),
+    );
+  }
+}
 ```
 
 The view watches `model.state`; `controller.refresh()` requests data. The controller does not need to update widgets directly. [2](https://martinfowler.com/eaaDev/uiArchs.html)
@@ -82,15 +110,43 @@ abstract interface class TransactionsView {
   void render(TransactionsState state);
 }
 
-// Inside the State object implementing TransactionsView:
-@override
-void render(TransactionsState next) {
-  if (!mounted) return;
-  setState(() => state = next);
+class TransactionsPresenter {
+  TransactionsPresenter(this._view, this._repo);
+  final TransactionsView _view;
+  final TransactionsRepository _repo;
+
+  Future<void> refresh() async {
+    _view.render(const TransactionsState.loading());
+    _view.render(await _repo.fetch());
+  }
 }
 
-// The Refresh button calls presenter.refresh().
-// The presenter eventually calls view.render(nextState).
+class TransactionsScreen extends StatefulWidget {
+  const TransactionsScreen({super.key});
+
+  @override
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen>
+    implements TransactionsView {
+  late final presenter = TransactionsPresenter(this, repo);
+  TransactionsState state = const TransactionsState.initial();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      TextButton(onPressed: presenter.refresh, child: const Text('Refresh')),
+      Expanded(child: TransactionsBody(state: state)),
+    ],
+  );
+
+  @override
+  void render(TransactionsState next) {
+    if (!mounted) return;
+    setState(() => state = next);
+  }
+}
 ```
 
 The presenter calls `render`; the view updates its state. Detach the view when it is disposed. [3](https://martinfowler.com/eaaDev/PassiveScreen.html)
@@ -109,19 +165,40 @@ The presenter calls `render`; the view updates its state. Detach the view when i
 **Example: MVVM + Riverpod**
 
 ```dart
-// Assume transactionsVmProvider is a
-// NotifierProvider<TransactionsViewModel, TransactionsState>.
-final state = ref.watch(transactionsVmProvider);
+class TransactionsViewModel extends Notifier<TransactionsState> {
+  @override
+  TransactionsState build() => const TransactionsState.initial();
 
-return Column(
-  children: [
-    TextButton(
-      onPressed: () => ref.read(transactionsVmProvider.notifier).load(),
-      child: const Text('Refresh'),
-    ),
-    Expanded(child: TransactionsBody(state: state)),
-  ],
+  Future<void> load() async {
+    state = const TransactionsState.loading();
+    state = await ref.read(transactionsRepoProvider).fetch();
+  }
+}
+
+final transactionsVmProvider =
+    NotifierProvider<TransactionsViewModel, TransactionsState>(
+  TransactionsViewModel.new,
 );
+
+class TransactionsScreen extends ConsumerWidget {
+  const TransactionsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // View observes ViewModel state; actions call the ViewModel.
+    final state = ref.watch(transactionsVmProvider);
+
+    return Column(
+      children: [
+        TextButton(
+          onPressed: () => ref.read(transactionsVmProvider.notifier).load(),
+          child: const Text('Refresh'),
+        ),
+        Expanded(child: TransactionsBody(state: state)),
+      ],
+    );
+  }
+}
 ```
 
 `ref.watch` observes state; `load()` calls the ViewModel. MVVM also supports unidirectional data flow. [4](https://docs.flutter.dev/app-architecture/recommendations) [5](https://docs.flutter.dev/app-architecture/concepts)
@@ -140,19 +217,38 @@ return Column(
 **Example: MVI-inspired + Bloc**
 
 ```dart
-BlocBuilder<TransactionsBloc, TransactionsState>(
-  builder: (context, state) => Column(
-    children: [
-      TextButton(
-        onPressed: () => context.read<TransactionsBloc>().add(
-          const TransactionsRequested(),
-        ),
-        child: const Text('Refresh'),
+class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
+  TransactionsBloc(this._repo) : super(const TransactionsState.initial()) {
+    on<TransactionsRequested>((event, emit) async {
+      emit(const TransactionsState.loading());
+      emit(await _repo.fetch());
+    });
+  }
+
+  final TransactionsRepository _repo;
+}
+
+class TransactionsScreen extends StatelessWidget {
+  const TransactionsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // View dispatches an intent and renders emitted state snapshots.
+    return BlocBuilder<TransactionsBloc, TransactionsState>(
+      builder: (context, state) => Column(
+        children: [
+          TextButton(
+            onPressed: () => context.read<TransactionsBloc>().add(
+              const TransactionsRequested(),
+            ),
+            child: const Text('Refresh'),
+          ),
+          Expanded(child: TransactionsBody(state: state)),
+        ],
       ),
-      Expanded(child: TransactionsBody(state: state)),
-    ],
-  ),
-)
+    );
+  }
+}
 ```
 
 The view dispatches an event and renders the emitted state. Bloc can support MVI without enforcing a strict implementation. [6](https://hannesdorfmann.com/android/mosby3-mvi-1/) [7](https://bloclibrary.dev/bloc-concepts/) [8](https://redux.js.org/understanding/thinking-in-redux/three-principles)

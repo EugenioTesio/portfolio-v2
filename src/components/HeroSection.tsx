@@ -1,20 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import {
-  Server,
-  Layers,
-  Cpu,
-  ArrowRight,
-  CheckCircle2,
-  MapPin,
-  Sparkles,
-  Briefcase,
-  GraduationCap,
-  Mail,
-  Bot,
-  Download,
-} from 'lucide-react';
+import { ArrowRight, MapPin, Download } from 'lucide-react';
 import { usePortfolioData } from '../data/portfolio';
 import regeneratedProfileImage from '../assets/images/regenerated_image_1788456283242.jpg';
 import { downloadCv } from '../utils/downloadCv';
@@ -40,8 +27,8 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
       setIsGeneratingCv(false);
     }
   };
+
   useEffect(() => {
-    // If user previously stored an older placeholder, migrate it to the new regenerated image
     const stored = localStorage.getItem('eugenio_profile_img');
     if (!stored || stored === '/profile-image-2.png' || stored === '/eugenio-tesio.jpg') {
       localStorage.setItem('eugenio_profile_img', regeneratedProfileImage);
@@ -61,122 +48,61 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
     return () => window.removeEventListener('eugenio-avatar-update', handleAvatarUpdate);
   }, []);
 
+  const metrics = [
+    { value: t('hero.metricYears'), label: t('hero.metricYearsLabel') },
+    { value: t('hero.metricEngineers'), label: t('hero.metricEngineersLabel') },
+    { value: t('hero.metricReleaseTrain'), label: t('hero.metricReleaseTrainLabel') },
+  ];
+
   return (
     <section
       id="hero"
-      className="relative min-h-screen pt-28 pb-20 overflow-hidden flex flex-col justify-center bg-transparent"
+      className="relative pt-32 pb-20 flex flex-col justify-center bg-transparent"
     >
-      {/* Background Subtle Grid */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        {/* Top Badges */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono backdrop-blur-md shadow-[0_0_15px_rgba(0,245,255,0.15)]"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#00F5FF] animate-pulse" />
-            <span className="text-[#A0A0A0]">{t('hero.currentStatus')}</span>
-            <span className="font-semibold text-white tracking-wide">{t('hero.currentRole')}</span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-[#A0A0A0] text-xs font-mono backdrop-blur-md"
-          >
-            <MapPin className="w-3.5 h-3.5 text-[#00F5FF]" />
-            <span>{PERSONAL_INFO.location}</span>
-          </motion.div>
-        </div>
-
-        {/* Hero Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Column: Heading & Comprehensive Overview */}
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div className="lg:col-span-7 space-y-6">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-3"
+              transition={{ duration: 0.45 }}
+              className="space-y-4"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-[#00F5FF]/30 text-[#00F5FF] text-xs font-mono">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="font-bold tracking-[2px]">{t('hero.sectionBadge')}</span>
-              </div>
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-accent">
+                <span>{t('hero.eyebrow')}</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5" />
+                  {PERSONAL_INFO.location}
+                </span>
+              </p>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-none">
-                <span className="inline-block leading-[1.25] pb-[0.18em] bg-gradient-to-r from-white via-[#E0E0E0] to-[#A0A0A0] bg-clip-text text-transparent [-webkit-text-fill-color:transparent]">
-                  {t('hero.headlineName')}
-                </span>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#A0A0A0] block mt-1 leading-snug">
-                  {t('hero.headlineTitle')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F5FF] via-[#9D00FF] to-[#FF00E5]">{t('hero.headlineHighlight')}</span> {t('hero.headlineSuffix')}
-                </span>
+              <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-ink leading-[1.05]">
+                {t('hero.headlineName')}
               </h1>
-              
-              <div className="space-y-3 text-[#A0A0A0] text-base leading-relaxed pt-2">
-                <p dangerouslySetInnerHTML={{ __html: t('hero.overviewP1') }} />
-                <p className="text-base" dangerouslySetInnerHTML={{ __html: t('hero.overviewP2') }} />
+
+              <div className="space-y-3 max-w-[65ch]">
+                <p className="text-2xl leading-[1.45] text-ink">
+                  {t('hero.overviewP1')}
+                </p>
+                <p className="text-2xl leading-[1.45] text-muted">
+                  {t('hero.overviewP2')}
+                </p>
               </div>
             </motion.div>
 
-            {/* Comprehensive Experience Trail Chips */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-wrap gap-2 pt-1"
-            >
-              <span className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-white/[0.08] to-white/[0.03] border border-[#00F5FF]/50 text-xs font-mono text-white flex items-center gap-1.5 hover:border-[#00F5FF] transition-all shadow-[0_0_15px_rgba(0,245,255,0.2)]">
-                <Bot className="w-3.5 h-3.5 text-[#00F5FF] animate-pulse" />
-                <span className="text-[#00F5FF] font-bold">{t('hero.chipAi')}</span>
-                <span className="text-slate-300">· {t('hero.chipAiSub')}</span>
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#00F5FF]/40 transition-colors">
-                <Layers className="w-3.5 h-3.5 text-[#00F5FF]" />
-                {t('hero.chipUeno')}
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#9D00FF]/40 transition-colors">
-                <Server className="w-3.5 h-3.5 text-[#9D00FF]" />
-                {t('hero.chipPairtree')}
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#00F5FF]/40 transition-colors">
-                <Cpu className="w-3.5 h-3.5 text-[#00F5FF]" />
-                {t('hero.chipValtech')}
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/10 text-xs font-mono text-slate-200 flex items-center gap-1.5 hover:border-[#FF00E5]/40 transition-colors">
-                <GraduationCap className="w-3.5 h-3.5 text-[#FF00E5]" />
-                {t('hero.chipUtn')}
-              </span>
-            </motion.div>
-
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap items-center gap-4 pt-3"
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="flex flex-wrap items-center gap-3"
             >
               <button
                 id="hero-explore-projects-btn"
                 onClick={() => onNavigate('projects')}
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#00F5FF] text-black font-extrabold uppercase text-xs tracking-wider hover:brightness-110 hover:shadow-[0_0_25px_rgba(0,245,255,0.5)] active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-accent text-page text-lg font-medium hover:brightness-110 transition-all"
               >
                 <span>{t('hero.viewCaseStudies')}</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                id="hero-experience-btn"
-                onClick={() => onNavigate('experience')}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-white text-xs uppercase tracking-wider font-semibold transition-all"
-              >
-                <Briefcase className="w-4 h-4 text-[#00F5FF]" />
-                <span>{t('hero.careerTimeline')}</span>
               </button>
 
               <button
@@ -184,134 +110,48 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                 type="button"
                 onClick={handleDownloadCv}
                 disabled={isGeneratingCv}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-white text-xs uppercase tracking-wider font-semibold transition-all disabled:opacity-60 disabled:cursor-wait"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-surface border border-line text-ink text-lg font-medium hover:border-ink/30 transition-colors disabled:opacity-60"
               >
-                <Download className="w-4 h-4 text-[#00F5FF]" />
+                <Download className="w-4 h-4" />
                 <span>{t('hero.downloadCv')}</span>
               </button>
-
-              <button
-                id="hero-contact-btn"
-                onClick={() => onNavigate('contact')}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-white/[0.04] text-[#A0A0A0] hover:text-white text-xs uppercase tracking-wider font-medium transition-all"
-              >
-                <Mail className="w-4 h-4" />
-                <span>{t('hero.directContact')}</span>
-              </button>
             </motion.div>
 
-            {/* Quick Metrics Bar - Glass Bento Grid */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+            <motion.dl
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/10"
+              transition={{ duration: 0.45, delay: 0.14 }}
+              className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 border-t border-line max-w-xl"
             >
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-[#00F5FF]">{t('hero.metricYears')}</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricYearsLabel')}</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-[#9D00FF]">{t('hero.metricEngineers')}</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricEngineersLabel')}</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-white">{t('hero.metricCoverage')}</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricCoverageLabel')}</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
-                <div className="text-2xl font-extrabold font-mono text-[#00F5FF]">{t('hero.metricRejections')}</div>
-                <div className="text-[11px] text-[#A0A0A0] uppercase tracking-wider mt-0.5">{t('hero.metricRejectionsLabel')}</div>
-              </div>
-            </motion.div>
+              {metrics.map((metric) => (
+                <div key={metric.label}>
+                  <dt className="text-base text-faint">{metric.label}</dt>
+                  <dd className="mt-1 text-2xl sm:text-4xl font-semibold text-accent tracking-tight leading-none whitespace-nowrap">{metric.value}</dd>
+                </div>
+              ))}
+            </motion.dl>
           </div>
 
-          {/* Right Column: Eugenio Tesio Profile Image & Glass Bento Card */}
           <div className="lg:col-span-5">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="rounded-[28px] bg-white/[0.03] border border-white/15 backdrop-blur-2xl p-4 sm:p-5 shadow-2xl relative group overflow-hidden hover:border-[#00F5FF]/40 transition-all duration-500 shadow-black/80"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="overflow-hidden rounded-2xl border-2 border-accent/70 bg-surface"
             >
-              {/* Profile Image Container */}
-              <div className="relative w-full h-[420px] sm:h-[480px] rounded-[22px] overflow-hidden bg-black/40 border border-white/10 transition-all duration-300">
-                <img
-                  src={profileImg}
-                  alt={t('hero.profileAlt')}
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    if (e.currentTarget.src.includes('profile-image-2')) {
-                      e.currentTarget.src = '/eugenio-tesio-tech.jpg';
-                    } else if (e.currentTarget.src.includes('eugenio-tesio-tech')) {
-                      e.currentTarget.src = '/eugenio-tesio.jpg';
-                    }
-                  }}
-                  className="w-full h-full object-cover object-center filter brightness-100 contrast-105 group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                />
-
-                {/* Subtle Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#00F5FF]/10 via-transparent to-[#9D00FF]/15 pointer-events-none" />
-
-                {/* Top Overlay Badge */}
-                <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/75 border border-[#00F5FF]/40 backdrop-blur-md text-[11px] font-mono text-[#00F5FF] font-bold shadow-lg">
-                    <span className="w-2 h-2 rounded-full bg-[#00F5FF] animate-pulse" />
-                    <span>EUGENIO TESIO</span>
-                  </div>
-                </div>
-
-                {/* Floating Bottom Highlights on Image */}
-                <div className="absolute bottom-4 left-4 right-4 space-y-2.5 pointer-events-none z-10">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2.5 rounded-xl bg-black/80 border border-white/15 backdrop-blur-md">
-                      <div className="text-[10px] font-mono text-[#00F5FF] font-bold uppercase tracking-wider">
-                        {t('hero.leadership')}
-                      </div>
-                      <div className="text-xs font-semibold text-white">
-                        {t('hero.leadershipValue')}
-                      </div>
-                      <div className="text-[10px] text-[#A0A0A0]">
-                        {t('hero.leadershipSub')}
-                      </div>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-black/80 border border-white/15 backdrop-blur-md">
-                      <div className="text-[10px] font-mono text-[#9D00FF] font-bold uppercase tracking-wider">
-                        {t('hero.releaseSla')}
-                      </div>
-                      <div className="text-xs font-semibold text-white">
-                        {t('hero.releaseSlaValue')}
-                      </div>
-                      <div className="text-[10px] text-[#A0A0A0]">
-                        {t('hero.releaseSlaSub')}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bento Footer Bar with Career Milestones */}
-              <div className="pt-4 mt-2 border-t border-white/10 flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <div className="text-xs font-bold text-white tracking-wide">
-                    {t('hero.profileRole')}
-                  </div>
-                  <div className="text-[11px] font-mono text-[#A0A0A0] flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3 h-3 text-[#00F5FF]" />
-                    <span>{t('hero.verifiedTrack')}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => onNavigate('about')}
-                  className="inline-flex items-center gap-1 text-xs font-mono font-bold uppercase tracking-wider text-[#00F5FF] hover:text-white transition-colors"
-                >
-                  <span>{t('hero.fullBio')}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              <img
+                src={profileImg}
+                alt={t('hero.profileAlt')}
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  if (e.currentTarget.src.includes('profile-image-2')) {
+                    e.currentTarget.src = '/eugenio-tesio-tech.jpg';
+                  } else if (e.currentTarget.src.includes('eugenio-tesio-tech')) {
+                    e.currentTarget.src = '/eugenio-tesio.jpg';
+                  }
+                }}
+                className="w-full h-[420px] sm:h-[480px] object-cover object-center"
+              />
             </motion.div>
           </div>
         </div>

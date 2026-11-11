@@ -31,7 +31,7 @@
 
 **Decision**: Ship HTML bodies under `src/content/blog/{en,es}/flutter-mitm-security-alert.html` with `format: 'html'`, using existing `figure.diagram-frame` + `pre.mermaid` pattern (1–2 diagrams).
 
-**Rationale**: Matches RASP and banking architecture posts; `HtmlArticleBody` already initializes Mermaid—no new dependency.
+**Rationale**: Matches RASP and other HTML blog posts; `HtmlArticleBody` already initializes Mermaid—no new dependency.
 
 **Alternatives considered**:
 - Markdown-only — works via glob, but long-form security posts in this repo are HTML with Mermaid.
