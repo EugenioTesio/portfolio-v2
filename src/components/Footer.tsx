@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Locale, usePortfolioData } from '../data/portfolio';
-import { getBlogIndexPath } from '../utils/blogUrls';
+import { BLOG_FROM_PORTFOLIO_STATE, getBlogIndexPath } from '../utils/blogUrls';
 
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
@@ -40,6 +40,7 @@ export default function Footer({ onNavigate }: FooterProps) {
             ))}
             <Link
               to={getBlogIndexPath(locale)}
+              state={BLOG_FROM_PORTFOLIO_STATE}
               className="hover:text-ink transition-colors"
             >
               {t('footer.blog')}

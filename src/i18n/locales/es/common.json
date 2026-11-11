@@ -161,7 +161,7 @@
     "sectionBadge": "04. BLOG TÉCNICO Y REPOSITORIO",
     "title": "Notas de ingeniería",
     "titleHighlight": "",
-    "subtitle": "Guías prácticas sobre arquitectura Flutter a gran escala, endurecimiento RASP e IoT industrial.",
+    "subtitle": "Guías prácticas sobre arquitectura Flutter a gran escala, seguridad móvil e IoT industrial.",
     "sourceIndicator": "Fuente: /src/content/blog/{locale}/*.md, *.html",
     "allCategories": "todos",
     "searchPlaceholder": "Buscar artículos y etiquetas...",

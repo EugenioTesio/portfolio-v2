@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
 import { Locale } from '../data/portfolio';
-import { getBlogIndexPath } from '../utils/blogUrls';
+import { BLOG_FROM_PORTFOLIO_STATE, getBlogIndexPath } from '../utils/blogUrls';
 import BlogPostList from './BlogPostList';
 
 export default function BlogSection() {
@@ -24,6 +24,7 @@ export default function BlogSection() {
         <div className="mt-10">
           <Link
             to={getBlogIndexPath(locale)}
+            state={BLOG_FROM_PORTFOLIO_STATE}
             className="inline-flex items-center gap-1.5 text-lg font-medium text-accent"
           >
             <span>{t('blog.viewAllArticles')}</span>

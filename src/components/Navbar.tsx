@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Mail } from 'lucide-react';
 import { Locale } from '../data/portfolio';
-import { getBlogIndexPath } from '../utils/blogUrls';
+import { BLOG_FROM_PORTFOLIO_STATE, getBlogIndexPath } from '../utils/blogUrls';
 import LanguageToggle from './LanguageToggle';
 
 interface NavbarProps {
@@ -89,6 +89,7 @@ export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
             <Link
               id="nav-link-blog"
               to={blogPath}
+              state={BLOG_FROM_PORTFOLIO_STATE}
               className={navLinkClass(false)}
             >
               {t('nav.blog')}
@@ -147,6 +148,7 @@ export default function Navbar({ activeSection, onNavigate }: NavbarProps) {
             ))}
             <Link
               to={blogPath}
+              state={BLOG_FROM_PORTFOLIO_STATE}
               onClick={() => setMobileMenuOpen(false)}
               className={`block ${mobileLinkClass(false)}`}
             >
