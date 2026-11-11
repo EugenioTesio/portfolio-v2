@@ -22,6 +22,38 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      // Mermaid diagram packs + react-pdf stay large but load only on demand.
+      chunkSizeWarningLimit: 1300,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return;
+            // Keep mermaid out of manualChunks so its diagram types stay lazy.
+            if (id.includes('@react-pdf')) return 'react-pdf';
+            if (id.includes('highlight.js') || id.includes('rehype-highlight')) {
+              return 'highlight';
+            }
+            if (
+              id.includes('react-markdown') ||
+              id.includes('remark-gfm') ||
+              id.includes('/remark-') ||
+              id.includes('/rehype-') ||
+              id.includes('/unified/') ||
+              id.includes('/mdast-') ||
+              id.includes('/hast-')
+            ) {
+              return 'markdown';
+            }
+            if (id.includes('/motion/')) return 'motion';
+            if (id.includes('i18next')) return 'i18n';
+            if (id.includes('lucide-react')) return 'icons';
+            if (id.includes('react-router')) return 'router';
+            if (id.includes('react-dom') || id.includes('/react/')) return 'react-vendor';
+          },
+        },
+      },
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.

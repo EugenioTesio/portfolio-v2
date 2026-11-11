@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown, { Components } from 'react-markdown';
@@ -11,7 +11,8 @@ import { ArrowLeft, Share2, Check } from 'lucide-react';
 import { BlogPost } from '../types';
 import { Locale } from '../data/portfolio';
 import { getBlogArticleUrl, getBlogIndexPath } from '../utils/blogUrls';
-import HtmlArticleBody from './HtmlArticleBody';
+
+const HtmlArticleBody = lazy(() => import('./HtmlArticleBody'));
 
 const markdownRehypePlugins: PluggableList = [
   [
@@ -148,7 +149,9 @@ export default function BlogArticleReader({
       )}
 
       {post.format === 'html' ? (
-        <HtmlArticleBody html={post.content || ''} />
+        <Suspense fallback={null}>
+          <HtmlArticleBody html={post.content || ''} />
+        </Suspense>
       ) : (
         <div className="html-article">
           <ReactMarkdown

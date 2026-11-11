@@ -10,29 +10,27 @@ const BLOG_COVERS: Record<string, string> = {
   'flutter-presentation-architecture-vs-state-management': flutterArchitectureCover,
 };
 
+type ArticleLoader = () => Promise<string>;
+
 const markdownModulesEn = import.meta.glob('../content/blog/en/*.md', {
   query: '?raw',
-  eager: true,
   import: 'default',
-}) as Record<string, string>;
+}) as Record<string, ArticleLoader>;
 
 const htmlModulesEn = import.meta.glob('../content/blog/en/*.html', {
   query: '?raw',
-  eager: true,
   import: 'default',
-}) as Record<string, string>;
+}) as Record<string, ArticleLoader>;
 
 const markdownModulesEs = import.meta.glob('../content/blog/es/*.md', {
   query: '?raw',
-  eager: true,
   import: 'default',
-}) as Record<string, string>;
+}) as Record<string, ArticleLoader>;
 
 const htmlModulesEs = import.meta.glob('../content/blog/es/*.html', {
   query: '?raw',
-  eager: true,
   import: 'default',
-}) as Record<string, string>;
+}) as Record<string, ArticleLoader>;
 
 function getArticleModules(locale: Locale) {
   if (locale === 'es') {
@@ -53,25 +51,44 @@ function fallbackContent(post: BlogPost, format: 'markdown' | 'html'): string {
   return `# ${post.title}\n\n${post.excerpt}`;
 }
 
+function findArticleLoader(
+  articleModules: Record<string, ArticleLoader>,
+  filename: string
+): ArticleLoader | undefined {
+  const matchedPath = Object.keys(articleModules).find(
+    (path) => path.endsWith(`/${filename}`) || path.endsWith(filename)
+  );
+  return matchedPath ? articleModules[matchedPath] : undefined;
+}
+
+/** Listing metadata only — article bodies stay in separate chunks. */
 export function getBlogPosts(locale: Locale = 'en'): BlogPost[] {
   const { BLOG_POSTS } = getPortfolioData(locale);
-  const articleModules = getArticleModules(locale);
 
   return BLOG_POSTS.map((post) => {
     const format = resolveFormat(post);
-    const matchedPath = Object.keys(articleModules).find(
-      (path) => path.endsWith(`/${post.filename}`) || path.endsWith(post.filename)
-    );
-    const content = matchedPath ? articleModules[matchedPath] : '';
     return {
       ...post,
       format,
       coverImage: BLOG_COVERS[post.slug],
-      content: content || fallbackContent(post, format),
     };
   });
 }
 
-export function getBlogPostBySlug(slug: string, locale: Locale = 'en'): BlogPost | undefined {
-  return getBlogPosts(locale).find((p) => p.slug === slug);
+export async function getBlogPostBySlug(
+  slug: string,
+  locale: Locale = 'en'
+): Promise<BlogPost | undefined> {
+  const post = getBlogPosts(locale).find((p) => p.slug === slug);
+  if (!post) return undefined;
+
+  const format = resolveFormat(post);
+  const loader = findArticleLoader(getArticleModules(locale), post.filename);
+  const content = loader ? await loader() : '';
+
+  return {
+    ...post,
+    format,
+    content: content || fallbackContent(post, format),
+  };
 }

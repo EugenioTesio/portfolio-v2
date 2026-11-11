@@ -1,5 +1,3 @@
-import { pdf } from '@react-pdf/renderer';
-import CvDocument from '../components/cv/CvDocument';
 import { getCvContent } from '../data/cv/content';
 
 function resolveLocale(locale: string): 'en' | 'es' {
@@ -9,6 +7,10 @@ function resolveLocale(locale: string): 'en' | 'es' {
 export async function downloadCv(locale: string): Promise<void> {
   const lang = resolveLocale(locale);
   const content = getCvContent(lang);
+  const [{ pdf }, { default: CvDocument }] = await Promise.all([
+    import('@react-pdf/renderer'),
+    import('../components/cv/CvDocument'),
+  ]);
   const blob = await pdf(<CvDocument content={content} />).toBlob();
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');

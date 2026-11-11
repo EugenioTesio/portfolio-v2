@@ -1,10 +1,22 @@
 import { useEffect, useRef } from 'react';
-import mermaid from 'mermaid';
+import type mermaidApi from 'mermaid';
+
+type Mermaid = typeof mermaidApi;
 
 let mermaidReady = false;
+let mermaidModule: Mermaid | null = null;
 
-function ensureMermaid(): void {
-  if (mermaidReady) return;
+async function loadMermaid(): Promise<Mermaid> {
+  if (mermaidModule) return mermaidModule;
+  const mod = await import('mermaid');
+  mermaidModule = mod.default;
+  return mermaidModule;
+}
+
+async function ensureMermaid(): Promise<Mermaid> {
+  const mermaid = await loadMermaid();
+  if (mermaidReady) return mermaid;
+
   mermaid.initialize({
     startOnLoad: false,
     theme: 'base',
@@ -39,6 +51,7 @@ function ensureMermaid(): void {
     }
   });
   mermaidReady = true;
+  return mermaid;
 }
 
 interface HtmlArticleBodyProps {
@@ -53,12 +66,15 @@ export default function HtmlArticleBody({ html }: HtmlArticleBodyProps) {
     if (!el) return;
 
     el.innerHTML = html;
-    ensureMermaid();
-
-    const nodes = Array.from(el.querySelectorAll<HTMLElement>('.mermaid'));
     let cancelled = false;
 
     const renderDiagrams = async () => {
+      const nodes = Array.from(el.querySelectorAll<HTMLElement>('.mermaid'));
+      if (nodes.length === 0) return;
+
+      const mermaid = await ensureMermaid();
+      if (cancelled) return;
+
       for (const node of nodes) {
         if (cancelled) return;
         node.removeAttribute('data-processed');
