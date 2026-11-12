@@ -1,5 +1,5 @@
 import { SkillCapability, ExperienceItem, ProjectItem, BlogPost } from '../../types';
-import regeneratedProfileImage from '../../assets/images/regenerated_image_1788456283242.jpg';
+import profileImage from '../../assets/images/eugenio-portrait.jpg';
 
 export const PERSONAL_INFO = {
   name: 'Eugenio Tesio',
@@ -7,7 +7,7 @@ export const PERSONAL_INFO = {
   subtitle: 'Senior Flutter & Python Enthusiast · Electronics Engineer',
   location: 'San Francisco, Córdoba, Argentina',
   email: 'eugeniotesio@gmail.com',
-  image: regeneratedProfileImage,
+  image: profileImage,
   bio: `I'm Eugenio Tesio, a passionate Mobile Expert, Systems Architect, and Electronics Engineer with over 14 years of professional software engineering and hardware telemetry experience. I specialize in designing and scaling high-velocity mobile platforms and resilient backends with Flutter (BLoC & Riverpod), Python (FastAPI), Java (Spring Boot), and Google Cloud Platform. 
 
 Most recently Mobile Expert at ueno bank (ITTI S.A.E.C.A.) through Nov. 2026, I pioneered the architectural migration to a multi-repo Micro-App & App Shell ecosystem that coordinated 50+ Flutter engineers, unified the flagship retail and business banking applications, built automated 15-day Release Trains to Apple App Store, Google Play, and Huawei AppGallery, and hardened security posture with Fintech RASP. Earlier I achieved 100% backend test coverage with FastAPI at PairTree (adoption enablement platform), delivered Riverpod and Nest.js microservices at Tandamos, built enterprise GCP Pub/Sub messaging pipelines at Valtech, and spent a decade delivering custom mobile/IoT solutions (including OCPP 1.6 EV charging networks and commercialized RS485 telemetry devices) with zero mobile store rejections.`,

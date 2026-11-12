@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, MapPin, Download } from 'lucide-react';
 import { usePortfolioData } from '../data/portfolio';
-import regeneratedProfileImage from '../assets/images/regenerated_image_1788456283242.jpg';
+import profileImage from '../assets/images/eugenio-portrait.jpg';
 import { downloadCv } from '../utils/downloadCv';
 
 interface HeroSectionProps {
@@ -15,7 +15,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
   const { PERSONAL_INFO } = usePortfolioData();
   const [isGeneratingCv, setIsGeneratingCv] = useState(false);
   const [profileImg, setProfileImg] = useState<string>(() => {
-    return localStorage.getItem('eugenio_profile_img') || regeneratedProfileImage;
+    return localStorage.getItem('eugenio_profile_img') || profileImage;
   });
 
   const handleDownloadCv = async () => {
@@ -30,9 +30,15 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
 
   useEffect(() => {
     const stored = localStorage.getItem('eugenio_profile_img');
-    if (!stored || stored === '/profile-image-2.png' || stored === '/eugenio-tesio.jpg') {
-      localStorage.setItem('eugenio_profile_img', regeneratedProfileImage);
-      setProfileImg(regeneratedProfileImage);
+    const isLegacyProfileImage =
+      !stored ||
+      stored === '/profile-image-2.png' ||
+      stored === '/eugenio-tesio.jpg' ||
+      stored.includes('regenerated_image_1788456283242') ||
+      stored.includes('eugenio-portrait.png');
+    if (isLegacyProfileImage) {
+      localStorage.setItem('eugenio_profile_img', profileImage);
+      setProfileImg(profileImage);
     }
 
     const handleAvatarUpdate = (e: Event) => {
