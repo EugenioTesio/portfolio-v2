@@ -585,6 +585,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'modular-flutter-architecture',
+    title: 'Arquitectura modular en Flutter',
+    excerpt: 'Los equipos entregan micro apps de Flutter independientes dentro de un App Shell, y comparten contratos de Foundations y una implementación de Core sin importar el código de las demás.',
+    date: '12 nov 2026',
+    readTime: '16 min de lectura',
+    category: 'Arquitectura',
+    tags: ['Flutter', 'Arquitectura', 'Modular', 'Micro apps', 'Foundations'],
+    author: 'Eugenio Tesio',
+    filename: 'modular-flutter-architecture.md',
+    format: 'markdown'
+  },
+  {
     slug: 'flutter-presentation-architecture-vs-state-management',
     title: 'Flutter Presentation Architecture vs State Managment',
     excerpt: 'Cómo encajan MVC, MVP, MVVM, MVI y la gestión de estado—y cómo elegir límites que sobrevivan un cambio de paquete.',

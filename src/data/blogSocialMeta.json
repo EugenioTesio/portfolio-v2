@@ -8,6 +8,12 @@
   },
   "posts": [
     {
+      "slug": "modular-flutter-architecture",
+      "title": "Modular Flutter Architecture",
+      "excerpt": "Teams ship independent Flutter micro apps inside one App Shell, sharing Foundations contracts and a Core implementation without importing each other's code.",
+      "ogImage": "/og/modular-flutter-architecture.jpg"
+    },
+    {
       "slug": "flutter-presentation-architecture-vs-state-management",
       "title": "Flutter Presentation Architecture vs State Managment",
       "excerpt": "How MVC, MVP, MVVM, MVI, and state management fit together—and how to choose boundaries that survive a package change.",
