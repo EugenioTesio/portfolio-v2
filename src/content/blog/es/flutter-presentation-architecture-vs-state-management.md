@@ -229,21 +229,67 @@ class TransactionsScreen extends ConsumerWidget {
 
 - **View:** `TransactionsScreen` despacha un intent como `TransactionsRequested` y renderiza un snapshot de estado de feature.
 - **Procesador de estado:** un event handler, update function o reducer traduce inputs y resultados al siguiente estado.
-- **Entrega de estado:** los suscriptores observan una secuencia de estados como `Initial`, `Loading`, `Loaded` y `Failure`.
+- **Entrega de estado:** los suscriptores observan un único modelo inmutable de la feature. Un refresh pone `status` en `loading` y conserva los `items` actuales; `ready` y `failure` reemplazan o retienen esa lista de forma explícita.
 - **Cableado posible en Flutter:** eventos de Bloc más `BlocBuilder`, o acciones/reducers de Redux más un store connector. Un notifier de Riverpod también puede seguir un diseño basado en intents si el equipo aplica esa disciplina de forma explícita.
 
 **Ejemplo: MVI-inspired + Bloc**
 
 ```dart
+sealed class TransactionsEvent {
+  const TransactionsEvent();
+}
+
+final class TransactionsRequested extends TransactionsEvent {
+  const TransactionsRequested();
+}
+
+enum TransactionsStatus { initial, loading, ready, failure }
+
+class TransactionsState {
+  const TransactionsState({
+    this.status = TransactionsStatus.initial,
+    this.items = const [],
+    this.error,
+  });
+
+  final TransactionsStatus status;
+  final List<Transaction> items;
+  final Object? error;
+}
+
 class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
-  TransactionsBloc(this._repo) : super(const TransactionsState.initial()) {
-    on<TransactionsRequested>((event, emit) async {
-      emit(const TransactionsState.loading());
-      emit(await _repo.fetch());
-    });
+  TransactionsBloc(this._repo) : super(const TransactionsState()) {
+    on<TransactionsRequested>(
+      _onRequested,
+      transformer: restartable(),
+    );
   }
 
   final TransactionsRepository _repo;
+
+  Future<void> _onRequested(
+    TransactionsRequested event,
+    Emitter<TransactionsState> emit,
+  ) async {
+    // Keep the previous rows; loading is a field of the same model.
+    emit(TransactionsState(
+      status: TransactionsStatus.loading,
+      items: state.items,
+    ));
+    try {
+      final items = await _repo.fetch();
+      emit(TransactionsState(
+        status: TransactionsStatus.ready,
+        items: items,
+      ));
+    } catch (error) {
+      emit(TransactionsState(
+        status: TransactionsStatus.failure,
+        items: state.items,
+        error: error,
+      ));
+    }
+  }
 }
 
 class TransactionsScreen extends StatelessWidget {
@@ -251,7 +297,7 @@ class TransactionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // View dispatches an intent and renders emitted state snapshots.
+    // View dispatches an intent and renders the feature-state model.
     return BlocBuilder<TransactionsBloc, TransactionsState>(
       builder: (context, state) => Column(
         children: [
@@ -269,7 +315,7 @@ class TransactionsScreen extends StatelessWidget {
 }
 ```
 
-La vista despacha un evento y renderiza el estado emitido. Bloc puede soportar MVI sin imponer una implementación estricta. [6](https://hannesdorfmann.com/android/mosby3-mvi-1/) [7](https://bloclibrary.dev/bloc-concepts/) [8](https://redux.js.org/understanding/thinking-in-redux/three-principles)
+La vista agrega `TransactionsRequested` y renderiza `TransactionsState`. Loading y failure copian los `items` previos, así que el refresh sigue siendo un solo modelo. `restartable`, de `package:bloc_concurrency`, es la política de concurrencia de este intent: solo el refresh más reciente puede emitir. Bloc puede alojar ese contrato; el intent sellado, el modelo único y el transformer son lo que hace que el ejemplo sea MVI. [6](https://hannesdorfmann.com/android/mosby3-mvi-1/) [7](https://bloclibrary.dev/bloc-concepts/) [8](https://redux.js.org/understanding/thinking-in-redux/three-principles)
 
 ![Un bucle de flujo unidireccional: los widgets envían un input a un dueño de estado; el dueño pide datos a un repositorio, recibe un resultado y publica estado de vuelta a los widgets.](/blog/flutter-presentation-architecture-vs-state-management/06_state_flow.png)
 

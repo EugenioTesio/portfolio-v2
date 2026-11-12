@@ -229,21 +229,67 @@ class TransactionsScreen extends ConsumerWidget {
 
 - **View:** `TransactionsScreen` dispatches an intent such as `TransactionsRequested` and renders a feature-state snapshot.
 - **State processor:** an event handler, update function, or reducer translates inputs and results into the next state.
-- **State delivery:** subscribers observe a sequence of states such as `Initial`, `Loading`, `Loaded`, and `Failure`.
+- **State delivery:** subscribers observe one immutable feature model. A refresh sets `status` to `loading` and keeps the current `items`; `ready` and `failure` replace or retain that list explicitly.
 - **Possible Flutter wiring:** Bloc events plus `BlocBuilder`, or Redux actions/reducers plus a store connector. A Riverpod notifier can also follow an intent-driven design if the team implements that discipline explicitly.
 
 **Example: MVI-inspired + Bloc**
 
 ```dart
+sealed class TransactionsEvent {
+  const TransactionsEvent();
+}
+
+final class TransactionsRequested extends TransactionsEvent {
+  const TransactionsRequested();
+}
+
+enum TransactionsStatus { initial, loading, ready, failure }
+
+class TransactionsState {
+  const TransactionsState({
+    this.status = TransactionsStatus.initial,
+    this.items = const [],
+    this.error,
+  });
+
+  final TransactionsStatus status;
+  final List<Transaction> items;
+  final Object? error;
+}
+
 class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
-  TransactionsBloc(this._repo) : super(const TransactionsState.initial()) {
-    on<TransactionsRequested>((event, emit) async {
-      emit(const TransactionsState.loading());
-      emit(await _repo.fetch());
-    });
+  TransactionsBloc(this._repo) : super(const TransactionsState()) {
+    on<TransactionsRequested>(
+      _onRequested,
+      transformer: restartable(),
+    );
   }
 
   final TransactionsRepository _repo;
+
+  Future<void> _onRequested(
+    TransactionsRequested event,
+    Emitter<TransactionsState> emit,
+  ) async {
+    // Keep the previous rows; loading is a field of the same model.
+    emit(TransactionsState(
+      status: TransactionsStatus.loading,
+      items: state.items,
+    ));
+    try {
+      final items = await _repo.fetch();
+      emit(TransactionsState(
+        status: TransactionsStatus.ready,
+        items: items,
+      ));
+    } catch (error) {
+      emit(TransactionsState(
+        status: TransactionsStatus.failure,
+        items: state.items,
+        error: error,
+      ));
+    }
+  }
 }
 
 class TransactionsScreen extends StatelessWidget {
@@ -251,7 +297,7 @@ class TransactionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // View dispatches an intent and renders emitted state snapshots.
+    // View dispatches an intent and renders the feature-state model.
     return BlocBuilder<TransactionsBloc, TransactionsState>(
       builder: (context, state) => Column(
         children: [
@@ -269,7 +315,7 @@ class TransactionsScreen extends StatelessWidget {
 }
 ```
 
-The view dispatches an event and renders the emitted state. Bloc can support MVI without enforcing a strict implementation. [6](https://hannesdorfmann.com/android/mosby3-mvi-1/) [7](https://bloclibrary.dev/bloc-concepts/) [8](https://redux.js.org/understanding/thinking-in-redux/three-principles)
+The view adds `TransactionsRequested` and renders `TransactionsState`. Loading and failure copy the previous `items` forward, so a refresh stays one model. `restartable`, from `package:bloc_concurrency`, is the concurrency policy for this intent: only the latest refresh may emit. Bloc can host that contract; the sealed intent, the single model, and the transformer are what make the example MVI. [6](https://hannesdorfmann.com/android/mosby3-mvi-1/) [7](https://bloclibrary.dev/bloc-concepts/) [8](https://redux.js.org/understanding/thinking-in-redux/three-principles)
 
 ![A unidirectional flow loop: widgets send an input to a state owner; the owner requests data from a repository, receives a result, and publishes state back to widgets.](/blog/flutter-presentation-architecture-vs-state-management/06_state_flow.png)
 
