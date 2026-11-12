@@ -119,7 +119,7 @@ The following Dart snippets illustrate an application-owned API. They show the F
 
 ### Define the contract in Foundations
 
-The endpoint and response envelope belong to Foundations. `InterModuleEndpoint` groups the destination URL and the parameters supplied for one call; the URL is an in-process registry key, not a network address. Providers declare required parameter names when registering, so consumers cannot bypass validation by omitting that declaration. Parameter schemas use primitive values, lists, and maps rather than provider-specific Dart objects.
+The endpoint and response envelope belong to Foundations. `InterModuleEndpoint` groups the destination URL, optional call parameters, and the required parameter names providers declare at registration; the URL is an in-process registry key, not a network address. Providers pass that same type when registering, so consumers cannot bypass validation by omitting the declaration. Parameter schemas use primitive values, lists, and maps rather than provider-specific Dart objects.
 
 The generic response preserves the result type: operations return provider-owned data maps, while widget factories return Flutter widgets. Foundations does not define Module B’s business model or Cards’ concrete banner class.
 
@@ -130,10 +130,12 @@ class InterModuleEndpoint {
   const InterModuleEndpoint({
     required this.url,
     this.parameters = const {},
+    this.requiredParameters = const {},
   });
 
   final String url;
   final Map<String, Object?> parameters;
+  final Set<String> requiredParameters;
 }
 
 class InterModuleCommunicationResponse<T> {
@@ -164,8 +166,7 @@ abstract class InterModuleCommunication {
   static late InterModuleCommunication instance;
 
   void register({
-    required String url,
-    Set<String> requiredParameters = const {},
+    required InterModuleEndpoint endpoint,
     required InterModuleHandler handler,
   });
 
@@ -174,8 +175,7 @@ abstract class InterModuleCommunication {
   });
 
   void registerWidget({
-    required String url,
-    Set<String> requiredParameters = const {},
+    required InterModuleEndpoint endpoint,
     required InterModuleWidgetFactory factory,
   });
 
@@ -185,7 +185,7 @@ abstract class InterModuleCommunication {
 }
 ```
 
-For both dispatch methods, Core checks `requiredParameters` before calling the provider. If any declared key is absent or null, it returns a response of the corresponding result type with `statusCode: 400`, `errorCode: 'missing_required_parameters'`, and no data. An empty string is present but may still be invalid according to the provider’s schema. Successful responses in these examples use `200` and include non-null data.
+For both dispatch methods, Core checks the `requiredParameters` stored from registration before calling the provider. If any declared key is absent or null, it returns a response of the corresponding result type with `statusCode: 400`, `errorCode: 'missing_required_parameters'`, and no data. An empty string is present but may still be invalid according to the provider’s schema. Successful responses in these examples use `200` and include non-null data.
 
 The `.instance` accessor keeps the usage example concise. In application code, passing the abstraction into constructors makes dependencies explicit and tests easier to isolate. The singleton is a wiring choice, not a requirement of this architecture.
 
@@ -196,8 +196,10 @@ The host invokes Module B’s bootstrap, which calls this registration function.
 ```dart
 void registerModuleBEndpoints(InterModuleCommunication communication) {
   communication.register(
-    url: '/module-b/v1/details',
-    requiredParameters: {'id'},
+    endpoint: const InterModuleEndpoint(
+      url: '/module-b/v1/details',
+      requiredParameters: {'id'},
+    ),
     handler: (parameters) async {
       final id = parameters['id'];
 
@@ -284,8 +286,10 @@ During bootstrap, the Cards micro app registers a factory for its ready-made ban
 ```dart
 void registerCardsWidgets(InterModuleCommunication communication) {
   communication.registerWidget(
-    url: '/cards/v1/home-banner',
-    requiredParameters: {'cardId'},
+    endpoint: const InterModuleEndpoint(
+      url: '/cards/v1/home-banner',
+      requiredParameters: {'cardId'},
+    ),
     factory: (parameters) {
       final cardId = parameters['cardId'];
       if (cardId is! String || cardId.trim().isEmpty) {

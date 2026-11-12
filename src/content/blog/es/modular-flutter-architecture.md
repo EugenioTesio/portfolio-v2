@@ -119,7 +119,7 @@ Los fragmentos de Dart que siguen ilustran una API que pertenece a la aplicació
 
 ### Definir el contrato en Foundations
 
-El endpoint y el sobre de la respuesta pertenecen a Foundations. `InterModuleEndpoint` agrupa la URL de destino y los parámetros que se envían en una llamada; la URL es una clave del registry dentro del proceso, no una dirección de red. Los proveedores declaran los nombres de los parámetros requeridos al registrarse, así que quien consume no puede saltear la validación omitiendo esa declaración. Los esquemas de parámetros usan valores primitivos, listas y mapas, y no objetos Dart propios del proveedor.
+El endpoint y el sobre de la respuesta pertenecen a Foundations. `InterModuleEndpoint` agrupa la URL de destino, los parámetros opcionales de la llamada y los nombres de los parámetros requeridos que los proveedores declaran al registrarse; la URL es una clave del registry dentro del proceso, no una dirección de red. Los proveedores pasan ese mismo tipo al registrarse, así que quien consume no puede saltear la validación omitiendo esa declaración. Los esquemas de parámetros usan valores primitivos, listas y mapas, y no objetos Dart propios del proveedor.
 
 La respuesta genérica conserva el tipo del resultado: las operaciones devuelven mapas de datos que pertenecen al proveedor, y las factories de widgets devuelven widgets de Flutter. Foundations no define el modelo de negocio del módulo B ni la clase concreta del banner de Cards.
 
@@ -130,10 +130,12 @@ class InterModuleEndpoint {
   const InterModuleEndpoint({
     required this.url,
     this.parameters = const {},
+    this.requiredParameters = const {},
   });
 
   final String url;
   final Map<String, Object?> parameters;
+  final Set<String> requiredParameters;
 }
 
 class InterModuleCommunicationResponse<T> {
@@ -164,8 +166,7 @@ abstract class InterModuleCommunication {
   static late InterModuleCommunication instance;
 
   void register({
-    required String url,
-    Set<String> requiredParameters = const {},
+    required InterModuleEndpoint endpoint,
     required InterModuleHandler handler,
   });
 
@@ -174,8 +175,7 @@ abstract class InterModuleCommunication {
   });
 
   void registerWidget({
-    required String url,
-    Set<String> requiredParameters = const {},
+    required InterModuleEndpoint endpoint,
     required InterModuleWidgetFactory factory,
   });
 
@@ -185,7 +185,7 @@ abstract class InterModuleCommunication {
 }
 ```
 
-En los dos métodos de dispatch, Core controla `requiredParameters` antes de llamar al proveedor. Si alguna clave declarada falta o es null, devuelve una respuesta del tipo de resultado que corresponda, con `statusCode: 400`, `errorCode: 'missing_required_parameters'` y sin data. Un string vacío está presente, pero igual puede ser inválido según el esquema del proveedor. Las respuestas exitosas de estos ejemplos usan `200` e incluyen data que no es null.
+En los dos métodos de dispatch, Core controla los `requiredParameters` guardados al registrarse antes de llamar al proveedor. Si alguna clave declarada falta o es null, devuelve una respuesta del tipo de resultado que corresponda, con `statusCode: 400`, `errorCode: 'missing_required_parameters'` y sin data. Un string vacío está presente, pero igual puede ser inválido según el esquema del proveedor. Las respuestas exitosas de estos ejemplos usan `200` e incluyen data que no es null.
 
 El accessor `.instance` mantiene breve el ejemplo de uso. En el código de la aplicación, pasar la abstracción por los constructores vuelve explícitas las dependencias y hace más fácil aislar los tests. El singleton es una decisión de wiring, no un requisito de esta arquitectura.
 
@@ -196,8 +196,10 @@ El host invoca el bootstrap del módulo B, y ese bootstrap llama a esta función
 ```dart
 void registerModuleBEndpoints(InterModuleCommunication communication) {
   communication.register(
-    url: '/module-b/v1/details',
-    requiredParameters: {'id'},
+    endpoint: const InterModuleEndpoint(
+      url: '/module-b/v1/details',
+      requiredParameters: {'id'},
+    ),
     handler: (parameters) async {
       final id = parameters['id'];
 
@@ -284,8 +286,10 @@ Durante el bootstrap, la micro app Cards registra una factory para su banner ya 
 ```dart
 void registerCardsWidgets(InterModuleCommunication communication) {
   communication.registerWidget(
-    url: '/cards/v1/home-banner',
-    requiredParameters: {'cardId'},
+    endpoint: const InterModuleEndpoint(
+      url: '/cards/v1/home-banner',
+      requiredParameters: {'cardId'},
+    ),
     factory: (parameters) {
       final cardId = parameters['cardId'];
       if (cardId is! String || cardId.trim().isEmpty) {
