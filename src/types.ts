@@ -70,6 +70,8 @@ export interface BlogPost {
   format?: 'markdown' | 'html';
   content?: string;
   coverImage?: string;
+  /** Stable public path for social previews, e.g. `/og/<slug>.jpg` (1200×630). */
+  ogImage?: string;
 }
 
 export interface ContactFormData {

@@ -10,6 +10,14 @@ const BLOG_COVERS: Record<string, string> = {
   'flutter-presentation-architecture-vs-state-management': flutterArchitectureCover,
 };
 
+/** Stable absolute-path OG assets in `public/og/` (also listed in blogSocialMeta.json). */
+const BLOG_OG_IMAGES: Record<string, string> = {
+  'iot-rs485-to-cloud': '/og/iot-rs485-to-cloud.jpg',
+  'flutter-mitm-security-alert': '/og/flutter-mitm-security-alert.jpg',
+  'flutter-presentation-architecture-vs-state-management':
+    '/og/flutter-presentation-architecture-vs-state-management.jpg',
+};
+
 type ArticleLoader = () => Promise<string>;
 
 const markdownModulesEn = import.meta.glob('../content/blog/en/*.md', {
@@ -71,6 +79,7 @@ export function getBlogPosts(locale: Locale = 'en'): BlogPost[] {
       ...post,
       format,
       coverImage: BLOG_COVERS[post.slug],
+      ogImage: post.ogImage ?? BLOG_OG_IMAGES[post.slug] ?? `/og/${post.slug}.jpg`,
     };
   });
 }

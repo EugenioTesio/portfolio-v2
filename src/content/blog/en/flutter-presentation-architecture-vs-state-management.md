@@ -53,7 +53,7 @@ The presentation pattern defines those relationships. A state-management mechani
 - **Model:** an observable `TransactionsModel` holds the data or screen-facing state that views read.
 - **Possible Flutter wiring:** the model exposes a `ValueNotifier`, `ChangeNotifier`, or `stream`; the view uses `ValueListenableBuilder`, `Provider`, or `StreamBuilder` to observe it.
 
-**Example: MVC + ValueNotifier**
+**MVC using ValueNotifier**
 
 ```dart
 class TransactionsState {
@@ -121,7 +121,7 @@ The view watches `model.state`; `controller.refresh()` requests data. The contro
 - **State delivery:** the widget adapter can save the supplied state and call `setState`; alternatively it can adapt the contract to a notifier or stream.
 - **Possible Flutter wiring:** `setState` is sufficient for the adapter; Provider may construct and scope the presenter, but it does not replace the explicit view contract.
 
-**Example: MVP + setState**
+**MVP using setState**
 
 ```dart
 abstract interface class TransactionsView {
@@ -180,7 +180,7 @@ The presenter calls `render`; the view updates its state. Detach the view when i
 - **State delivery:** the ViewModel publishes changes; the view subscribes and rebuilds the relevant widgets.
 - **Possible Flutter wiring:** `ChangeNotifier` with Provider, a Riverpod `Notifier`/`AsyncNotifier`, a Cubit serving as the ViewModel, or MobX observables and `Observer`.
 
-**Example: MVVM + Riverpod**
+**MVVM using Riverpod**
 
 ```dart
 class TransactionsViewModel extends Notifier<TransactionsState> {
@@ -232,7 +232,7 @@ class TransactionsScreen extends ConsumerWidget {
 - **State delivery:** subscribers observe one immutable feature model. A refresh sets `status` to `loading` and keeps the current `items`; `ready` and `failure` replace or retain that list explicitly.
 - **Possible Flutter wiring:** Bloc events plus `BlocBuilder`, or Redux actions/reducers plus a store connector. A Riverpod notifier can also follow an intent-driven design if the team implements that discipline explicitly.
 
-**Example: MVI-inspired + Bloc**
+**MVI using Bloc**
 
 ```dart
 sealed class TransactionsEvent {

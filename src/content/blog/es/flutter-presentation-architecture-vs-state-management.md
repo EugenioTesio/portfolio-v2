@@ -53,7 +53,7 @@ El patrón de presentación define esas relaciones. Un mecanismo de state manage
 - **Model:** un `TransactionsModel` observable guarda los datos o el estado orientado a pantalla que leen las vistas.
 - **Cableado posible en Flutter:** el modelo expone un `ValueNotifier`, `ChangeNotifier` o `stream`; la vista usa `ValueListenableBuilder`, `Provider` o `StreamBuilder` para observarlo.
 
-**Ejemplo: MVC + ValueNotifier**
+**MVC usando ValueNotifier**
 
 ```dart
 class TransactionsState {
@@ -121,7 +121,7 @@ La vista observa `model.state`; `controller.refresh()` pide datos. El controller
 - **Entrega de estado:** el adaptador del widget puede guardar el estado recibido y llamar `setState`; también puede adaptar el contrato a un notifier o stream.
 - **Cableado posible en Flutter:** `setState` alcanza para el adaptador; Provider puede construir y delimitar el presenter, pero no reemplaza el contrato explícito de vista.
 
-**Ejemplo: MVP + setState**
+**MVP usando setState**
 
 ```dart
 abstract interface class TransactionsView {
@@ -180,7 +180,7 @@ El presenter llama `render`; la vista actualiza su estado. Desconecta la vista c
 - **Entrega de estado:** el ViewModel publica cambios; la vista se suscribe y reconstruye los widgets relevantes.
 - **Cableado posible en Flutter:** `ChangeNotifier` con Provider, un `Notifier`/`AsyncNotifier` de Riverpod, un Cubit como ViewModel, u observables de MobX con `Observer`.
 
-**Ejemplo: MVVM + Riverpod**
+**MVVM usando Riverpod**
 
 ```dart
 class TransactionsViewModel extends Notifier<TransactionsState> {
@@ -232,7 +232,7 @@ class TransactionsScreen extends ConsumerWidget {
 - **Entrega de estado:** los suscriptores observan un único modelo inmutable de la feature. Un refresh pone `status` en `loading` y conserva los `items` actuales; `ready` y `failure` reemplazan o retienen esa lista de forma explícita.
 - **Cableado posible en Flutter:** eventos de Bloc más `BlocBuilder`, o acciones/reducers de Redux más un store connector. Un notifier de Riverpod también puede seguir un diseño basado en intents si el equipo aplica esa disciplina de forma explícita.
 
-**Ejemplo: MVI-inspired + Bloc**
+**MVI usando Bloc**
 
 ```dart
 sealed class TransactionsEvent {

@@ -1,0 +1,29 @@
+{
+  "siteUrlDefault": "https://eugenio-tesio-porfolio.web.app",
+  "blogIndex": {
+    "title": "Blog | Eugenio Tesio",
+    "description": "Articles on Flutter architecture, mobile security, and industrial IoT from Eugenio Tesio.",
+    "ogImage": "/og-image.jpg",
+    "path": "/blog"
+  },
+  "posts": [
+    {
+      "slug": "flutter-presentation-architecture-vs-state-management",
+      "title": "Flutter Presentation Architecture vs State Managment",
+      "excerpt": "How MVC, MVP, MVVM, MVI, and state management fit together—and how to choose boundaries that survive a package change.",
+      "ogImage": "/og/flutter-presentation-architecture-vs-state-management.jpg"
+    },
+    {
+      "slug": "flutter-mitm-security-alert",
+      "title": "Flutter TLS MitM Alert: eMudhra CA Compromise, Who Must Rebuild, and Upgrade Friction",
+      "excerpt": "Compromised eMudhra intermediates, dart:io trust on Android/Windows/Linux, Firestore plugin floors, and why OS updates do not fix last week’s binary.",
+      "ogImage": "/og/flutter-mitm-security-alert.jpg"
+    },
+    {
+      "slug": "iot-rs485-to-cloud",
+      "title": "From RS485 & OCPP 1.6 to Cloud Backends: Industrial IoT Telemetry Lessons",
+      "excerpt": "CRC on the wire, durable edge logs, and idempotent ingest — how Smart Lub and OCPP 1.6 survive EMI, blackouts, and replay without inventing metering.",
+      "ogImage": "/og/iot-rs485-to-cloud.jpg"
+    }
+  ]
+}
