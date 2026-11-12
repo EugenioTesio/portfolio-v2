@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Search, X } from 'lucide-react';
 import { getBlogPosts } from '../data/blogLoader';
 import { Locale } from '../data/portfolio';
 import { BlogPost } from '../types';
-import { getBlogArticlePath } from '../utils/blogUrls';
+import { getBlogArticlePath, resolveLocale } from '../utils/blogUrls';
 
 interface BlogPostListProps {
   limit?: number;
@@ -79,7 +79,8 @@ export default function BlogPostList({
   openInNewTab = false,
 }: BlogPostListProps) {
   const { t, i18n } = useTranslation();
-  const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
+  const [searchParams] = useSearchParams();
+  const locale = resolveLocale(i18n.language, searchParams.get('lng'));
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 

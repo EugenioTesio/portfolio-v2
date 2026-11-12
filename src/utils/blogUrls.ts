@@ -7,7 +7,13 @@ export type BlogLocationState = {
 };
 
 function withLocaleQuery(path: string, locale: Locale): string {
-  return locale === 'es' ? `${path}?lng=es` : path;
+  return `${path}?lng=${locale}`;
+}
+
+/** URL `lng` wins when it is explicit. Otherwise follow the active i18n language. */
+export function resolveLocale(language: string, lngParam?: string | null): Locale {
+  if (lngParam === 'es' || lngParam === 'en') return lngParam;
+  return language.startsWith('es') ? 'es' : 'en';
 }
 
 export function getBlogIndexPath(locale: Locale = 'en'): string {

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -9,8 +9,7 @@ import dart from 'highlight.js/lib/languages/dart';
 import typescript from 'highlight.js/lib/languages/typescript';
 import { ArrowLeft, Share2, Check } from 'lucide-react';
 import { BlogPost } from '../types';
-import { Locale } from '../data/portfolio';
-import { getBlogArticleUrl, getBlogIndexPath } from '../utils/blogUrls';
+import { getBlogArticleUrl, getBlogIndexPath, resolveLocale } from '../utils/blogUrls';
 
 const HtmlArticleBody = lazy(() => import('./HtmlArticleBody'));
 
@@ -61,7 +60,8 @@ export default function BlogArticleReader({
 }: BlogArticleReaderProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
+  const [searchParams] = useSearchParams();
+  const locale = resolveLocale(i18n.language, searchParams.get('lng'));
   const resolvedBackHref = backHref ?? getBlogIndexPath(locale);
   const [copied, setCopied] = useState(false);
 

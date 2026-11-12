@@ -3,10 +3,10 @@ import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import BlogArticleReader from '../components/BlogArticleReader';
+import BlogPageHeader from '../components/BlogPageHeader';
 import { getBlogPostBySlug } from '../data/blogLoader';
-import { Locale } from '../data/portfolio';
 import { BlogPost } from '../types';
-import { getBlogIndexPath } from '../utils/blogUrls';
+import { getBlogIndexPath, resolveLocale } from '../utils/blogUrls';
 
 export default function BlogArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -14,15 +14,7 @@ export default function BlogArticlePage() {
   const { t, i18n } = useTranslation();
   const [post, setPost] = useState<BlogPost | null | undefined>(undefined);
 
-  const lngParam = searchParams.get('lng');
-
-  useEffect(() => {
-    if (lngParam === 'es' && !i18n.language.startsWith('es')) {
-      i18n.changeLanguage('es');
-    }
-  }, [lngParam, i18n]);
-
-  const locale = (i18n.language.startsWith('es') ? 'es' : 'en') as Locale;
+  const locale = resolveLocale(i18n.language, searchParams.get('lng'));
   const backHref = getBlogIndexPath(locale);
 
   useEffect(() => {
@@ -43,17 +35,16 @@ export default function BlogArticlePage() {
     };
   }, [slug, locale]);
 
+  let body;
   if (post === undefined) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-muted text-lg">
+    body = (
+      <div className="min-h-[50vh] flex items-center justify-center text-muted text-lg">
         Loading…
       </div>
     );
-  }
-
-  if (!post) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+  } else if (!post) {
+    body = (
+      <div className="min-h-[50vh] flex items-center justify-center px-4">
         <div className="text-center space-y-4 max-w-md">
           <p className="text-ink font-medium">{t('blog.articleNotFound')}</p>
           <Link
@@ -66,11 +57,18 @@ export default function BlogArticlePage() {
         </div>
       </div>
     );
+  } else {
+    body = (
+      <div className="py-12 sm:py-16 px-3 sm:px-6">
+        <BlogArticleReader post={post} backHref={backHref} />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen py-12 sm:py-24 px-3 sm:px-6">
-      <BlogArticleReader post={post} backHref={backHref} />
+    <div className="min-h-screen">
+      <BlogPageHeader />
+      {body}
     </div>
   );
 }
