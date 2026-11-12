@@ -1,4 +1,4 @@
-import { Children, isValidElement, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown, { Components } from 'react-markdown';
@@ -11,7 +11,6 @@ import { ArrowLeft, Share2, Check } from 'lucide-react';
 import { BlogPost } from '../types';
 import { Locale } from '../data/portfolio';
 import { getBlogArticleUrl, getBlogIndexPath } from '../utils/blogUrls';
-import { ensureMermaid } from '../utils/mermaidClient';
 
 const HtmlArticleBody = lazy(() => import('./HtmlArticleBody'));
 
@@ -28,75 +27,7 @@ const markdownRehypePlugins: PluggableList = [
   ],
 ];
 
-function MermaidBlock({ chart }: { chart: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    let cancelled = false;
-    el.textContent = chart;
-    el.removeAttribute('data-processed');
-
-    const renderDiagram = async () => {
-      const mermaid = await ensureMermaid();
-      if (cancelled || !ref.current) return;
-      try {
-        await mermaid.run({ nodes: [ref.current] });
-      } catch (error) {
-        if (!cancelled) {
-          const message = error instanceof Error ? error.message : String(error);
-          console.error('Mermaid diagram failed to render', message);
-        }
-      }
-    };
-
-    void renderDiagram();
-    return () => {
-      cancelled = true;
-    };
-  }, [chart]);
-
-  return (
-    <div className="diagram-frame">
-      <div ref={ref} className="mermaid">
-        {chart}
-      </div>
-    </div>
-  );
-}
-
-function nodeText(node: ReactNode): string {
-  return Children.toArray(node)
-    .map((child) => {
-      if (typeof child === 'string' || typeof child === 'number') return String(child);
-      if (isValidElement(child)) {
-        return nodeText((child.props as { children?: ReactNode }).children);
-      }
-      return '';
-    })
-    .join('');
-}
-
 const markdownComponents: Components = {
-  pre({ children }) {
-    const codeNode = Children.toArray(children).find(
-      (node) =>
-        isValidElement(node) &&
-        typeof (node.props as { className?: string }).className === 'string'
-    );
-    if (isValidElement(codeNode)) {
-      const className = (codeNode.props as { className?: string }).className ?? '';
-      if (/\blanguage-mermaid\b/.test(className)) {
-        const chart = nodeText(
-          (codeNode.props as { children?: ReactNode }).children
-        ).replace(/\n$/, '');
-        return <MermaidBlock chart={chart} />;
-      }
-    }
-    return <pre>{children}</pre>;
-  },
   code({ className, children, ...props }) {
     const source = String(children).replace(/\n$/, '');
     const hasLanguage = typeof className === 'string' && /\blanguage-/.test(className);
