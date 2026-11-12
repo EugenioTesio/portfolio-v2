@@ -29,8 +29,9 @@ const markdownRehypePlugins: PluggableList = [
 
 const markdownComponents: Components = {
   code({ className, children, ...props }) {
+    const source = String(children).replace(/\n$/, '');
     const hasLanguage = typeof className === 'string' && /\blanguage-/.test(className);
-    const isBlock = hasLanguage || String(children).includes('\n');
+    const isBlock = hasLanguage || source.includes('\n');
     const resolvedClassName = hasLanguage
       ? className
       : isBlock
@@ -143,7 +144,7 @@ export default function BlogArticleReader({
           <img
             src={post.coverImage}
             alt={post.title}
-            className="h-48 sm:h-64 w-full object-cover"
+            className="w-full h-auto"
           />
         </div>
       )}
