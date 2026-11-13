@@ -589,7 +589,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: 'Arquitectura modular en Flutter',
     excerpt: 'Los equipos entregan micro apps de Flutter independientes dentro de un App Shell, y comparten contratos de Foundations y una implementación de Core sin importar el código de las demás.',
     date: '12 nov 2026',
-    readTime: '16 min de lectura',
+    readTime: '11 min de lectura',
     category: 'Arquitectura',
     tags: ['Flutter', 'Arquitectura', 'Modular', 'Micro apps', 'Foundations'],
     author: 'Eugenio Tesio',
