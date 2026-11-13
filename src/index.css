@@ -144,7 +144,7 @@
 }
 
 .html-article strong {
-  color: var(--color-ink);
+  color: var(--color-accent);
   font-weight: 600;
 }
 
