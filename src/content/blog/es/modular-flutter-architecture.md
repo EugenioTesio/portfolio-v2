@@ -1,77 +1,108 @@
-Una aplicación Flutter que crece trae un desafío conocido: más features, más equipos y más cambios que compiten por el mismo código. Una actualización pequeña de **Accounts** puede afectar a **Transfers** sin que nadie lo espere. Probar un flujo puede exigir arrancar toda la aplicación, iniciar sesión y reproducir un estado de usuario muy concreto.
+Cuando una aplicación Flutter crece, más features y equipos comparten el mismo código. Un cambio en Accounts puede afectar a Transfers, y probar un flujo puede exigir recorrer toda la aplicación y reproducir un estado específico.
 
-La **arquitectura modular** le da a cada feature un límite claro. Los equipos desarrollan **micro apps** autocontenidas, y una aplicación padre—el **App Shell**—las ensambla en un solo producto y coordina la navegación y los recorridos. La idea se parece a los **micro frontends**. En mobile, los módulos se empaquetan en la misma aplicación y comparten su resolución de dependencias y su build nativo.
+La **arquitectura modular** le da a cada feature un límite claro. Los equipos desarrollan **micro apps** autocontenidas y el **App Shell** las ensambla en un solo producto. La idea comparte la separación de responsabilidades de los **micro frontends** web; aquí, los módulos se empaquetan en la misma aplicación y comparten la resolución de dependencias y el build nativo.
 
-La independencia sigue exigiendo colaboración. Transfers puede necesitar información de Accounts, aunque los mantengan equipos distintos. Los dos pueden necesitar el mismo **design system**, el mismo contexto de autenticación y las mismas capacidades de analytics. La arquitectura tiene que sostener esas relaciones sin que una feature importe la implementación de otra.
+La independencia también requiere colaboración: Transfers puede necesitar datos de Accounts, mientras ambos usan el mismo **design system**, contexto de autenticación y analytics. Esas relaciones necesitan contratos explícitos.
 
-El enfoque separa **lo que un módulo necesita** de **cómo se lo provee la aplicación**. **Foundations** define los contratos compartidos y las piezas de UI. **Core** aporta implementaciones reutilizables. El App Shell y los ejemplos independientes eligen cómo se configuran esas implementaciones.
+El enfoque separa **lo que un módulo necesita** de **cómo se lo provee la aplicación**: **Foundations** define contratos y UI compartida, **Core** los implementa y los hosts los configuran. Así, las features colaboran sin importar las implementaciones de las demás.
 
 ## La arquitectura
 
 ![Diagrama de arquitectura modular en Flutter: el App Shell y los ejemplos inicializan Core y alojan micro apps; las micro apps dependen de Foundations; Core implementa abstracciones y usa paquetes y SDKs de terceros.](/blog/modular-flutter-architecture/architecture.jpg)
 
-Las flechas muestran las direcciones principales de dependencia entre paquetes. El App Shell y los ejemplos componen las features e inicializan Core. Las micro apps dependen de Foundations; Core implementa sus abstracciones. Los tres elementos dentro de Foundations son responsabilidades de ese paquete, no paquetes de implementación adicionales.
+Las flechas muestran las **dependencias entre paquetes**: el **App Shell** y los ejemplos alojan **micro apps** e inicializan **Core**; las **micro apps** dependen de **Foundations**; **Core** implementa sus **abstracciones**. Las tres responsabilidades de **Foundations** pertenecen al mismo paquete, no a paquetes de implementación adicionales.
 
-> **El límite clave:** una micro app conoce las capacidades que puede usar, pero no qué SDK ni qué implementación concreta las provee.
+**El límite clave:** una **micro app** conoce las capacidades que consume, sin conocer el SDK o la implementación concreta que las provee.
 
 ## Desglose de componentes
 
 ![Sección 01 — App Shell: ensamblar módulos y orquestar la experiencia del producto.](/blog/modular-flutter-architecture/01-app-shell.jpg)
 
-El **App Shell** es el **composition root**: elige las implementaciones concretas y las conecta con quienes las consumen. Ensambla las **micro apps**, arranca el producto y orquesta los recorridos que cruzan varias features. El **bootstrap del Core Package** configura las dependencias compartidas de development, staging o production, e instala la comunicación entre módulos antes de que esas micro apps se inicialicen. Cada una registra entonces sus **handlers de request** y sus **factories de widgets**. El comportamiento expuesto y la UI se quedan en la feature que los provee.
+El **App Shell** es la aplicación padre y el **composition root**: el lugar donde se seleccionan las implementaciones y se conectan con sus consumidores. Ensambla las **micro apps**, coordina el arranque y orquesta la navegación y los recorridos entre features.
+
+Ejecuta el **bootstrap de Core** para development, staging o production, y deja disponible la comunicación antes de inicializar los módulos. Cada **micro app** registra entonces sus handlers y factories de widgets. El shell coordina el ciclo de vida; las features conservan la propiedad del comportamiento y de la UI que exponen.
 
 ![Sección 02 — Micro Apps: ser dueñas de una feature y mantener un límite claro.](/blog/modular-flutter-architecture/02-micro-apps.jpg)
 
-Una **micro app** es dueña de una capacidad, como Accounts o Transfers: su presentación, su lógica y sus modelos. Expone **rutas**, localization delegates, hooks de inicialización y registro de endpoints. El paquete de la feature depende de Foundations y no importa Core ni otra micro app, así que el equipo puede construirla y probarla sola, con la arquitectura interna y el state management que le sirvan. Ese límite complementa la separación de UI, datos y negocio de la [guía de arquitectura de Flutter](https://docs.flutter.dev/app-architecture/recommendations).
+Una **micro app** es dueña de una capacidad de negocio, como Accounts o Transfers: presentación, lógica y modelos internos. Expone rutas, localization delegates, hooks de inicialización y registro de endpoints para integrarse con el shell.
+
+Los paquetes de feature dependen de **Foundations**, sin importar **Core** ni implementaciones de otras **micro apps**. Cada equipo puede desarrollar y probar por separado, eligiendo su arquitectura interna y su state management. Estos límites complementan la [separación de UI, datos y responsabilidades de negocio de Flutter](https://docs.flutter.dev/app-architecture/recommendations).
 
 ![Sección 03 — Ejemplos de micro app: ejecutar una feature y reproducir flujos difíciles de alcanzar.](/blog/modular-flutter-architecture/03-micro-app-examples.jpg)
 
-Un **ejemplo independiente** es un host pequeño. Ejecuta el bootstrap de Core, selecciona dependencias y monta la feature, así quien revisa puede abrir una pantalla o un flujo que, de otro modo, exigiría un feature flag. Puede componer Authentication y Accounts para requests autenticados de verdad; esas dependencias pertenecen al ejemplo, no al paquete de la feature. Los ejemplos usan el **mismo paquete Core y los mismos adaptadores de SDK** que el App Shell, y pueden cambiar analytics y crash reporting por implementaciones de consola o no-op.
+Cada **micro app** tiene un **ejemplo independiente**: un host pequeño que inicializa **Core**, selecciona dependencias y monta la feature. Permite abrir pantallas y reproducir escenarios que, en la aplicación completa, exigirían feature flags o recorridos complejos.
+
+Los ejemplos pueden componer otros módulos, como Authentication y Accounts, para probar requests autenticados. Esas dependencias pertenecen al host; el paquete de la feature conserva su límite.
+
+Reutilizan el **mismo Core y los mismos adaptadores de SDK** que el **App Shell**. La configuración permite usar analytics y crash reporting de consola o no-op, evitando inicializaciones innecesarias durante las pruebas manuales y manteniendo representativo el resto del entorno.
 
 ![Sección 04 — Foundations: contratos compartidos y un lenguaje visual común.](/blog/modular-flutter-architecture/04-foundations.jpg)
 
-**Foundations** es la superficie compartida que consume cada micro app: **abstracciones**, el **Design System** e **InterModuleCommunication**. La autenticación y los permisos tienen aquí contratos fuertemente tipados. Los modelos de una feature se quedan en su módulo, así que un cambio de Accounts no cambia Foundations. Su superficie pública debería mantenerse deliberada y estable.
+**Foundations** aporta contratos propios de la aplicación mediante **abstracciones**, el **Design System** integrado y el contrato **InterModuleCommunication**. El contexto de autenticación y los permisos tienen contratos explícitos y fuertemente tipados; los modelos específicos permanecen en sus módulos.
+
+Una respuesta de Accounts puede evolucionar sin trasladar sus modelos a **Foundations**. Como todos los consumidores dependen de este paquete, su **superficie pública debe ser estable y deliberada**.
 
 ![Sección 05 — Abstractions: ser dueñas del contrato y elegir la implementación.](/blog/modular-flutter-architecture/05-abstractions.jpg)
 
-Una **abstracción** nombra una capacidad en el lenguaje de la aplicación—analytics, storage, información de la aplicación, cámara o navegación—y no la API de un proveedor. **AppInfo** puede exponer la versión; un adaptador de Core la lee con [package_info_plus](https://pub.dev/packages/package_info_plus), y las micro apps no ven ese paquete. Inyectar el contrato es **inversión de control**: el host aporta la implementación, los tests aportan un fake y un cambio de SDK se queda en el adaptador. Aplícalo donde proteja una capacidad real, no en cada widget de Flutter ni en una copia de Riverpod o BLoC.
+Una **abstracción** describe capacidades como analytics, almacenamiento, información de la aplicación, cámara o navegación en el lenguaje de la aplicación, sin exponer APIs de proveedores a cada feature.
+
+Por ejemplo, **AppInfo** expone la versión de la app y un adaptador de **Core** la obtiene con [package_info_plus](https://pub.dev/packages/package_info_plus). El host inyecta implementaciones y los tests pueden inyectar fakes: la **inversión de control** concentra el impacto de reemplazar un SDK en su adaptador, siempre que el contrato siga siendo compatible.
+
+Conviene aplicar estos límites de forma selectiva. Envolver cada widget de Flutter o reproducir toda la API de Riverpod o BLoC agrega mantenimiento sin necesariamente proteger una capacidad significativa.
 
 ![Sección 06 — Design System: componentes consistentes y themes flexibles.](/blog/modular-flutter-architecture/06-design-system.jpg)
 
-El **Design System**, dentro de Foundations, aporta componentes, themes, tipografía, spacing y **design tokens**. Los **tokens primitivos** guardan valores de base, como una paleta. Los **tokens semánticos** guardan una intención, como el fondo de un error o una acción primaria. Los componentes consumen esos roles, así que un theme o una marca cambian en un solo lugar. Atoms, molecules, organisms y templates pueden organizar el sistema, con la accesibilidad incorporada en los componentes compartidos.
+El **Design System** aporta componentes reutilizables, themes, tipografía, espaciado y **design tokens** desde **Foundations**.
+
+Los **tokens primitivos** contienen valores base, como una paleta de colores; los **tokens semánticos** expresan intención, como el fondo de un error o una acción principal. Los componentes consumen esos roles para cambiar de theme o marca mediante una configuración consistente.
+
+Atoms, molecules, organisms y templates pueden organizar el crecimiento del sistema. Los componentes compartidos incorporan **accesibilidad y comportamiento de interacción** para mantener una experiencia coherente entre features.
 
 ![Sección 07 — Comunicación entre módulos: registrar capacidades y solicitar datos o widgets.](/blog/modular-flutter-architecture/07-inter-module-communication.jpg)
 
-**InterModuleCommunication** permite que las micro apps colaboren sin importarse entre sí. Cada una sigue siendo dueña de su lógica, de sus modelos y de su UI. Transfers puede pedirle a Accounts detalles de cuenta a través de ese contrato: Transfers conoce el request y la respuesta, y Accounts decide cómo cumplirlo.
+**InterModuleCommunication** conecta **micro apps** aisladas mediante contratos públicos explícitos. Transfers puede solicitar datos de Accounts sin importar su implementación; Accounts conserva el control de cómo resuelve la petición y devuelve el resultado acordado.
 
-1. **Registrar.** Durante el bootstrap, Accounts registra un handler en un endpoint versionado y declara los parámetros requeridos.
-2. **Llamar.** Transfers usa el contrato de Foundations y no importa Accounts.
-3. **Despachar.** El registry de Core encuentra el handler, controla esos parámetros y devuelve un solo sobre de respuesta.
+La interacción tiene tres pasos:
 
-- **`request`** pide datos o una operación propia de la feature.
-- **`getWidget`** pide un widget que otro equipo construye y mantiene.
+1. **Registrar:** durante el **bootstrap**, el proveedor declara un endpoint versionado, sus parámetros requeridos y un handler.
+2. **Solicitar:** el consumidor envía el endpoint y los parámetros mediante la **abstracción** de **Foundations**.
+3. **Despachar:** **Core** localiza el handler, comprueba los parámetros requeridos y devuelve el resultado en una respuesta común.
 
-Un **Home federado** usa el segundo. Cards registra una factory de banner en `/cards/v1/home-banner`. Home ubica ese widget sin importar la clase de Cards. Cards es dueña del comportamiento, de la carga y de las interacciones. Home es dueña de la ubicación y del fallback.
+Dos métodos permiten colaborar: **`request`** obtiene datos o ejecuta una operación propia de una feature; **`getWidget`** obtiene UI lista para usar, provista y mantenida por otro equipo.
+
+Un **Home federado** solicita el banner de Cards en `/cards/v1/home-banner`. Cards es responsable de su comportamiento, carga de datos e interacciones; Home decide dónde ubicarlo y qué fallback mostrar, sin importar la clase concreta del banner.
 
 ![Home federado: micro apps independientes componen una sola experiencia; Home obtiene el banner de Cards mediante InterModuleCommunication en `/cards/v1/home-banner`.](/blog/modular-flutter-architecture/federated-home.jpg)
 
-Los dos métodos reciben un `InterModuleEndpoint` (`url` y `parameters`) y devuelven un `InterModuleCommunicationResponse<T>`. `400` significa parámetros faltantes o inválidos. `404` significa que el endpoint no está disponible. Un ejemplo independiente puede registrar un stub y ejercitar al consumidor solo. La comunicación ocurre **dentro del proceso**, en una sola aplicación empaquetada. Los equipos acuerdan parámetros, resultados y versiones, y pueden cambiar el código que hay detrás de ese contrato. **InterModuleCommunication** es el nombre que le da este artículo. El estado de sesión y el usuario actual van en sus propias abstracciones de Foundations.
+Ambos métodos reciben un **`InterModuleEndpoint`** y devuelven un **`InterModuleCommunicationResponse<T>`** con resultados explícitos. Los **ejemplos independientes** pueden registrar stubs compatibles para ejercitar al consumidor por separado.
+
+El aislamiento está en los **paquetes y las implementaciones**: la comunicación ocurre **dentro del mismo proceso**, en una sola aplicación. Los equipos coordinan parámetros, resultados y versiones de los endpoints mientras evolucionan sus implementaciones independientemente. El contexto compartido de sesión o del usuario actual pertenece a **abstracciones** dedicadas de **Foundations**.
+
+**InterModuleCommunication** es un nombre descriptivo para una **abstracción** propia de la aplicación.
 
 ![Sección 08 — Core Package: adaptadores compartidos y bootstrap configurable.](/blog/modular-flutter-architecture/08-core-package.jpg)
 
-**Core** implementa Foundations: adaptadores de SDK, el registry y el dispatcher de la comunicación, y el arranque compartido. El **bootstrap** los arma según la configuración del host. El App Shell y cada ejemplo lo llaman; los paquetes de feature, no. Los registries se indexan por URL y rechazan duplicados. Core resuelve la URL (`404` si falta), controla los parámetros requeridos (`400` si falta una clave o si su valor es null) y después invoca el handler o la factory. Los proveedores devuelven `400` cuando los valores son inválidos. Una excepción inesperada se convierte en `500`, y el diagnóstico se queda dentro de Core. Los errores posteriores de build o de carga pertenecen al widget devuelto.
+**Core** implementa los contratos de **Foundations** mediante adaptadores de SDK, registros de comunicación y lógica compartida de inicialización. El **App Shell** y los ejemplos ejecutan su **bootstrap** configurable; los paquetes de feature no lo inicializan por su cuenta.
+
+Los registros separados de handlers y factories de widgets usan URLs como claves y rechazan duplicados dentro de cada registro. **Core** resuelve la URL, comprueba los parámetros requeridos del proveedor y después invoca el handler o la factory. El proveedor valida tipos, formatos y reglas de negocio; la tabla de estados detalla cada resultado.
+
+**Core** convierte las excepciones inesperadas de handlers o factories en **respuestas `500`**, conservando los detalles en el diagnóstico interno. Los errores posteriores, durante el build o la carga asíncrona de un widget devuelto, son responsabilidad del componente. Las features aportan handlers y factories; **Core** administra el dispatch.
 
 ![Sección 09 — Paquetes y SDK de terceros: reutilizar adaptadores y mantener alineadas las versiones de dependencias.](/blog/modular-flutter-architecture/09-third-party-sdks.jpg)
 
-Los paquetes externos quedan detrás de esos adaptadores, así que el shell y los ejemplos comparten una sola implementación. Incluye a los dos en un [workspace de Dart Pub](https://dart.dev/tools/pub/workspaces) para que compartan una sola resolución y un solo lockfile. La configuración del build nativo y las dependencias de plataforma siguen necesitando coordinación.
+Los paquetes externos quedan detrás de los **adaptadores de Core** para las capacidades abstraídas. Reutilizar adaptadores evita mantener implementaciones divergentes, pero no garantiza versiones de dependencias idénticas.
+
+Un [**workspace de Dart Pub**](https://dart.dev/tools/pub/workspaces) proporciona al shell y a los ejemplos **una resolución de dependencias y un lockfile compartidos**. La configuración del build nativo y las dependencias de plataforma siguen requiriendo coordinación y controles de integración.
 
 ## La comunicación entre módulos, en la práctica
 
-Micro App A le pide a Micro App B `/module-b/v1/details`. El módulo B es dueño del significado de `id` y de la forma de la respuesta. Los fragmentos son el contrato de Foundations, un request entre módulos y un Home federado. Core y el arranque de Flutter quedan afuera.
+**Micro App** B es dueña de `/module-b/v1/details`, del significado de `id` y del esquema de respuesta. Estos fragmentos ilustrativos de Dart muestran el contrato compartido, una petición desde **Micro App** A y un banner de Cards. Se omiten la implementación de **Core** y el arranque de Flutter.
 
-### Definir el contrato en Foundations
+### Definir el contrato en **Foundations**
 
-`InterModuleEndpoint` lleva la URL—una clave del registry dentro del proceso, no una dirección de red—, los parámetros de la llamada y los nombres requeridos que se declaran al registrarse. Los proveedores se registran con ese mismo tipo, así que quien consume no puede saltear el control. Los parámetros son primitivos, listas y mapas. La respuesta genérica conserva el tipo del resultado: un mapa de datos, o un widget de Flutter. Foundations no define el modelo del módulo B ni la clase del banner de Cards.
+**`InterModuleEndpoint`** agrupa la URL, los parámetros de la llamada y los nombres de parámetros requeridos declarados al registrarse. La URL es una **clave del registro dentro del proceso**. **Core** usa la declaración almacenada del proveedor, así que el consumidor no puede omitirla para evitar la validación. Los esquemas usan valores primitivos, listas y mapas en lugar de objetos propios del proveedor.
+
+La **respuesta genérica** conserva el tipo del resultado: un mapa de datos o un widget de Flutter. **Foundations** no define el modelo de negocio del módulo B ni la clase del banner de Cards.
 
 ```dart
 import 'package:flutter/widgets.dart';
@@ -135,11 +166,13 @@ abstract class InterModuleCommunication {
 }
 ```
 
-Core controla los `requiredParameters` guardados antes de llamar al proveedor. Una clave faltante o null es `400` con `missing_required_parameters` y sin data. Un string vacío cuenta como presente y puede seguir siendo inválido. El éxito, en estos ejemplos, es `200` con data que no es null. En el código de la aplicación, pasa la abstracción por los constructores. `.instance` solo acorta estos ejemplos, y el singleton es una decisión de wiring, no parte de la arquitectura.
+Los parámetros requeridos ausentes o null producen **`400`**, `missing_required_parameters` y ningún dato antes de llamar al proveedor. Un string vacío requiere validación del proveedor. Las respuestas **`200`** de estos ejemplos incluyen datos no nulos.
 
-### Registrar el endpoint dentro de Micro App B
+El **accessor `.instance`** mantiene breve el ejemplo. La inyección por constructor hace explícitas las dependencias y facilita aislar los tests; el singleton es opcional.
 
-El bootstrap del módulo B registra el handler. Core lo guarda.
+### Registrar el endpoint dentro de **Micro App** B
+
+El **bootstrap** del módulo B registra su handler en **Core** antes de habilitar los flujos que dependen de él:
 
 ```dart
 void registerModuleBEndpoints(InterModuleCommunication communication) {
@@ -176,9 +209,9 @@ void registerModuleBEndpoints(InterModuleCommunication communication) {
 }
 ```
 
-Registra los handlers antes de los flujos que dependen de ellos. Un ejemplo ejecuta el bootstrap del módulo B, o registra un stub compatible.
+Los hosts independientes invocan el **bootstrap** del módulo B o registran un **stub compatible** para ese endpoint.
 
-### Hacer el request desde Micro App A
+### Hacer el request desde **Micro App** A
 
 ```dart
 Future<String> loadModuleBDetails() async {
@@ -210,24 +243,24 @@ Future<String> loadModuleBDetails() async {
 }
 ```
 
-Micro App A importa Foundations y el esquema publicado del módulo B, no el paquete del módulo B. Una feature real mapea cada resultado a su propio estado y a su UI.
+**Micro App** A importa **Foundations** y conoce el esquema publicado, sin importar el módulo B ni saber cómo **Core** encuentra el handler. Una feature real puede convertir estos resultados en su propio estado y en UI localizada.
 
 ### Darle un significado claro a cada resultado
 
-`request` y `getWidget` toman los [códigos de estado HTTP](https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes) para esta API dentro del proceso. Son estados de la aplicación, no respuestas HTTP.
+Ambos métodos toman los significados de los [**códigos de estado HTTP**](https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes) para una **API dentro del proceso**. Son estados de la aplicación, no respuestas HTTP reales:
 
-| Status | Significado en este diseño | Lo produce |
+| Status | Significado | Lo produce |
 | --- | --- | --- |
-| `200` | La llamada tuvo éxito; `data` contiene el mapa del resultado o el widget. | El handler del módulo o la factory de widgets. |
-| `400` | Faltan parámetros requeridos o son null (`missing_required_parameters`), o los valores enviados son inválidos (por ejemplo, `invalid_id` o `invalid_card_id`). | Core, en el control de parámetros requeridos; el proveedor, en la validación de valores. |
-| `404` | El endpoint no está registrado, o el ítem pedido no existe. `errorCode` distingue los casos. | Core o el proveedor. |
-| `500` | Una falla inesperada impidió completar la llamada. | Core, cuando un handler o una factory lanza una excepción inesperada. |
+| **`200`** | Éxito; `data` contiene el mapa de resultados o el widget. | El proveedor. |
+| **`400`** | Parámetros requeridos ausentes/null (`missing_required_parameters`) o valores inválidos (`invalid_id`, `invalid_card_id`). | **Core** comprueba presencia; el proveedor valida valores. |
+| **`404`** | Endpoint sin registrar (`endpoint_not_registered`) o ítem inexistente; `errorCode` distingue ambos casos. | **Core** o el proveedor. |
+| **`500`** | Excepción inesperada del handler o de la factory. | **Core**; los detalles internos quedan en el diagnóstico. |
 
-Si falta el módulo B, la respuesta es `404` con `endpoint_not_registered`, y quien llama puede ofrecer un fallback a propósito. Las excepciones se quedan en el diagnóstico. Un path versionado, la validación de parámetros y los **contract tests** les permiten a los dos equipos evolucionar el contrato.
+La ausencia de un módulo produce una respuesta predecible que permite elegir un **fallback**. Los **endpoints versionados**, la validación y los **contract tests** ayudan a evolucionar con seguridad; versionar una ruta no garantiza compatibilidad. Los cambios incompatibles pueden usar una ruta nueva mientras los equipos mantienen los consumidores existentes.
 
 ### Componer un Home federado con un banner de Cards
 
-Cards registra una factory para `CardsHomeBanner`, que se queda dentro de Cards y recibe un `cardId`.
+Cards registra una factory durante su **bootstrap**. Su widget **`CardsHomeBanner`** recibe un `cardId` para elegir la tarjeta; la implementación permanece dentro de Cards.
 
 ```dart
 void registerCardsWidgets(InterModuleCommunication communication) {
@@ -254,7 +287,7 @@ void registerCardsWidgets(InterModuleCommunication communication) {
 }
 ```
 
-Home pide el componente a través de Foundations y lo agrega a su layout:
+Home solicita el componente mediante **Foundations** y lo agrega a su layout:
 
 ```dart
 Widget buildHome() {
@@ -275,10 +308,24 @@ Widget buildHome() {
 }
 ```
 
-Omitir `cardId` es `400` con `missing_required_parameters`, antes de que la factory se ejecute. Core llama a la factory de forma sincrónica. El widget entra como siempre en el [árbol de widgets de Flutter](https://api.flutter.dev/flutter/widgets/Widget-class.html), y la carga asíncrona se queda dentro de ese widget. Los equipos acuerdan layout, navegación, dependencias y contexto de host. Home importa Foundations y Flutter, no `CardsHomeBanner`.
+La falta de configuración requerida produce una falla estructurada:
 
-Si falta el módulo Cards, la respuesta es `404` con `endpoint_not_registered`. Un `cardId` inválido es `400` con `invalid_card_id`. Home puede omitir el banner o mapear cada status a un fallback, y un ejemplo independiente puede registrar un stub en la misma URL. No se descarga código de widgets en runtime.
+```dart
+final response = InterModuleCommunication.instance.getWidget(
+  endpoint: const InterModuleEndpoint(url: '/cards/v1/home-banner'),
+);
+// With Cards registered:
+// response.statusCode == 400
+// response.errorCode == 'missing_required_parameters'
+// response.data == null
+```
+
+**Core** invoca la factory **de forma sincrónica**, devolviendo el widget sin esperar a que cargue sus datos. El componente se incorpora al [árbol de widgets de Flutter](https://api.flutter.dev/flutter/widgets/Widget-class.html); Cards gestiona la carga asíncrona y su UI de carga o error. La factory o el widget aportan las dependencias específicas de Cards, y los equipos acuerdan restricciones de layout, navegación y contexto necesario del host.
+
+Home importa **Foundations** y Flutter. Aquí omite el banner cuando falla la llamada, aunque puede elegir un fallback según el estado: **`404`** si Cards está ausente, **`400`** si falta `cardId` o es null, y **`400`** con `invalid_card_id` si está vacío o tiene un tipo incorrecto. Un **ejemplo independiente** de Home puede registrar una factory stub compatible. Todos los módulos se empaquetan juntos; **no se descarga código de widgets en runtime**.
 
 ## Hacer que los límites le sirvan al equipo
 
-El valor está en un flujo que se puede repetir: implementar una feature detrás de un límite claro, ejercitarla en un **ejemplo independiente** e integrarla por el **App Shell** con los mismos adaptadores. **Foundations** es el vocabulario compartido. **Core** lo conecta con una tecnología concreta. Las **micro apps** conservan su comportamiento y sus contratos, así un equipo puede cambiar su parte del producto y seguir viendo cómo se conecta con el resto.
+El flujo se puede repetir: implementar una feature detrás de un **límite claro**, probarla en un **ejemplo independiente** e integrarla mediante el **App Shell** usando adaptadores compartidos.
+
+**Foundations** aporta contratos estables, **Core** los conecta con la tecnología y las **micro apps** conservan la propiedad de sus features. Los hosts ensamblan el producto, dando a cada equipo confianza para cambiar, probar y entender su parte de la aplicación.
