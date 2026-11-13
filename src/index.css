@@ -146,6 +146,14 @@
 .html-article strong {
   color: var(--color-ink);
   font-weight: 600;
+  background-image: linear-gradient(
+    transparent 58%,
+    rgb(154 52 18 / 0.28) 58%,
+    rgb(154 52 18 / 0.28) 90%,
+    transparent 90%
+  );
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .html-article code {

@@ -589,7 +589,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: 'Modular Flutter Architecture',
     excerpt: 'Teams ship independent Flutter micro apps inside one App Shell, sharing Foundations contracts and a Core implementation without importing each other\'s code.',
     date: 'Nov 12, 2026',
-    readTime: '16 min read',
+    readTime: '12 min read',
     category: 'Architecture',
     tags: ['Flutter', 'Architecture', 'Modular', 'Micro apps', 'Foundations'],
     author: 'Eugenio Tesio',
