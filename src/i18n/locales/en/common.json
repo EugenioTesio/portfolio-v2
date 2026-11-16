@@ -60,22 +60,27 @@
   },
   "about": {
     "sectionBadge": "01. ABOUT ME",
-    "title": "Electronics, then software.",
+    "title": "Mobile architecture and AI",
     "titleHighlight": "Engineering Rigor",
-    "subtitle": "The degree is in electronics. The work since then is mobile architecture, Python services, and the path from a device to a release.",
+    "subtitle": "I’m a systems architect with over 14 years of engineering experience across mobile apps, backend services, and software delivery.",
     "yearsExp": "14+ Years Exp",
     "bioP1": "Hello! I'm <strong class=\"text-white font-semibold\">Eugenio Tesio</strong>, a Mobile Expert, Systems Architect, and Electronics Engineer with more than 14 years of end-to-end software delivery and hardware systems engineering.",
-    "bioP2": "Most recently at <strong class=\"text-white font-semibold\">ueno bank (ITTI S.A.E.C.A.)</strong> through Nov. 2026, I led mobile architecture for 50+ Flutter engineers, migrating legacy monoliths into an independent <span class=\"text-[#00F5FF] font-medium\">Micro-App & App Shell ecosystem</span>, harmonizing BLoC and Riverpod across unified retail and corporate banking products, orchestrating 15-day automated release trains across 3 app stores, and enforcing Fintech RASP threat defense.",
-    "bioP3": "Prior to ueno bank, I delivered mission-critical <span class=\"text-white font-medium\">FastAPI Python backends with 100% test coverage</span> and Flutter apps with golden UI tests at <strong class=\"text-slate-100\">PairTree</strong> (adoption enablement platform), built cross-platform Riverpod apps and <span class=\"text-[#9D00FF] font-medium\">Nest.js / TypeScript microservices</span> at <strong class=\"text-slate-100\">Tandamos</strong>, and engineered high-throughput <span class=\"text-[#00F5FF] font-medium\">Spring Boot</span> microservices on Google Cloud Platform at <strong class=\"text-slate-100\">Valtech</strong>.",
+    "latestRole": "As Mobile Expert at ueno bank (ITTI), I led the migration from a Flutter monolith to independently developed micro-apps in a shared app shell. This let more than 50 engineers work in parallel. I also set up automated releases every 15 days across three app stores.",
+    "aiExperience": "At ueno bank, I introduced multi-agent workflows with Cursor and GitHub Copilot and promoted spec-driven development. We used AI agents to speed up architectural refactoring and make code reviews more consistent.",
+    "earlierRoles": "At PairTree, I developed Flutter features for an adoption platform and maintained FastAPI services with 100% test coverage. I built Flutter apps and NestJS services at Tandamos, and Spring Boot microservices on Google Cloud at Valtech.",
     "bioP4": "Holding a formal <strong class=\"text-white font-semibold\">Electrical & Electronics Engineering degree</strong> from Universidad Tecnológica Nacional (UTN), my engineering intuition extends from serial buses (RS485 Modbus) and EV charging protocols (OCPP 1.6) to cloud microservices and modern multi-agent AI workflows.",
     "quote": "I look for Python and Flutter work where architecture, test coverage, and the release train are what make the product reliable.",
-    "degreeLead": "Graduated as Ingeniero Electrónico.",
     "seeRoles": "See the roles",
     "groups": {
       "mobile": {
         "title": "Mobile",
         "items": "Flutter, BLoC, Riverpod, micro-apps, RASP",
-        "proof": "App shell and release architecture delivered for the ueno bank mobile group."
+        "proof": "Shared BLoC and Riverpod patterns across ueno bank’s retail and business banking apps."
+      },
+      "ai": {
+        "title": "AI-assisted development",
+        "items": "AI agents, Cursor, GitHub Copilot, Spec-driven development",
+        "proof": "Code generation and refactoring for a shared Flutter platform."
       },
       "backend": {
         "title": "Backend",
@@ -85,27 +90,19 @@
       "delivery": {
         "title": "Delivery",
         "items": "Codemagic, GitHub Actions, GCP",
-        "proof": "A 15-day release train across app stores."
-      },
-      "hardware": {
-        "title": "Hardware",
-        "items": "RS485, OCPP 1.6",
-        "proof": "Smart Lub for Vulcano, and an EV charging network."
+        "proof": "Automated signing and distribution to the App Store, Google Play, and Huawei AppGallery."
       }
     },
     "languages": "Languages: Spanish (Native), English (Professional)",
     "connect": "Connect with Eugenio",
     "competenciesTitle": "Core Competencies at a Glance",
     "academicDegree": "Academic Degree",
-    "degreeTitle": "Engineer's degree, Electrical & Electronics Engineering",
     "graduatedAs": "Graduated as",
     "ingeniero": "Ingeniero Electrónico",
     "capstoneTitle": "Capstone Project: Smart Lub",
     "commercialProduct": "Commercial Product",
-    "capstoneDesc": "The capstone became Smart Lub, a telemetry device for Vulcano Lubricación. It reads industrial equipment over an RS485 bus, sends the packets over Ethernet or Wi-Fi, and stores the metrics for monitoring. The company commissioned it, and it shipped as a product.",
     "capstoneNote": "Commissioned by the company and became part of a commercialized product.",
     "electronicsAdvantage": "The Electronics-to-Cloud Advantage",
-    "electronicsDesc": "Understanding signal integrity, hardware interrupts, and serial communication creates a developer who writes remarkably robust, leak-free Flutter code and resilient distributed backend APIs.",
     "readyToCollaborate": "Ready to Collaborate",
     "seekingProjects": "Seeking innovative Python & Flutter projects where architecture and scale matter.",
     "reachOut": "Reach Out",
