@@ -78,8 +78,7 @@ export default function ExperienceSection({
 
         <div className="space-y-6 relative before:absolute before:inset-0 before:left-3 before:w-px before:bg-line before:pointer-events-none">
           {displayedExperiences.map((exp, index) => {
-            const isCurrent = Boolean(exp.current);
-            const isExpanded = expandedRoles[exp.id] ?? (isCurrent || index === 0);
+            const isExpanded = expandedRoles[exp.id] ?? false;
 
             return (
               <motion.article
@@ -155,6 +154,7 @@ export default function ExperienceSection({
                   <div className="mt-5">
                     <button
                       onClick={() => toggleExpand(exp.id, isExpanded)}
+                      aria-expanded={isExpanded}
                       className="text-lg font-medium text-accent inline-flex items-center gap-1"
                     >
                       <span>{isExpanded ? t('experience.collapse') : t('experience.expandDetails')}</span>

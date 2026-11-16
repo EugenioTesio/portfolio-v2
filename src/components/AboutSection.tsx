@@ -1,15 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { usePortfolioData } from '../data/portfolio';
 
 interface AboutSectionProps {
   onNavigate: (sectionId: string) => void;
 }
 
-const GROUP_KEYS = ['mobile', 'backend', 'delivery', 'hardware'] as const;
+const GROUP_KEYS = ['mobile', 'ai', 'backend', 'delivery'] as const;
 
 export default function AboutSection({ onNavigate }: AboutSectionProps) {
   const { t } = useTranslation();
-  const { PERSONAL_INFO } = usePortfolioData();
 
   return (
     <section id="about" className="py-[5.5rem] border-t border-line">
@@ -26,18 +24,13 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div className="lg:col-span-7 space-y-5 max-w-[65ch]">
             <p className="text-xl leading-[1.6] text-muted">
-              {t('about.degreeLead')}{' '}
-              <span className="text-ink">{t('about.degreeTitle')}</span>
-              {' · '}
-              {PERSONAL_INFO.education.institution}
-              {' · '}
-              {PERSONAL_INFO.education.period}
+              {t('about.latestRole')}
             </p>
             <p className="text-xl leading-[1.6] text-muted">
-              {t('about.capstoneDesc')}
+              {t('about.aiExperience')}
             </p>
             <p className="text-xl leading-[1.6] text-muted">
-              {t('about.electronicsDesc')}
+              {t('about.earlierRoles')}
             </p>
             <p className="text-base text-faint">{t('about.languages')}</p>
             <button
