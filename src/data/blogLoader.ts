@@ -1,3 +1,4 @@
+import playgroundCover from '../assets/images/blog/flutter-a2ui-playground-cover.jpg';
 import { BlogPost } from '../types';
 import { getPortfolioData, Locale } from './portfolio';
 import iotCover from '../assets/images/blog/iot-rs485-to-cloud.jpg';
@@ -6,6 +7,7 @@ import flutterArchitectureCover from '../assets/images/blog/flutter-presentation
 import modularFlutterCover from '../assets/images/blog/modular-flutter-architecture-cover.jpg';
 
 const BLOG_COVERS: Record<string, string> = {
+  'flutter-a2ui-playground': playgroundCover,
   'iot-rs485-to-cloud': iotCover,
   'flutter-mitm-security-alert': flutterMitmCover,
   'flutter-presentation-architecture-vs-state-management': flutterArchitectureCover,

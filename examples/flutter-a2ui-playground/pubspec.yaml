@@ -1,0 +1,24 @@
+name: flutter_a2ui_playground
+description: A bilingual Flutter A2UI playground with recorded prompts and optional Gemini.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: '>=3.13.7 <4.0.0'
+  flutter: '>=3.47.9'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  a2ui_flutter: 0.3.0
+  a2ui_core: 0.7.0
+  a2ui_agent: 0.3.0
+  dartantic_ai: 3.4.2
+  json_schema_builder: 0.1.7
+  web: ^1.1.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true

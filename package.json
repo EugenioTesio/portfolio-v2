@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build && node scripts/prerender-og.mjs",
+    "build": "npm run build:demo && vite build && node scripts/prerender-og.mjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "build:demo": "node scripts/build-demo.mjs",
+    "predev": "npm run build:demo"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

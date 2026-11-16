@@ -18,8 +18,11 @@ export default function BlogArticlePage() {
   const backHref = getBlogIndexPath(locale);
 
   useEffect(() => {
-    let cancelled = false;
     setPost(undefined);
+  }, [slug]);
+
+  useEffect(() => {
+    let cancelled = false;
 
     if (!slug) {
       setPost(null);
