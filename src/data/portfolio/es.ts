@@ -585,6 +585,32 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+  "slug": "flutter-a2ui-playground",
+  "title": "A2UI en Flutter: cómo los agentes arman interfaces con tus componentes",
+  "excerpt": "Entendé cómo A2UI conecta tu catálogo de componentes, un agente de IA y Flutter. Seguí el recorrido desde el pedido del usuario hasta los widgets, los enlaces a datos y las acciones.",
+  "date": "16 nov 2026",
+  "readTime": "10 min de lectura",
+  "category": "Flutter",
+  "tags": [
+    "Flutter",
+    "GenUI",
+    "A2UI",
+    "Gemini"
+  ],
+  "author": "Eugenio Tesio",
+  "filename": "flutter-a2ui-playground.md",
+  "format": "markdown",
+  "demo": {
+    "placement": "after-article",
+    "title": "Probá el playground de A2UI",
+    "description": "Reproducí tres pedidos grabados y mirá el A2UI, o conectá tu propia cuenta de Gemini.",
+    "assetPath": "/demos/flutter-a2ui-playground/index.html",
+    "sourceDownload": "/downloads/flutter-a2ui-playground.zip",
+    "previewImage": "/blog/flutter-a2ui-playground/es-dashboard.jpg",
+    "previewAlt": "La reproducción en español muestra el tablero de ventas junto al mensaje A2UI"
+  }
+},
+  {
     slug: 'modular-flutter-architecture',
     title: 'Arquitectura modular en Flutter',
     excerpt: 'Los equipos entregan micro apps de Flutter independientes dentro de un App Shell, y comparten contratos de Foundations y una implementación de Core sin importar el código de las demás.',

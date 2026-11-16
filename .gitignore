@@ -6,3 +6,8 @@ coverage/
 *.log
 .env*
 !.env.example
+
+.dart_tool/
+.flutter-plugins-dependencies
+public/demos/flutter-a2ui-playground/
+public/downloads/flutter-a2ui-playground.zip

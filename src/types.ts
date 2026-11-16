@@ -57,7 +57,18 @@ export interface ProjectItem {
   }[];
 }
 
+export interface BlogDemoMetadata {
+  placement?: 'before-article' | 'after-article';
+  title: string;
+  description: string;
+  assetPath: string;
+  sourceDownload: string;
+  previewImage: string;
+  previewAlt: string;
+}
+
 export interface BlogPost {
+  demo?: BlogDemoMetadata;
   slug: string;
   title: string;
   excerpt: string;

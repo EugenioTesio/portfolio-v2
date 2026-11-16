@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+  <rect width="1200" height="560" rx="24" fill="#0b1220"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7dd3fc"/>
+    </marker>
+  </defs>
+  <rect x="48" y="70" width="250" height="110" rx="18" fill="#121a2b" stroke="#7dd3fc"/>
+  <text x="173" y="132" fill="#e7eef8" font-family="Arial,sans-serif" font-size="22" text-anchor="middle">Prompt or replay chip</text>
+  <rect x="360" y="70" width="250" height="110" rx="18" fill="#121a2b" stroke="#7dd3fc"/>
+  <text x="485" y="122" fill="#e7eef8" font-family="Arial,sans-serif" font-size="22" text-anchor="middle">Replay or Gemini</text>
+  <text x="485" y="152" fill="#93a4bd" font-family="Arial,sans-serif" font-size="16" text-anchor="middle">Direct JSON</text>
+  <rect x="672" y="70" width="250" height="110" rx="18" fill="#121a2b" stroke="#7dd3fc"/>
+  <text x="797" y="132" fill="#e7eef8" font-family="Arial,sans-serif" font-size="22" text-anchor="middle">A2UI messages</text>
+  <rect x="516" y="300" width="250" height="110" rx="18" fill="#121a2b" stroke="#7dd3fc"/>
+  <text x="641" y="352" fill="#e7eef8" font-family="Arial,sans-serif" font-size="22" text-anchor="middle">Flutter surface</text>
+  <text x="641" y="382" fill="#93a4bd" font-family="Arial,sans-serif" font-size="16" text-anchor="middle">in the transcript</text>
+  <rect x="860" y="300" width="250" height="110" rx="18" fill="#121a2b" stroke="#7dd3fc"/>
+  <text x="985" y="352" fill="#e7eef8" font-family="Arial,sans-serif" font-size="22" text-anchor="middle">Source pane</text>
+  <text x="985" y="382" fill="#93a4bd" font-family="Arial,sans-serif" font-size="16" text-anchor="middle">one component a line</text>
+  <path d="M298 125 H350" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M610 125 H662" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M797 180 V250 H641 V290" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M922 125 V355 H1110" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <text x="600" y="500" fill="#93a4bd" font-family="Arial,sans-serif" font-size="20" text-anchor="middle">The same messages paint the surface and fill the source pane</text>
+</svg>

@@ -11,6 +11,8 @@ import { ArrowLeft, Share2, Check } from 'lucide-react';
 import { BlogPost } from '../types';
 import { getBlogArticleUrl, getBlogIndexPath, resolveLocale } from '../utils/blogUrls';
 
+const BlogDemo = lazy(() => import('./BlogDemo'));
+
 const HtmlArticleBody = lazy(() => import('./HtmlArticleBody'));
 
 const markdownRehypePlugins: PluggableList = [
@@ -149,6 +151,12 @@ export default function BlogArticleReader({
         </div>
       )}
 
+      {post.demo && post.demo.placement !== 'after-article' && (
+        <Suspense fallback={null}>
+          <BlogDemo post={post} locale={locale} />
+        </Suspense>
+      )}
+
       {post.format === 'html' ? (
         <Suspense fallback={null}>
           <HtmlArticleBody html={post.content || ''} />
@@ -163,6 +171,12 @@ export default function BlogArticleReader({
             {post.content || ''}
           </ReactMarkdown>
         </div>
+      )}
+
+      {post.demo?.placement === 'after-article' && (
+        <Suspense fallback={null}>
+          <BlogDemo post={post} locale={locale} />
+        </Suspense>
       )}
 
       <div className="pt-8 mt-8 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

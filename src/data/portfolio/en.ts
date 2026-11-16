@@ -585,6 +585,32 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+  "slug": "flutter-a2ui-playground",
+  "title": "A2UI in Flutter: How Agents Build UI from Your Components",
+  "excerpt": "Understand how A2UI connects your component catalog, an AI agent, and Flutter. Follow the path from a user request to widgets, data bindings, and actions.",
+  "date": "Nov 16, 2026",
+  "readTime": "10 min read",
+  "category": "Flutter",
+  "tags": [
+    "Flutter",
+    "GenUI",
+    "A2UI",
+    "Gemini"
+  ],
+  "author": "Eugenio Tesio",
+  "filename": "flutter-a2ui-playground.md",
+  "format": "markdown",
+  "demo": {
+    "placement": "after-article",
+    "title": "Try the A2UI playground",
+    "description": "Replay three recorded prompts and inspect the A2UI, or connect your own Gemini account.",
+    "assetPath": "/demos/flutter-a2ui-playground/index.html",
+    "sourceDownload": "/downloads/flutter-a2ui-playground.zip",
+    "previewImage": "/blog/flutter-a2ui-playground/en-dashboard.jpg",
+    "previewAlt": "The English replay showing a regional sales dashboard beside its A2UI payload"
+  }
+},
+  {
     slug: 'modular-flutter-architecture',
     title: 'Modular Flutter Architecture',
     excerpt: 'Teams ship independent Flutter micro apps inside one App Shell, sharing Foundations contracts and a Core implementation without importing each other\'s code.',

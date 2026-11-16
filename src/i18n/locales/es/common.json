@@ -233,5 +233,16 @@
     "top": "Arriba",
     "backToTop": "Volver arriba",
     "copyright": "© {{year}} Eugenio Tesio."
+  },
+  "demo": {
+    "open": "Abrir demo completa",
+    "download": "Descargar código",
+    "languageReset": "Cambiar el idioma reinicia la sesión de la demo.",
+    "run": "Iniciar demo",
+    "loading": "Cargando la demo de Flutter…",
+    "failed": "La demo tarda más de lo esperado. Reintentá o abrila directamente.",
+    "retry": "Reintentar",
+    "direct": "Abrir la app de Flutter directamente",
+    "back": "Volver al artículo"
   }
 }

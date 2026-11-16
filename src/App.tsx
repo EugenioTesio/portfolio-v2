@@ -5,6 +5,8 @@ import PortfolioPage from './pages/PortfolioPage';
 const BlogIndexPage = lazy(() => import('./pages/BlogIndexPage'));
 const BlogArticlePage = lazy(() => import('./pages/BlogArticlePage'));
 
+const BlogDemoPage = lazy(() => import('./pages/BlogDemoPage'));
+
 function RouteFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center text-muted text-lg">
@@ -21,6 +23,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<PortfolioPage />} />
             <Route path="/blog" element={<BlogIndexPage />} />
+            <Route path="/blog/:slug/demo" element={<BlogDemoPage />} />
             <Route path="/blog/:slug" element={<BlogArticlePage />} />
           </Routes>
         </Suspense>
