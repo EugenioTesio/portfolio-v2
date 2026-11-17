@@ -5,8 +5,10 @@ import iotCover from '../assets/images/blog/iot-rs485-to-cloud.jpg';
 import flutterMitmCover from '../assets/images/blog/flutter-mitm-security-alert.jpg';
 import flutterArchitectureCover from '../assets/images/blog/flutter-presentation-architecture-vs-state-management-cover.jpg';
 import modularFlutterCover from '../assets/images/blog/modular-flutter-architecture-cover.jpg';
+import goldenRulesCover from '../assets/images/blog/testing-ai-golden-rules-cover.jpg';
 
 const BLOG_COVERS: Record<string, string> = {
+  'testing-ai-golden-rules': goldenRulesCover,
   'flutter-a2ui-playground': playgroundCover,
   'iot-rs485-to-cloud': iotCover,
   'flutter-mitm-security-alert': flutterMitmCover,

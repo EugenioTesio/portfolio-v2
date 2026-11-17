@@ -585,6 +585,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'testing-ai-golden-rules',
+    title: 'Testing AI Golden Rules: How Much Can You Trust Them?',
+    excerpt: 'Turn coding guidelines into useful evaluations. Learn how to design scenarios, test your graders, and judge what passing results actually prove.',
+    date: 'Nov 17, 2026',
+    readTime: '8 min read',
+    category: 'AI Engineering',
+    tags: ['AI', 'Evals', 'Testing', 'Architecture'],
+    author: 'Eugenio Tesio',
+    filename: 'testing-ai-golden-rules.md',
+    format: 'markdown'
+  },
+  {
   "slug": "flutter-a2ui-playground",
   "title": "A2UI in Flutter: How Agents Build UI from Your Components",
   "excerpt": "Understand how A2UI connects your component catalog, an AI agent, and Flutter. Follow the path from a user request to widgets, data bindings, and actions.",
