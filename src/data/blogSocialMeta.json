@@ -8,6 +8,12 @@
   },
   "posts": [
     {
+      "slug": "testing-ai-golden-rules",
+      "title": "Testing AI Golden Rules: How Much Can You Trust Them?",
+      "excerpt": "Turn coding guidelines into useful evaluations. Learn how to design scenarios, test your graders, and judge what passing results actually prove.",
+      "ogImage": "/og/testing-ai-golden-rules.jpg"
+    },
+    {
       "slug": "flutter-a2ui-playground",
       "title": "A2UI in Flutter: How Agents Build UI from Your Components",
       "excerpt": "Understand how A2UI connects your component catalog, an AI agent, and Flutter. Follow the path from a user request to widgets, data bindings, and actions.",

@@ -585,6 +585,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'testing-ai-golden-rules',
+    title: 'Cómo probar las reglas de oro de la IA y cuánto confiar en ellas',
+    excerpt: 'Convertí tus reglas de programación en evaluaciones útiles. Aprendé a diseñar escenarios, probar los evaluadores e interpretar qué demuestran los resultados.',
+    date: '17 nov 2026',
+    readTime: '8 min de lectura',
+    category: 'Ingeniería de IA',
+    tags: ['IA', 'Evals', 'Pruebas', 'Arquitectura'],
+    author: 'Eugenio Tesio',
+    filename: 'testing-ai-golden-rules.md',
+    format: 'markdown'
+  },
+  {
   "slug": "flutter-a2ui-playground",
   "title": "A2UI en Flutter: cómo los agentes arman interfaces con tus componentes",
   "excerpt": "Entendé cómo A2UI conecta tu catálogo de componentes, un agente de IA y Flutter. Seguí el recorrido desde el pedido del usuario hasta los widgets, los enlaces a datos y las acciones.",
