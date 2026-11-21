@@ -10,7 +10,7 @@ export const PERSONAL_INFO = {
   image: profileImage,
   bio: `I'm Eugenio Tesio, a passionate Mobile Expert, Systems Architect, and Electronics Engineer with over 14 years of professional software engineering and hardware telemetry experience. I specialize in designing and scaling high-velocity mobile platforms and resilient backends with Flutter (BLoC & Riverpod), Python (FastAPI), Java (Spring Boot), and Google Cloud Platform. 
 
-Most recently Mobile Expert at ueno bank (ITTI S.A.E.C.A.) through Nov. 2026, I pioneered the architectural migration to a multi-repo Micro-App & App Shell ecosystem that coordinated 50+ Flutter engineers, unified the flagship retail and business banking applications, built automated 15-day Release Trains to Apple App Store, Google Play, and Huawei AppGallery, and hardened security posture with Fintech RASP. Earlier I achieved 100% backend test coverage with FastAPI at PairTree (adoption enablement platform), delivered Riverpod and Nest.js microservices at Tandamos, built enterprise GCP Pub/Sub messaging pipelines at Valtech, and spent a decade delivering custom mobile/IoT solutions (including OCPP 1.6 EV charging networks and commercialized RS485 telemetry devices) with zero mobile store rejections.`,
+Most recently Mobile Expert at ueno bank (ITTI S.A.E.C.A.) through Nov. 2026, I pioneered the architectural migration to a multi-repo Micro-App & App Shell ecosystem that coordinated 50+ Flutter engineers, unified the flagship retail and business banking applications, built automated 15-day Release Trains to Apple App Store, Google Play, and Huawei AppGallery, and hardened security posture with Fintech RASP. During a four-month assignment on the uGO project, I also worked hands-on with React Native, building a single-page app and micro-frontends integrated through Module Federation, with Playwright visual-regression tests and a Storybook component catalog. Earlier I achieved 100% backend test coverage with FastAPI at PairTree (adoption enablement platform), delivered Riverpod and Nest.js microservices at Tandamos, built enterprise GCP Pub/Sub messaging pipelines at Valtech, and spent a decade delivering custom mobile/IoT solutions (including OCPP 1.6 EV charging networks and commercialized RS485 telemetry devices) with zero mobile store rejections.`,
   education: {
     degree: "Engineer’s degree, Electrical and Electronics Engineering (Ingeniero Electrónico)",
     institution: 'Universidad Tecnológica Nacional (UTN) — Facultad Regional San Francisco',
@@ -18,7 +18,7 @@ Most recently Mobile Expert at ueno bank (ITTI S.A.E.C.A.) through Nov. 2026, I 
     capstone: 'Smart Lub: an electronic device for Vulcano Lubricación that reads equipment data over RS485, sends it over Ethernet or Wi-Fi, and stores it in a cloud database for downstream display. Commissioned and commercialized.'
   },
   stats: [
-    { label: 'Engineering Experience', value: '14+ Yrs', change: '5+ yrs Flutter leadership' },
+    { label: 'Engineering Experience', value: '14+ Yrs', change: '3+ yrs leading Flutter architecture' },
     { label: 'Mobile Engineers Scaled', value: '50+', change: 'Micro-App Architecture' },
     { label: 'Predictable Release Train', value: '15-Day', change: 'Automated Codemagic' },
     { label: 'FastAPI Backend Coverage', value: '100%', change: 'Zero regression rate' },
@@ -41,7 +41,7 @@ export const CAPABILITIES: SkillCapability[] = [
     icon: 'Layers',
     badge: 'Mobile Systems',
     evidenceKey: 'itti-ueno',
-    skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell', 'Modular Routing']
+    skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell', 'Modular Routing', 'React Native', 'Module Federation']
   },
   {
     id: 'backend-apis',
@@ -109,7 +109,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   {
     id: 'itti-ueno',
     kind: 'job',
-    role: 'Mobile Expert',
+    role: 'Mobile Expert (promoted from Tech Lead)',
     company: 'ITTI S.A.E.C.A. | ueno bank',
     location: 'San Francisco / Remote',
     period: 'Sep. 2023 – Nov. 2026',
@@ -179,6 +179,18 @@ export const EXPERIENCES: ExperienceItem[] = [
         text: 'Championed Spec-Driven Development (SDD), earned Hackathon Champion recognition, and led mobile engineering standards — resulting in promotion from Tech Lead to Mobile Expert.',
         metrics: 'Earned Hackathon Champion & Promotion to Mobile Expert',
         capabilityTag: 'Technical Leadership'
+      },
+      {
+        category: 'uGO Project · React Native Micro-Frontends',
+        text: 'During a four-month assignment, contributed to a React Native single-page application (SPA) and two micro-frontends integrated through Module Federation.',
+        metrics: 'Two micro-frontends integrated into one SPA',
+        capabilityTag: 'React Native & Module Federation'
+      },
+      {
+        category: 'uGO Project · Visual QA & Design System',
+        text: 'Wrote Playwright screenshot tests to flag visual regressions in layout and styling, and built a Storybook catalog so the team could preview individual design system components.',
+        metrics: 'Layout and styling regressions flagged automatically',
+        capabilityTag: 'Playwright & Storybook'
       }
     ],
     technologies: [
@@ -186,7 +198,8 @@ export const EXPERIENCES: ExperienceItem[] = [
       'Multi-Agent AI (Cursor, Copilot)', 'Codemagic', 'GitHub Actions', 'CI/CD',
       'Sonar', 'Checkmarx', 'Node.js', 'Fastify', 'NullPlatform', 'RASP',
       'Mobile Security', 'New Relic', 'Instabug', 'App Store Connect',
-      'Google Play Console', 'Huawei AppGallery', 'Spec-Driven Development'
+      'Google Play Console', 'Huawei AppGallery', 'Spec-Driven Development',
+      'React Native', 'Module Federation', 'Micro-Frontends', 'Playwright', 'Storybook'
     ]
   },
   {
@@ -360,7 +373,7 @@ export const EXPERIENCES: ExperienceItem[] = [
       },
       {
         category: 'Domain Delivery (IoT & EV)',
-        text: 'Integrated OCPP 1.6 EV chargers; gathered requirements; trained developers; led large-scale deployments.',
+        text: 'Gathered client requirements, trained developers, and led deployments for an OCPP 1.6 electric vehicle charging network with a Python WebSocket backend and a Flutter monitoring dashboard.',
         metrics: 'Connected physical EV charging hardware to cloud controllers',
         capabilityTag: 'OCPP 1.6 EV Integration'
       }
@@ -436,6 +449,33 @@ export const PROJECTS: ProjectItem[] = [
     ],
     links: [
       { label: 'ueno bank Portal', url: 'https://uenobank.com.py', type: 'live' }
+    ]
+  },
+  {
+    id: 'ugo-micro-frontends',
+    title: 'uGO React Native Micro-Frontends',
+    tagline: 'Four-month ITTI assignment on a React Native SPA composed of micro-frontends through Module Federation.',
+    category: 'mobile',
+    categoryLabel: 'Mobile & Flutter',
+    featured: false,
+    bannerGradient: 'from-cyan-500/20 via-blue-500/10 to-transparent',
+    technologies: ['React Native', 'Module Federation', 'Micro-Frontends', 'Playwright', 'Storybook'],
+    metrics: [
+      { label: 'Assignment', value: 'Four months' },
+      { label: 'Integration', value: 'Module Federation' },
+      { label: 'Visual QA', value: 'Playwright' }
+    ],
+    overview: 'uGO was a React Native single-page application built at ITTI from independently developed micro-frontends. Eugenio joined the project for a four-month assignment alongside his Flutter architecture work at ueno bank.',
+    challenge: 'Several micro-frontends had to load inside one single-page application and still look consistent, so layout or styling changes in one part could not be allowed to break another unnoticed.',
+    solution: 'Contributed to the SPA and to two micro-frontends integrated through Module Federation. Added Playwright screenshot tests to flag visual regressions and built a Storybook catalog of the design system components.',
+    architectureHighlights: [
+      'Two micro-frontends loaded into the SPA at runtime through Module Federation',
+      'Playwright screenshot tests comparing layout and styling against baselines',
+      'Storybook catalog for previewing individual design system components'
+    ],
+    results: [
+      'Visual regressions in layout and styling flagged automatically',
+      'The team could preview and review design system components on their own'
     ]
   },
   {
