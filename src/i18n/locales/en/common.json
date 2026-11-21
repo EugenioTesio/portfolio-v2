@@ -65,8 +65,8 @@
     "subtitle": "I’m a systems architect with over 14 years of engineering experience across mobile apps, backend services, and software delivery.",
     "yearsExp": "14+ Years Exp",
     "bioP1": "Hello! I'm <strong class=\"text-white font-semibold\">Eugenio Tesio</strong>, a Mobile Expert, Systems Architect, and Electronics Engineer with more than 14 years of end-to-end software delivery and hardware systems engineering.",
-    "latestRole": "As Mobile Expert at ueno bank (ITTI), I led the migration from a Flutter monolith to independently developed micro-apps in a shared app shell. This let more than 50 engineers work in parallel. I also set up automated releases every 15 days across three app stores.",
-    "aiExperience": "At ueno bank, I introduced multi-agent workflows with Cursor and GitHub Copilot and promoted spec-driven development. We used AI agents to speed up architectural refactoring and make code reviews more consistent.",
+    "latestRole": "As Mobile Expert at ueno bank (ITTI), I led the migration from a Flutter monolith to independently developed micro-apps in a shared app shell. This let more than 50 engineers work in parallel. I also set up automated releases every 15 days across three app stores. During a four-month assignment on uGO, I built React Native micro-frontends integrated through Module Federation, with Playwright screenshot tests and a Storybook component catalog.",
+    "aiExperience": "At ueno bank, I served as a champion of our spec-driven development SDLC and drove its adoption across several teams, with a written specification as the starting point for every change. I integrated it with AI agents in Cursor and GitHub Copilot to speed up architectural refactoring and align code review criteria.",
     "earlierRoles": "At PairTree, I developed Flutter features for an adoption platform and maintained FastAPI services with 100% test coverage. I built Flutter apps and NestJS services at Tandamos, and Spring Boot microservices on Google Cloud at Valtech.",
     "bioP4": "Holding a formal <strong class=\"text-white font-semibold\">Electrical & Electronics Engineering degree</strong> from Universidad Tecnológica Nacional (UTN), my engineering intuition extends from serial buses (RS485 Modbus) and EV charging protocols (OCPP 1.6) to cloud microservices and modern multi-agent AI workflows.",
     "quote": "I look for Python and Flutter work where architecture, test coverage, and the release train are what make the product reliable.",
@@ -74,7 +74,7 @@
     "groups": {
       "mobile": {
         "title": "Mobile",
-        "items": "Flutter, BLoC, Riverpod, micro-apps, RASP",
+        "items": "Flutter, BLoC, Riverpod, micro-apps, RASP, React Native",
         "proof": "Shared BLoC and Riverpod patterns across ueno bank’s retail and business banking apps."
       },
       "ai": {
@@ -93,7 +93,7 @@
         "proof": "Automated signing and distribution to the App Store, Google Play, and Huawei AppGallery."
       }
     },
-    "languages": "Languages: Spanish (Native), English (Professional)",
+    "languages": "Languages: Spanish (Native), English (Professional working proficiency)",
     "connect": "Connect with Eugenio",
     "competenciesTitle": "Core Competencies at a Glance",
     "academicDegree": "Academic Degree",

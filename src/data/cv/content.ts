@@ -113,14 +113,14 @@ const contentEn: CvContent = {
     },
     {
       value: 'AI + SDD',
-      title: 'Multi-Agent Engineering',
-      detail: 'Cursor, Copilot & SDD accelerating delivery',
+      title: 'SDLC Champion',
+      detail: 'Spec-driven development with Cursor & Copilot',
     },
   ],
   skillGroups: [
     {
       label: 'Mobile',
-      skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell'],
+      skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell', 'React Native'],
     },
     {
       label: 'Backend',
@@ -154,7 +154,8 @@ const contentEn: CvContent = {
         'Co-led consolidation of Individuos (retail) and Empresas (corporate) banking apps, harmonizing BLoC and Riverpod architectures across 300+ stakeholders.',
         'Established a predictable 15-day Release Train with automated Codemagic CD pipelines to Apple App Store, Google Play, and Huawei AppGallery.',
         'Hardened fintech security by integrating RASP for real-time jailbreak/root detection, enterprise secure WebView, and CI SAST gates (SonarQube & Checkmarx).',
-        'Spec-Driven Development (SDD) & Multi-agent AI: Promoted and implemented SDD with Cursor and GitHub Copilot workflows to accelerate architectural refactoring and code-review consistency, leading mobile engineering standards (Hackathon Champion and promotion from Tech Lead to Mobile Expert).',
+        'Served as an SDLC champion for Spec-Driven Development (SDD): drove adoption of the methodology across several teams, paired with Cursor and GitHub Copilot agents to accelerate architectural refactoring and code-review consistency (Hackathon Champion; promoted from Tech Lead to Mobile Expert).',
+        'uGO project (4 months): React Native SPA and two micro-frontends via Module Federation; Playwright screenshot tests and a Storybook design-system catalog.',
       ],
       technologies:
         'Flutter · Dart · BLoC · Riverpod · Micro-Apps · Spec-Driven Development (SDD) · Codemagic · GitHub Actions · Fastify · RASP · New Relic · Instabug',
@@ -200,7 +201,7 @@ const contentEn: CvContent = {
       period: 'Apr 2011 – Aug 2021',
       bullets: [
         'Delivered Flutter and native apps plus Spring Boot / FastAPI backends with zero store rejections.',
-        'Integrated OCPP 1.6 EV charging networks and commercialized RS485 industrial telemetry (Smart Lub).',
+        'Gathered requirements, trained developers, and led deployments for an OCPP 1.6 EV charging network (Python WebSocket backend, Flutter monitoring dashboard); commercialized RS485 industrial telemetry (Smart Lub).',
       ],
       technologies: 'Flutter · Spring Boot · FastAPI · WebSockets · OCPP 1.6 · GCP · Docker · Firebase',
     },
@@ -234,7 +235,7 @@ const contentEn: CvContent = {
   ],
   languages: [
     { name: 'Spanish', level: 'Native' },
-    { name: 'English', level: 'Professional' },
+    { name: 'English', level: 'Professional working proficiency' },
   ],
 };
 
@@ -283,14 +284,14 @@ const contentEs: CvContent = {
     },
     {
       value: 'IA + SDD',
-      title: 'Ingeniería Multiagente',
-      detail: 'Cursor, Copilot y SDD acelerando la entrega',
+      title: 'Champion de SDLC',
+      detail: 'Spec-driven development con Cursor y Copilot',
     },
   ],
   skillGroups: [
     {
       label: 'Mobile',
-      skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell'],
+      skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell', 'React Native'],
     },
     {
       label: 'Backend',
@@ -324,7 +325,8 @@ const contentEs: CvContent = {
         'Colideré la consolidación de las apps bancarias Individuos (retail) y Empresas (corporativa), armonizando arquitecturas BLoC y Riverpod entre más de 300 stakeholders.',
         'Establecí un Release Train predecible de 15 días con pipelines CD automatizados en Codemagic hacia Apple App Store, Google Play y Huawei AppGallery.',
         'Endurecí la seguridad fintech integrando RASP para detección en tiempo real de jailbreak/root, WebView seguro empresarial y gates SAST en CI (SonarQube y Checkmarx).',
-        'Spec-Driven Development (SDD) e IA Multiagente: Promoví e implementé SDD junto a flujos de desarrollo con Cursor y GitHub Copilot para acelerar el refactoring arquitectónico y la consistencia en code reviews, liderando estándares de ingeniería móvil (Hackathon Champion y promoción de Tech Lead a Experto Mobile).',
+        'Participé como champion de la metodología SDLC con Spec-Driven Development (SDD): impulsé su adopción en varios equipos, junto a agentes de IA en Cursor y GitHub Copilot, para acelerar el refactoring arquitectónico y la consistencia en code reviews (Hackathon Champion; promoción de Tech Lead a Experto Mobile).',
+        'Proyecto uGO (4 meses): SPA en React Native y dos micro-frontends con Module Federation; tests visuales con Playwright y catálogo Storybook.',
       ],
       technologies:
         'Flutter · Dart · BLoC · Riverpod · Micro-Apps · Spec-Driven Development (SDD) · Codemagic · GitHub Actions · Fastify · RASP · New Relic · Instabug',
@@ -370,7 +372,7 @@ const contentEs: CvContent = {
       period: 'Abr 2011 – Ago 2021',
       bullets: [
         'Entregué apps Flutter y nativas más backends Spring Boot / FastAPI con cero rechazos en tiendas.',
-        'Integré redes de carga EV OCPP 1.6 y comercialicé telemetría industrial RS485 (Smart Lub).',
+        'Relevé requisitos, formé desarrolladores y lideré despliegues de una red de carga EV OCPP 1.6 (backend WebSocket en Python, dashboard de monitoreo en Flutter); comercialicé telemetría industrial RS485 (Smart Lub).',
       ],
       technologies: 'Flutter · Spring Boot · FastAPI · WebSockets · OCPP 1.6 · GCP · Docker · Firebase',
     },
@@ -404,7 +406,7 @@ const contentEs: CvContent = {
   ],
   languages: [
     { name: 'Español', level: 'Nativo' },
-    { name: 'Inglés', level: 'Profesional' },
+    { name: 'Inglés', level: 'Competencia profesional' },
   ],
 };
 

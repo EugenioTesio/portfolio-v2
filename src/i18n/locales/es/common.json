@@ -65,8 +65,8 @@
     "subtitle": "Soy arquitecto de sistemas con más de 14 años de experiencia en aplicaciones móviles, servicios backend y entrega de software.",
     "yearsExp": "14+ años exp.",
     "bioP1": "¡Hola! Soy <strong class=\"text-white font-semibold\">Eugenio Tesio</strong>, Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico con más de 14 años de entrega de software y sistemas de hardware.",
-    "latestRole": "Como Experto Mobile en ueno bank (ITTI), lideré la migración de un monolito Flutter a microapps desarrolladas de forma independiente dentro de un app shell compartido. Esto permitió que más de 50 ingenieros trabajaran en paralelo. También automaticé las publicaciones cada 15 días en tres tiendas de aplicaciones.",
-    "aiExperience": "En ueno bank incorporé flujos de trabajo con múltiples agentes de IA usando Cursor y GitHub Copilot, e impulsé el desarrollo guiado por especificaciones. Usamos agentes de IA para agilizar la refactorización de la arquitectura y dar más consistencia a las revisiones de código.",
+    "latestRole": "Como Experto Mobile en ueno bank (ITTI), lideré la migración de un monolito Flutter a microapps desarrolladas de forma independiente dentro de un app shell compartido. Esto permitió que más de 50 ingenieros trabajaran en paralelo. También automaticé las publicaciones cada 15 días en tres tiendas de aplicaciones. Durante una asignación de cuatro meses en uGO construí micro-frontends en React Native integrados con Module Federation, con tests de capturas en Playwright y un catálogo de componentes en Storybook.",
+    "aiExperience": "En ueno bank participé como champion de la metodología de SDLC basada en spec-driven development e impulsé su adopción en varios equipos, con una especificación escrita como punto de partida de cada cambio. La integré con agentes de IA en Cursor y GitHub Copilot para agilizar la refactorización de la arquitectura y unificar criterios en las revisiones de código.",
     "earlierRoles": "En PairTree desarrollé funcionalidades en Flutter para una plataforma de adopción y mantuve servicios con FastAPI y un 100 % de cobertura de pruebas. En Tandamos construí aplicaciones Flutter y servicios NestJS, y en Valtech desarrollé microservicios con Spring Boot en Google Cloud.",
     "bioP4": "Con título formal en <strong class=\"text-white font-semibold\">Ingeniería Eléctrica y Electrónica</strong> de la Universidad Tecnológica Nacional (UTN), mi intuición de ingeniería va desde buses seriales (RS485 Modbus) y protocolos OCPP 1.6 hasta microservicios cloud e IA multiagente.",
     "quote": "Busco proyectos de Python y Flutter donde la arquitectura, la cobertura de tests y el tren de releases son lo que vuelve confiable al producto.",
@@ -74,7 +74,7 @@
     "groups": {
       "mobile": {
         "title": "Mobile",
-        "items": "Flutter, BLoC, Riverpod, micro-apps, RASP",
+        "items": "Flutter, BLoC, Riverpod, micro-apps, RASP, React Native",
         "proof": "Patrones compartidos de BLoC y Riverpod en las apps de banca personal y empresarial de ueno bank."
       },
       "ai": {
@@ -93,7 +93,7 @@
         "proof": "Firma y distribución automatizadas a App Store, Google Play y Huawei AppGallery."
       }
     },
-    "languages": "Idiomas: Español (nativo), Inglés (profesional)",
+    "languages": "Idiomas: Español (nativo), Inglés (competencia profesional)",
     "connect": "Conectar con Eugenio",
     "competenciesTitle": "Competencias centrales de un vistazo",
     "academicDegree": "Título académico",

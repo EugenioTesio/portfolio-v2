@@ -10,7 +10,7 @@ export const PERSONAL_INFO = {
   image: profileImage,
   bio: `Soy Eugenio Tesio, Experto Mobile, Arquitecto de Sistemas e Ingeniero Electrónico, con más de 14 años de experiencia profesional en ingeniería de software y telemetría de hardware. Me especializo en diseñar y escalar plataformas móviles de alta velocidad y backends resilientes con Flutter (BLoC y Riverpod), Python (FastAPI), Java (Spring Boot) y Google Cloud Platform. 
 
-Más recientemente fui Experto Mobile en ueno bank (ITTI S.A.E.C.A.) hasta nov. 2026, donde lideré la migración arquitectónica a un ecosistema multi-repo de Micro-App y App Shell que coordinó a más de 50 ingenieros Flutter, unifiqué las aplicaciones insignia de banca minorista y empresarial, implementé Release Trains automatizados de 15 días hacia Apple App Store, Google Play y Huawei AppGallery, y fortalecí la postura de seguridad con RASP para fintech. Antes logré 100 % de cobertura de tests en el backend FastAPI de PairTree (plataforma de habilitación de adopciones), entregué microservicios con Riverpod y Nest.js en Tandamos, construí pipelines empresariales de mensajería GCP Pub/Sub en Valtech, y durante una década desarrollé soluciones móviles e IoT a medida (incluidas redes de carga de vehículos eléctricos OCPP 1.6 y dispositivos de telemetría RS485 comercializados) con cero rechazos en las tiendas de aplicaciones.`,
+Más recientemente fui Experto Mobile en ueno bank (ITTI S.A.E.C.A.) hasta nov. 2026, donde lideré la migración arquitectónica a un ecosistema multi-repo de Micro-App y App Shell que coordinó a más de 50 ingenieros Flutter, unifiqué las aplicaciones insignia de banca minorista y empresarial, implementé Release Trains automatizados de 15 días hacia Apple App Store, Google Play y Huawei AppGallery, y fortalecí la postura de seguridad con RASP para fintech. Durante una asignación de cuatro meses en el proyecto uGO también trabajé con React Native, construyendo una aplicación de página única y micro-frontends integrados mediante Module Federation, con tests de regresión visual en Playwright y un catálogo de componentes en Storybook. Antes logré 100 % de cobertura de tests en el backend FastAPI de PairTree (plataforma de habilitación de adopciones), entregué microservicios con Riverpod y Nest.js en Tandamos, construí pipelines empresariales de mensajería GCP Pub/Sub en Valtech, y durante una década desarrollé soluciones móviles e IoT a medida (incluidas redes de carga de vehículos eléctricos OCPP 1.6 y dispositivos de telemetría RS485 comercializados) con cero rechazos en las tiendas de aplicaciones.`,
   education: {
     degree: 'Ingeniero Electrónico (Ingeniería Eléctrica y Electrónica)',
     institution: 'Universidad Tecnológica Nacional (UTN) — Facultad Regional San Francisco',
@@ -18,7 +18,7 @@ Más recientemente fui Experto Mobile en ueno bank (ITTI S.A.E.C.A.) hasta nov. 
     capstone: 'Smart Lub: un dispositivo electrónico para Vulcano Lubricación que lee datos de equipos por RS485, los envía por Ethernet o Wi-Fi y los almacena en una base de datos en la nube para su visualización. Puesto en marcha y comercializado.'
   },
   stats: [
-    { label: 'Experiencia en ingeniería', value: '14+ años', change: '5+ años de liderazgo en Flutter' },
+    { label: 'Experiencia en ingeniería', value: '14+ años', change: '3+ años liderando arquitectura Flutter' },
     { label: 'Ingenieros mobile escalados', value: '50+', change: 'Arquitectura Micro-App' },
     { label: 'Release Train predecible', value: '15 días', change: 'Codemagic automatizado' },
     { label: 'Cobertura backend FastAPI', value: '100%', change: 'Tasa de regresiones cero' },
@@ -41,7 +41,7 @@ export const CAPABILITIES: SkillCapability[] = [
     icon: 'Layers',
     badge: 'Sistemas móviles',
     evidenceKey: 'itti-ueno',
-    skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell', 'Modular Routing']
+    skills: ['Flutter', 'Dart', 'BLoC', 'Riverpod', 'Micro-Apps', 'App Shell', 'Modular Routing', 'React Native', 'Module Federation']
   },
   {
     id: 'backend-apis',
@@ -109,7 +109,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   {
     id: 'itti-ueno',
     kind: 'job',
-    role: 'Experto Mobile',
+    role: 'Experto Mobile (promovido desde Tech Lead)',
     company: 'ITTI S.A.E.C.A. | ueno bank',
     location: 'San Francisco / Remoto',
     period: 'Sep. 2023 – Nov. 2026',
@@ -179,6 +179,18 @@ export const EXPERIENCES: ExperienceItem[] = [
         text: 'Promoví Spec-Driven Development (SDD), obtuve el reconocimiento Hackathon Champion y lideré los estándares de ingeniería móvil, lo que derivó en la promoción de Tech Lead a Experto Mobile.',
         metrics: 'Hackathon Champion y promoción a Experto Mobile',
         capabilityTag: 'Liderazgo técnico'
+      },
+      {
+        category: 'Proyecto uGO · Micro-frontends React Native',
+        text: 'Durante una asignación de cuatro meses, contribuí a una aplicación de página única (SPA) en React Native y a dos micro-frontends integrados mediante Module Federation.',
+        metrics: 'Dos micro-frontends integrados en una sola SPA',
+        capabilityTag: 'React Native y Module Federation'
+      },
+      {
+        category: 'Proyecto uGO · QA visual y design system',
+        text: 'Escribí tests de capturas con Playwright para detectar regresiones visuales de layout y estilos, y armé un catálogo en Storybook para que el equipo pudiera previsualizar cada componente del design system.',
+        metrics: 'Regresiones de layout y estilos detectadas automáticamente',
+        capabilityTag: 'Playwright y Storybook'
       }
     ],
     technologies: [
@@ -186,7 +198,8 @@ export const EXPERIENCES: ExperienceItem[] = [
       'Multi-Agent AI (Cursor, Copilot)', 'Codemagic', 'GitHub Actions', 'CI/CD',
       'Sonar', 'Checkmarx', 'Node.js', 'Fastify', 'NullPlatform', 'RASP',
       'Mobile Security', 'New Relic', 'Instabug', 'App Store Connect',
-      'Google Play Console', 'Huawei AppGallery', 'Spec-Driven Development'
+      'Google Play Console', 'Huawei AppGallery', 'Spec-Driven Development',
+      'React Native', 'Module Federation', 'Micro-Frontends', 'Playwright', 'Storybook'
     ]
   },
   {
@@ -360,7 +373,7 @@ export const EXPERIENCES: ExperienceItem[] = [
       },
       {
         category: 'Entrega de dominio (IoT y EV)',
-        text: 'Integré cargadores EV OCPP 1.6; relevé requisitos; formé desarrolladores; lideré despliegues a gran escala.',
+        text: 'Relevé requisitos con clientes, formé desarrolladores y lideré despliegues de una red de carga de vehículos eléctricos OCPP 1.6 con backend WebSocket en Python y un dashboard de monitoreo en Flutter.',
         metrics: 'Hardware físico de carga EV conectado a controladores en la nube',
         capabilityTag: 'Integración EV OCPP 1.6'
       }
@@ -436,6 +449,33 @@ export const PROJECTS: ProjectItem[] = [
     ],
     links: [
       { label: 'Portal ueno bank', url: 'https://uenobank.com.py', type: 'live' }
+    ]
+  },
+  {
+    id: 'ugo-micro-frontends',
+    title: 'Micro-frontends React Native de uGO',
+    tagline: 'Asignación de cuatro meses en ITTI sobre una SPA en React Native compuesta por micro-frontends con Module Federation.',
+    category: 'mobile',
+    categoryLabel: 'Mobile y Flutter',
+    featured: false,
+    bannerGradient: 'from-cyan-500/20 via-blue-500/10 to-transparent',
+    technologies: ['React Native', 'Module Federation', 'Micro-Frontends', 'Playwright', 'Storybook'],
+    metrics: [
+      { label: 'Asignación', value: 'Cuatro meses' },
+      { label: 'Integración', value: 'Module Federation' },
+      { label: 'QA visual', value: 'Playwright' }
+    ],
+    overview: 'uGO fue una aplicación de página única en React Native construida en ITTI a partir de micro-frontends desarrollados de forma independiente. Eugenio se sumó al proyecto durante una asignación de cuatro meses, en paralelo a su trabajo de arquitectura Flutter en ueno bank.',
+    challenge: 'Varios micro-frontends debían cargarse dentro de una misma aplicación de página única y verse consistentes, por lo que un cambio de layout o estilos en una parte no podía romper otra sin que nadie lo notara.',
+    solution: 'Contribuí a la SPA y a dos micro-frontends integrados mediante Module Federation. Agregué tests de capturas con Playwright para detectar regresiones visuales y armé un catálogo en Storybook con los componentes del design system.',
+    architectureHighlights: [
+      'Dos micro-frontends cargados en la SPA en tiempo de ejecución mediante Module Federation',
+      'Tests de capturas con Playwright que comparan layout y estilos contra una línea base',
+      'Catálogo en Storybook para previsualizar cada componente del design system'
+    ],
+    results: [
+      'Regresiones visuales de layout y estilos detectadas automáticamente',
+      'El equipo pudo previsualizar y revisar los componentes del design system por separado'
     ]
   },
   {
