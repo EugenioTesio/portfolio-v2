@@ -70,8 +70,15 @@ class TransactionsState {
 }
 
 class TransactionsModel {
+  TransactionsModel(this._repo);
+  final TransactionsRepository _repo;
+
   final state = ValueNotifier(const TransactionsState.initial());
-  // repository updates `state.value` after fetch
+
+  Future<void> load() async {
+    state.value = const TransactionsState.loading();
+    state.value = await _repo.fetch();
+  }
 }
 
 class TransactionsController {
@@ -89,7 +96,7 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
-  late final model = TransactionsModel(/* repo */);
+  late final model = TransactionsModel(repo);
   late final controller = TransactionsController(model);
 
   @override
