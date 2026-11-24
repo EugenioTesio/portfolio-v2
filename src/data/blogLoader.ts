@@ -8,6 +8,7 @@ import modularFlutterCover from '../assets/images/blog/modular-flutter-architect
 import goldenRulesCover from '../assets/images/blog/testing-ai-golden-rules-cover.jpg';
 
 const BLOG_COVERS: Record<string, string> = {
+  'flutter-design-patterns': '/og/flutter-design-patterns.jpg',
   'testing-ai-golden-rules': goldenRulesCover,
   'flutter-a2ui-playground': playgroundCover,
   'iot-rs485-to-cloud': iotCover,

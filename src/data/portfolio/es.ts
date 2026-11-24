@@ -625,6 +625,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'flutter-design-patterns',
+    title: 'Cuatro patrones de diseño en Flutter para un historial de movimientos',
+    excerpt: 'Seguí el recorrido de un café desde el sistema del banco hasta un widget de Flutter. Cuatro patrones permiten consultar y ordenar los movimientos incluso dentro de un túnel.',
+    date: '24 nov 2026',
+    readTime: '7 min de lectura',
+    category: 'Flutter',
+    tags: ['Flutter', 'Dart', 'Patrones de diseño'],
+    author: 'Eugenio Tesio',
+    filename: 'flutter-design-patterns.md',
+    format: 'markdown'
+  },
+  {
     slug: 'testing-ai-golden-rules',
     title: 'Cómo probar las reglas de oro de la IA y cuánto confiar en ellas',
     excerpt: 'Convertí tus reglas de programación en evaluaciones útiles. Aprendé a diseñar escenarios, probar los evaluadores e interpretar qué demuestran los resultados.',

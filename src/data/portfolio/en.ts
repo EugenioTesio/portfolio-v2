@@ -625,6 +625,18 @@ export const PROJECTS: ProjectItem[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'flutter-design-patterns',
+    title: 'Four Flutter Design Patterns Behind One Transaction Feed',
+    excerpt: 'Follow a coffee charge from a legacy ledger to a Flutter widget. See how Adapter, Repository, Strategy, and Observer keep a transaction feed useful when a refresh goes offline.',
+    date: 'Nov 24, 2026',
+    readTime: '7 min read',
+    category: 'Flutter',
+    tags: ['Flutter', 'Dart', 'Design patterns'],
+    author: 'Eugenio Tesio',
+    filename: 'flutter-design-patterns.md',
+    format: 'markdown'
+  },
+  {
     slug: 'testing-ai-golden-rules',
     title: 'Testing AI Golden Rules: How Much Can You Trust Them?',
     excerpt: 'Turn coding guidelines into useful evaluations. Learn how to design scenarios, test your graders, and judge what passing results actually prove.',
